@@ -155,6 +155,18 @@ textarea.inp{min-height:96px;font-size:14px;word-break:break-all}
 .mp .open .det{display:block}
 .mp .det p{margin:5px 0}
 .mp .det .sum{background:#fff8e6;border-radius:8px;padding:6px 8px}
+.rd{padding-bottom:20px}
+.rd-cover{text-align:center;background:linear-gradient(145deg,var(--p),var(--p2));color:#fff;border-radius:26px;padding:22px 16px;position:relative}
+.rd-cover .stars{color:var(--g2);letter-spacing:6px}.rd-cover h1{color:#fff;margin:6px 0}.rd-cover h2{color:var(--g2);margin:2px 0 8px}.rd-cover p{color:#ecdffb;margin:3px 0;font-size:15px}
+.rd-wheel{text-align:center}.wheel{width:100%;max-width:420px;height:auto}.rd-wheel .cap{font-size:12px;color:var(--mut);margin:2px 0}
+.rd h3{margin:22px 0 8px;font-size:22px}
+.rd-tab{width:100%;border-collapse:collapse;font-size:14px}.rd-tab th,.rd-tab td{border-bottom:1px solid #e2d4f0;padding:6px 5px;text-align:left;vertical-align:top}.rd-tab th{color:var(--p);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.rd-card{background:#fff;border-radius:16px;padding:12px 14px;margin:10px 0;border-left:6px solid var(--c);box-shadow:0 2px 8px rgba(74,35,112,.08);break-inside:avoid}
+.rd-card h4{font-family:Georgia,serif;font-weight:400;font-size:19px;color:var(--p);margin:2px 0 6px}
+.rd-card ul{margin:4px 0;padding-left:18px;font-size:14.5px}.rd-card li{margin:4px 0}.rd-card ul.two{columns:2;font-size:13.5px}.orb{color:var(--mut);font-size:12px}
+.rd-end{text-align:center;font-family:Georgia,serif;font-size:22px;color:var(--p);margin:22px 0 4px}.rd-foot{text-align:center;color:var(--mut);font-size:12px}
+@page{size:A4;margin:12mm}
+@media print{body{background:#fff!important}.nav,header.top,.noprint,.toast{display:none!important}#app{max-width:none;padding:0}.rd-cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}.rd-card,.rd-wheel{break-inside:avoid}.rd h3{break-after:avoid}.wheel{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 </head>
 <body>
@@ -343,6 +355,7 @@ Q(6,L('Quem manda em Câncer?','Who rules Cancer?'),['Lua','Vênus','Saturno'],0
 Q(6,L('Quem manda em Gêmeos e em Virgem?','Who rules Gemini and Virgo?'),['Mercúrio','Vênus','Júpiter'],0,L('Mercúrio rege os dois.','Mercury rules both.'));
 Q(6,L('Qual é o regente tradicional de Peixes?','Who is the traditional ruler of Pisces?'),['Júpiter','Netuno','Marte'],0,L('Júpiter (o moderno é Netuno).','Jupiter (the modern one is Neptune).'));
 Q(7,L('Qual aspecto é o Aperto de mão, que ajuda se você der o primeiro passo?','Which aspect is the Handshake, which helps if you take the first step?'),['Sextil','Oposição','Conjunção'],0,L('Sextil: se ajudam com um empurrãozinho.','Sextile: they help each other with a little nudge.'));
+[['sarah',{y:1988,mo:2,d:12,hh:8,mm:50}],['renata',{y:1990,mo:4,d:10,hh:7,mm:24}]].forEach(function(x){var i=x[1];i.tz='America/Sao_Paulo';i.lat=-23.55;i.lon=-46.63;var r=computeChart(i);CHARTS[x[0]].lons=r.lons;CHARTS[x[0]].cusp=r.cusp});
 genBank();
 loadGuests().forEach(function(g){CHARTS[g.id]=mkGuest(g)});
 }
@@ -476,7 +489,7 @@ function mkGuest(g){
   nt?['Vênus',L(' em '+sg('Vênus')+': ama e curte '+SSTYLE[sg('Vênus')]+'.',' in '+N(sg('Vênus'))+': loves and enjoys '+SSTYLE[sg('Vênus')]+'.')]:['Ascendente',L(' em '+sg('Ascendente')+': você chega ao mundo '+SSTYLE[sg('Ascendente')]+'.',' in '+N(sg('Ascendente'))+': you arrive in the world '+SSTYLE[sg('Ascendente')]+'.')]];
  var sat=L('O seu Saturno está em '+sg('Saturno')+(hs('Saturno')?', casa '+hs('Saturno')+' ('+HSHORT[hs('Saturno')]+')':'')+': ele pede disciplina, paciência e constância nisso.','Your Saturn is in '+N(sg('Saturno'))+(hs('Saturno')?', house '+hs('Saturno')+' ('+HSHORT[hs('Saturno')]+')':'')+': it asks for discipline, patience and consistency there.');
  var curio=L('Uma curiosidade: '+ec[top]+' dos seus 10 planetas estão em '+top.toLowerCase()+'. Esse é o tom do seu mapa.','A curiosity: '+ec[top]+' of your 10 planets are in '+N(top).toLowerCase()+'. That is the tone of your chart.');
- return {name:g.name,other:'renata',guest:true,noTime:nt,moonAlt:g.moonAlt||null,nasc:nasc,pl:pl,retro:g.retro||[],merc:MERC[sg('Mercúrio')],sat:sat,asp:asp,learn:learn,four:four,curio:curio}}
+ return {name:g.name,other:'renata',guest:true,lons:g.lons,cusp:g.cusp||null,noTime:nt,moonAlt:g.moonAlt||null,nasc:nasc,pl:pl,retro:g.retro||[],merc:MERC[sg('Mercúrio')],sat:sat,asp:asp,learn:learn,four:four,curio:curio}}
 
 /* ===== banco de perguntas gerado (determinístico, igual nos dois celulares) ===== */
 function genBank(){
@@ -512,6 +525,74 @@ function genBank(){
  });
  ['Fogo','Terra','Ar','Água'].forEach(function(e){add(4,'eA'+e,L('Qual elemento é: "'+ELKW[e]+'"?','Which element is: "'+ELKW[e]+'"?'),e,['Fogo','Terra','Ar','Água'],function(k){return k},L(N(e)+': '+ELKW[e]+'.',N(e)+': '+ELKW[e]+'.'))});
 }
+/* ===== leitura completa, desenho do mapa e PDF ===== */
+var ZG=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+var ASPT=[['conj',0,8,'☌'],['semi',45,2,'∠'],['sext',60,5,'⚹'],['quad',90,7,'□'],['trig',120,7,'△'],['quin',150,3,'⚻'],['opos',180,8,'☍']];
+function aspName(k){return {conj:L('Conjunção','Conjunction'),semi:L('Semiquadratura','Semisquare'),sext:L('Sextil','Sextile'),quad:L('Quadratura','Square'),trig:L('Trígono','Trine'),quin:L('Quincúncio','Quincunx'),opos:L('Oposição','Opposition')}[k]}
+function aspectsList(lons,names){var out=[];for(var i=0;i<names.length;i++)for(var j=i+1;j<names.length;j++){var a=lons[names[i]],b=lons[names[j]];if(a==null||b==null)continue;var sep=Math.abs(a-b);if(sep>180)sep=360-sep;ASPT.forEach(function(d){var orb=Math.abs(sep-d[1]);if(orb<=d[2])out.push({a:names[i],b:names[j],k:d[0],sym:d[3],orb:orb})})}return out.sort(function(x,y){return x.orb-y.orb})}
+function fmtOrb(o){var d=Math.floor(o),m=Math.round((o-d)*60);if(m===60){d++;m=0}return d+'°'+(m<10?'0':'')+m+"'"}
+function cuspsOf(C){if(C.noTime)return null;if(C.cusp)return C.cusp;var a=C.lons['Ascendente'],c=[];for(var h=1;h<=12;h++)c[h]=(a+(h-1)*30)%360;return c}
+function wheelSVG(C){
+  var cx=180,cy=180,R1=170,R2=140,R3=112,R4=88,asc=C.noTime?0:C.lons['Ascendente'],cusp=cuspsOf(C);
+  function ang(l){return (180+(l-asc))*Math.PI/180}
+  function P(r,l){var a=ang(l);return [cx+r*Math.cos(a),cy-r*Math.sin(a)]}
+  function f(p){return p[0].toFixed(1)+' '+p[1].toFixed(1)}
+  var EC={Fogo:'#fde3d8',Terra:'#e6f0dc',Ar:'#dff0f8','Água':'#e4e4fa'},s='<svg viewBox="-24 -24 408 408" xmlns="http://www.w3.org/2000/svg" class="wheel" role="img" aria-label="'+L('Desenho do mapa','Chart drawing')+'"><rect x="-24" y="-24" width="408" height="408" fill="#fff"/>';
+  for(var i=0;i<12;i++){var l1=i*30,l2=l1+30;s+='<path d="M'+f(P(R1,l1))+' A'+R1+' '+R1+' 0 0 0 '+f(P(R1,l2))+' L'+f(P(R2,l2))+' A'+R2+' '+R2+' 0 0 1 '+f(P(R2,l1))+' Z" fill="'+EC[ELEM_OF[SIGNS[i]]]+'" stroke="#c9a35b" stroke-width="1"/>';var m=P((R1+R2)/2,l1+15);s+='<text x="'+m[0].toFixed(1)+'" y="'+(m[1]+6).toFixed(1)+'" text-anchor="middle" font-size="18" fill="#4a2370" font-family="Apple Symbols,Segoe UI Symbol,serif">'+ZG[i]+'&#xFE0E;</text>'}
+  s+='<circle cx="180" cy="180" r="'+R2+'" fill="none" stroke="#c9a35b"/><circle cx="180" cy="180" r="'+R3+'" fill="#fff" stroke="#b58fd6"/><circle cx="180" cy="180" r="'+R4+'" fill="#faf6fd" stroke="#e2d4f0"/>';
+  if(cusp){for(var h=1;h<=12;h++){var a=P(R4,cusp[h]),b=P(R2,cusp[h]);s+='<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+b[0].toFixed(1)+'" y2="'+b[1].toFixed(1)+'" stroke="#6f3fa0" stroke-width="'+(h%3===1?1.8:0.7)+'"/>';var nx=cusp[h===12?1:h+1],span=((nx-cusp[h])%360+360)%360,mp=P(100,cusp[h]+span/2);s+='<text x="'+mp[0].toFixed(1)+'" y="'+(mp[1]+3.5).toFixed(1)+'" text-anchor="middle" font-size="10" fill="#7a6a88" font-family="Georgia,serif">'+h+'</text>'}
+    var A=P(R1+12,C.lons['Ascendente']),M=P(R1+12,C.lons['Meio do Céu']);s+='<text x="'+A[0].toFixed(1)+'" y="'+(A[1]+4).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#4a2370">AC</text><text x="'+M[0].toFixed(1)+'" y="'+(M[1]+4).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#4a2370">MC</text>'}
+  var names=TEN.concat(C.noTime?[]:['Ascendente']);
+  aspectsList(C.lons,names).forEach(function(x){if(x.k==='conj'||x.k==='semi'||x.k==='quin')return;var col={sext:'#2a8fbd',quad:'#d9432f',trig:'#2fa58f',opos:'#7d4fb5'}[x.k],a=P(R4,C.lons[x.a]),b=P(R4,C.lons[x.b]);s+='<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+b[0].toFixed(1)+'" y2="'+b[1].toFixed(1)+'" stroke="'+col+'" stroke-width="1" opacity=".75"/>'});
+  // planetas com espaçamento
+  var arr=TEN.map(function(n){return {n:n,l:C.lons[n],d:C.lons[n]}}).sort(function(a,b){return a.l-b.l});
+  for(var it=0;it<30;it++)for(var k=1;k<arr.length;k++){var gap=arr[k].d-arr[k-1].d;if(gap<10){var push=(10-gap)/2;arr[k].d+=push;arr[k-1].d-=push}}
+  arr.forEach(function(p){var t1=P(R2,p.l),t2=P(R2-6,p.l),g2=P((R2+R3)/2,p.d);s+='<line x1="'+t1[0].toFixed(1)+'" y1="'+t1[1].toFixed(1)+'" x2="'+t2[0].toFixed(1)+'" y2="'+t2[1].toFixed(1)+'" stroke="'+COL[p.n]+'" stroke-width="2"/><text x="'+g2[0].toFixed(1)+'" y="'+(g2[1]+6).toFixed(1)+'" text-anchor="middle" font-size="19" fill="'+COL[p.n]+'" font-family="Apple Symbols,Segoe UI Symbol,serif" font-weight="700">'+GL[p.n]+'&#xFE0E;</text>'});
+  return s+'</svg>'}
+
+var DEFP={'Ascendente':[L('sua vida, seu corpo, sua personalidade','your life, your body, your personality')],'Sol':[L('o que te faz sentir viva','what makes you feel alive')],'Lua':[L('como você se vincula emocionalmente','how you bond emotionally')],'Mercúrio':[L('como você pensa e se comunica','how you think and communicate')],'Vênus':[L('estilo, o que você gosta sem esforço, prazer e amor','style, what you enjoy effortlessly, pleasure and love')],'Marte':[L('o que te apaixona e te acende','what you are passionate about and what lights you up')],'Saturno':[L('disciplina e a forma de encarar os grandes desafios','discipline and how you face the big challenges')],'Júpiter':[L('ideais, crenças, filosofia de vida, abundância e prosperidade','ideals, beliefs, life philosophy, abundance and prosperity')]};
+function advice(p,h){var where=h?L(' A casa '+h+' mostra onde: '+HSHORT[h]+'.',' House '+h+' shows where: '+HSHORT[h]+'.'):'';
+  return {'Ascendente':L('Habite o seu corpo e a sua presença do jeito do seu signo, sem se comparar.','Inhabit your body and your presence in your sign\'s way, without comparing yourself.'),
+  'Sol':L('Faça com frequência o que te faz sentir viva, em vez de deixar para depois.','Often do what makes you feel alive, instead of leaving it for later.')+where,
+  'Lua':L('Descubra o que acalma o seu coração e ofereça isso a você, sem culpa.','Find what calms your heart and offer it to yourself, without guilt.')+where,
+  'Mercúrio':L('Pense e comunique do seu jeito: ele é o seu jeito de aprender e de ensinar.','Think and communicate your way: it is how you learn and how you teach.')+where,
+  'Vênus':L('Quanto mais você se cerca do que é do seu Vênus (cores, pessoas, ambientes), mais o encarna.','The more you surround yourself with what belongs to your Venus (colors, people, places), the more you embody it.')+where,
+  'Marte':L('Dê ação ao que te acende: comece pequeno, mas comece.','Give action to what lights you up: start small, but start.')+where,
+  'Saturno':L('Trate o desafio como treino: pequenos passos constantes constroem a sua força.','Treat the challenge as training: small steady steps build your strength.')+where,
+  'Júpiter':L('Acredite no que expande você e cultive isso: é por aí que as coisas crescem.','Believe in what expands you and cultivate it: that is where things grow.')+where}[p]}
+function genText(p,sg){var st=SSTYLE[sg];return {'Urano':L('A sua geração quer mudar o velho '+st+'.','Your generation wants to change the old '+st+'.'),'Netuno':L('A sua geração sonha e busca sentido '+st+'.','Your generation dreams and seeks meaning '+st+'.'),'Plutão':L('A sua geração transforma o mundo por dentro '+st+'.','Your generation transforms the world from within '+st+'.')}[p]}
+function readingHTML(C){
+  var M=C.pl,nt=C.noTime,esc=function(x){return x},H='';
+  var asp=aspectsList(C.lons,TEN.concat(nt?[]:['Ascendente']));
+  H+='<div class="rd-cover"><div class="stars">✦ ✧ ✦</div><h1>'+L('O universo dentro de você','The universe inside you')+'</h1><h2>'+C.name+'</h2><p>'+L('Nascimento: ','Born: ')+C.nasc+'</p>'+(nt?'<p>'+L('Sem a hora de nascimento: leitura só com planetas e signos.','No birth time: reading with planets and signs only.')+'</p>':'<p>'+L('Ascendente em ','Ascendant in ')+N(M['Ascendente'][0])+L(', Meio do Céu em ',', Midheaven in ')+N(M['Meio do Céu'][0])+'</p>')+'</div>';
+  H+='<div class="rd-wheel">'+wheelSVG(C)+'<p class="cap">'+L('O desenho do seu mapa. Aspectos: verde trígono, azul sextil, vermelho quadratura, roxo oposição.','The drawing of your chart. Aspects: green trine, blue sextile, red square, purple opposition.')+'</p></div>';
+  H+='<h3>'+L('O que cada ponto representa','What each point represents')+'</h3><table class="rd-tab"><tr><th>'+L('Ponto','Point')+'</th><th>'+L('Seu signo','Your sign')+'</th>'+(nt?'':'<th>'+L('Casa','House')+'</th>')+'<th>'+L('Rege','Governs')+'</th></tr>';
+  (nt?[]:['Ascendente']).concat(['Sol','Lua','Mercúrio','Vênus','Marte','Saturno','Júpiter']).forEach(function(p){H+='<tr><td><b>'+(GL[p]?g(p)+' ':'')+N(p)+'</b></td><td>'+N(M[p][0])+'</td>'+(nt?'':'<td>'+M[p][1]+'</td>')+'<td>'+DEFP[p][0]+'</td></tr>'});
+  H+='<tr><td><b>'+g('Urano')+' '+N('Urano')+', '+g('Netuno')+' '+N('Netuno')+', '+g('Plutão')+' '+N('Plutão')+'</b></td><td>'+N(M['Urano'][0])+', '+N(M['Netuno'][0])+', '+N(M['Plutão'][0])+'</td>'+(nt?'':'<td>'+M['Urano'][1]+', '+M['Netuno'][1]+', '+M['Plutão'][1]+'</td>')+'<td>'+L('os valores da sua geração','the values of your generation')+'</td></tr></table>';
+  H+='<h3>'+L('O que fazer em cada um','What to do with each one')+'</h3>';
+  (nt?[]:['Ascendente']).concat(['Sol','Lua','Mercúrio','Vênus','Marte','Saturno','Júpiter']).forEach(function(p){
+    var sg=M[p][0],h=M[p][1],mine=asp.filter(function(x){return x.a===p||x.b===p});
+    var al=mine.length?mine.map(function(x){var o=x.a===p?x.b:x.a;return '<li>'+x.sym+' '+aspName(x.k)+' '+L('com','with')+' '+N(o)+' <span class="orb">('+L('orbe ','orb ')+fmtOrb(x.orb)+')</span></li>'}).join(''):'<li>'+L('Nenhum aspecto próximo.','No close aspects.')+'</li>';
+    H+='<div class="rd-card" style="--c:'+(COL[p]||'#6f3fa0')+'"><div class="tag">'+DEFP[p][0]+'</div><h4>'+(GL[p]?g(p)+' ':'')+L(N(p)+' em '+sg+(h?', casa '+h:''),N(p)+' in '+N(sg)+(h?', house '+h:''))+'</h4><ul>'
+     +'<li><b>'+L('No signo','In the sign')+' '+N(sg)+':</b> '+cap(SSTYLE[sg])+'. '+cap(MEAN[sg])+'.</li>'
+     +(h?'<li><b>'+L('Na casa ','In house ')+h+':</b> '+HFULL[h]+'</li>':'')
+     +(C.retro&&C.retro.indexOf(p)>=0?'<li><b>'+L('Retrógrado','Retrograde')+':</b> '+L('a energia vira para dentro: revisar, repensar, refazer.','the energy turns inward: reviewing, rethinking, redoing.')+'</li>':'')
+     +'<li><b>'+L('Aspectos','Aspects')+':</b><ul>'+al+'</ul></li>'
+     +'<li><b>'+L('Como se alinhar','How to align')+':</b> '+advice(p,h)+'</li></ul></div>'});
+  H+='<h3>'+L('Os valores da sua geração','The values of your generation')+'</h3>';
+  ['Urano','Netuno','Plutão'].forEach(function(p){var sg=M[p][0],h=M[p][1];H+='<div class="rd-card" style="--c:'+COL[p]+'"><h4>'+g(p)+' '+L(N(p)+' em '+sg+(h?', casa '+h:''),N(p)+' in '+N(sg)+(h?', house '+h:''))+'</h4><ul><li>'+genText(p,sg)+'</li>'+(h?'<li><b>'+L('Na sua vida:','In your life:')+'</b> '+HFULL[h]+'</li>':'')+'</ul></div>'});
+  H+='<h3>'+L('Como tudo se conecta no seu mapa','How everything connects in your chart')+'</h3><div class="rd-card" style="--c:#c9a35b"><ul>';
+  var ec={Fogo:[],Terra:[],Ar:[],'Água':[]};TEN.forEach(function(p){ec[ELEM_OF[M[p][0]]].push(N(p))});
+  for(var e in ec)H+='<li><b>'+N(e)+':</b> '+(ec[e].length?ec[e].length+' ('+ec[e].join(', ')+')':L('nenhum planeta','no planets'))+'</li>';
+  H+='</ul></div><div class="rd-card" style="--c:#6f3fa0"><div class="tag">'+L('Todos os aspectos','All aspects')+'</div><ul class="two">'+asp.map(function(x){return '<li>'+x.sym+' '+N(x.a)+' '+aspName(x.k).toLowerCase()+' '+N(x.b)+' <span class="orb">('+fmtOrb(x.orb)+')</span></li>'}).join('')+'</ul></div>';
+  H+='<p class="rd-end">'+L('Você não tem um signo só. Você é o universo inteiro.','You do not have just one sign. You are the whole universe.')+'</p>';
+  if(!nt)H+='<p class="rd-foot">'+L('Casas pelo sistema Placidus.','Houses in the Placidus system.')+'</p>';
+  return H}
+function leitura(){
+  LANGBACK=leitura;cur=null;app.innerHTML='';app.appendChild(topbar(true));
+  var w=el('div',{class:'rd',html:readingHTML(CH)});app.appendChild(w);
+  bottom([el('button',{class:'btn ghost',id:'rd-back',onclick:mapa},'‹'),el('button',{class:'btn gold wide',id:'rd-pdf',onclick:printReading},L('⬇ Baixar em PDF','⬇ Download as PDF'))]);window.scrollTo(0,0)}
+function printReading(){var t=document.title;document.title=L('Mapa astral - ','Birth chart - ')+CH.name;var back=function(){document.title=t;window.removeEventListener('afterprint',back)};window.addEventListener('afterprint',back);toast(L('Na janela, escolha "Salvar como PDF"','In the window, choose "Save as PDF"'));setTimeout(function(){window.print()},700)}
 
 /* ===== estado ===== */
 var S={done:{},pts:0,best:{}};
@@ -521,7 +602,7 @@ function stateKey(){return 'missaoAstro_'+PROFILE}
 function loadState(){S={done:{},pts:0,best:{}};try{var raw=localStorage.getItem(stateKey());if(raw)S=JSON.parse(raw)}catch(e){}}
 function save(){try{localStorage.setItem(stateKey(),JSON.stringify(S))}catch(e){}}
 function setProfile(key){CH=CHARTS[key];PROFILE=key;MAPA=CH.pl;loadState();S.name=CH.name;try{localStorage.setItem('missaoAstroProfile',key)}catch(e){}buildDays()}
-function setLang(l){LANG=l==='en'?'en':'pt';try{localStorage.setItem('missaoAstroLang',LANG)}catch(e){}document.documentElement.lang=LANG==='en'?'en':'pt-BR';buildData();if(PROFILE){var nm=S.name;setProfile(PROFILE);if(nm)S.name=nm}}
+function setLang(l){LANG=l==='en'?'en':'pt';try{localStorage.setItem('missaoAstroLang',LANG)}catch(e){}document.documentElement.lang=LANG==='en'?'en':'pt-BR';buildData();if(PROFILE&&CHARTS[PROFILE]){var nm=S.name;setProfile(PROFILE);if(nm)S.name=nm}}
 function toggleLang(){setLang(LANG==='pt'?'en':'pt');(LANGBACK||home)()}
 
 function el(tag,attrs){var e=document.createElement(tag);for(var k in (attrs||{})){if(k==='class')e.className=attrs[k];else if(k==='html')e.innerHTML=attrs[k];else if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),attrs[k]);else e.setAttribute(k,attrs[k])}for(var i=2;i<arguments.length;i++){var c=arguments[i];if(c==null)continue;e.appendChild(typeof c==='string'?document.createTextNode(c):c)}return e}
@@ -586,6 +667,8 @@ function mapa(){
   TEN.concat(CH.noTime?[]:['Ascendente','Meio do Céu']).forEach(function(n){
     var card=el('div',{style:'--c:'+(COL[n]||'#6f3fa0'),class:'pc',id:'pc-'+n,role:'button',tabindex:'0'},el('b',{class:'glyph'},(GL[n]?g(n)+' ':'')+N(n)),N(MAPA[n][0])+(MAPA[n][1]?', '+houseTxt(MAPA[n][1]):'')+(CH.retro.indexOf(n)>=0?L(' (retrógrado)',' (retrograde)'):''),el('span',{class:'more'},L(' · toque para entender',' · tap to understand')),el('div',{class:'det',html:detail(n)}));
     card.addEventListener('click',function(){card.classList.toggle('open')});mp.appendChild(card)});
+  app.appendChild(el('div',{class:'rd-wheel',style:'margin:10px 0',html:wheelSVG(CH)}));
+  app.appendChild(el('button',{class:'btn gold wide',id:'open-reading',style:'margin-bottom:10px',onclick:leitura},L('📖 Ver a leitura completa e baixar em PDF','📖 See the full reading and download as PDF')));
   app.appendChild(mp);
   var lul=el('ul',{});CH.learn.forEach(function(x){lul.appendChild(el('li',{html:'<b>'+x[0]+'</b>'+x[1]}))});
   app.appendChild(el('div',{class:'mine',style:'margin-top:16px'},el('div',{class:'tag'},L('O seu jeito de aprender','Your way of learning')),lul));
@@ -865,12 +948,13 @@ function chooser(){
   if(h==='#escolher'){chooser();return}
   if(!key&&(h==='#sarah'||h==='#renata'))key=h.slice(1);
   if(!key){try{key=localStorage.getItem('missaoAstroProfile')}catch(e){}}
-  var dbg=/^#(d\d+s\d+|mapa|juntas)$/.test(h);
+  var dbg=/^#(d\d+s\d+|mapa|juntas|leitura)$/.test(h);
   if(!CHARTS[key]&&dbg)key='sarah';
   if(!CHARTS[key]){chooser();return}
   setProfile(key);
   var m=h.match(/#d(\d)s(\d+)/);
   if(h==='#mapa'){mapa();return}
+  if(h==='#leitura'){leitura();return}
   if(h==='#juntas'){together();return}
   if(m){cur={day:+m[1],step:+m[2]};renderStep();return}
   home();
@@ -982,7 +1066,7 @@ function createMap(){
     if(!noT&&!(hh.value!==''&&mi.value!==''&&h>=0&&h<=23&&m>=0&&m<=59)){toast(L('Confira a hora, ou marque que não sabe','Check the time, or tick that you do not know it'));return}
     if(!place){toast(L('Busque e escolha a cidade','Search and pick the city'));return}
     var r;try{r=computeChart({y:y,mo:mo,d:d,hh:h,mm:m,tz:place.tz,lat:place.lat,lon:place.lon,noTime:noT})}catch(e){toast(L('Não consegui calcular esse mapa','I could not work out this chart'));return}
-    var id='g_'+Date.now().toString(36),gx={id:id,name:cleanName(nm.value),birth:{d:d,mo:mo,y:y,hh:h,mm:m,place:place.short},pl:r.pl,lons:r.lons,retro:r.retro,noTime:noT,moonAlt:r.moonAlt||null};
+    var id='g_'+Date.now().toString(36),gx={id:id,name:cleanName(nm.value),birth:{d:d,mo:mo,y:y,hh:h,mm:m,place:place.short},pl:r.pl,lons:r.lons,cusp:r.cusp,retro:r.retro,noTime:noT,moonAlt:r.moonAlt||null};
     var gs=loadGuests();gs.push(gx);saveGuests(gs);PROFILE=null;setLang(LANG);setProfile(id);home();confetti()
   }},L('Criar o meu mapa e começar','Create my chart and start')));
   c.appendChild(el('p',{style:'text-align:center;margin-top:10px'},el('button',{class:'link',id:'cm-back',onclick:chooser},L('Voltar','Back'))));
