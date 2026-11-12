@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#4a2370">
+<title>Missão Astro</title>
+<style>
+:root{--p:#4a2370;--p2:#6f3fa0;--p3:#b58fd6;--g:#c9a35b;--g2:#f2d58a;--bg:#f7f1fc;--ink:#2a2033;--mut:#7a6a88;--ok:#2f9e6e;--no:#d9432f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:"Avenir Next","Trebuchet MS",-apple-system,Helvetica,Arial,sans-serif;font-size:17px;line-height:1.45}
+body{min-height:100vh;background:radial-gradient(circle at 50% -10%,#efe2fb 0,#f7f1fc 45%,#f7f1fc 100%)}
+#app{max-width:560px;margin:0 auto;padding:14px 16px 96px}
+.glyph{font-family:"Apple Symbols","Menlo","Segoe UI Symbol",serif}
+header.top{display:flex;align-items:center;justify-content:space-between;padding:6px 2px 10px}
+.brand{font-family:Georgia,serif;font-size:20px;color:var(--p);letter-spacing:.02em}
+.brand span{color:var(--g)}
+.pts{background:#fff;border:2px solid var(--g2);color:var(--p);font-weight:700;border-radius:99px;padding:4px 12px;font-size:15px}
+h1,h2,h3{font-family:Georgia,serif;font-weight:400;color:var(--p);margin:0}
+h1{font-size:30px;line-height:1.12}
+h2{font-size:23px;line-height:1.2}
+p{margin:6px 0}
+.hero{background:linear-gradient(145deg,var(--p) 0,var(--p2) 60%,#8a58c0 100%);color:#fff;border-radius:26px;padding:22px 20px;box-shadow:0 8px 24px rgba(74,35,112,.25);position:relative;overflow:hidden}
+.hero h1{color:#fff}
+.hero p{color:#ecdffb}
+.hero .stars{position:absolute;right:14px;top:10px;color:var(--g2);letter-spacing:6px;font-size:14px;opacity:.9}
+.bar{height:10px;background:rgba(255,255,255,.22);border-radius:99px;margin-top:14px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--g2),var(--g));border-radius:99px;transition:width .5s}
+.bar-l{font-size:13px;color:#e4d3f6;margin-top:6px}
+.days{display:grid;gap:12px;margin-top:18px}
+.day{display:flex;gap:14px;align-items:center;background:#fff;border-radius:22px;padding:14px 14px;box-shadow:0 2px 10px rgba(74,35,112,.10);border:2px solid transparent;cursor:pointer;text-align:left;width:100%;font:inherit;color:inherit;transition:transform .12s}
+.day:active{transform:scale(.985)}
+.day .n{flex:none;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;background:var(--c,var(--p2))}
+.day b{display:block;font-family:Georgia,serif;font-size:19px;color:var(--p);font-weight:400}
+.day small{color:var(--mut);font-size:14px}
+.day .st{margin-left:auto;font-size:22px;color:#d9cce8}
+.day.done{border-color:#bfe6d3}
+.day.done .st{color:var(--ok)}
+.tile{background:#fff;border-radius:22px;padding:16px;margin-top:16px;box-shadow:0 2px 10px rgba(74,35,112,.10)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--p);color:#fff;border:0;border-radius:16px;padding:14px 20px;font:inherit;font-weight:700;font-size:17px;cursor:pointer;box-shadow:0 4px 0 #2f1550;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #2f1550}
+.btn.gold{background:var(--g);color:#2b1c05;box-shadow:0 4px 0 #8d6d2c}
+.btn.gold:active{box-shadow:0 1px 0 #8d6d2c}
+.btn.ghost{background:#fff;color:var(--p);box-shadow:0 0 0 2px var(--p3) inset;border:0}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.btn.wide{width:100%}
+.row{display:flex;gap:10px;align-items:center}
+.row.sp{justify-content:space-between}
+.link{background:none;border:0;color:var(--p2);font:inherit;text-decoration:underline;cursor:pointer;padding:6px}
+/* lesson */
+.lt{display:flex;align-items:center;gap:10px;margin:2px 0 12px}
+.x{background:#fff;border:0;border-radius:50%;width:40px;height:40px;font-size:20px;color:var(--p);box-shadow:0 1px 6px rgba(74,35,112,.15);cursor:pointer}
+.dots{flex:1;display:flex;gap:5px}
+.dots i{flex:1;height:8px;border-radius:99px;background:#e2d4f0}
+.dots i.on{background:var(--g)}
+.dots i.cur{background:var(--p2)}
+.card{background:#fff;border-radius:26px;padding:22px 20px;box-shadow:0 6px 20px rgba(74,35,112,.13);animation:in .35s}
+@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.card .big{font-size:56px;text-align:center;margin:4px 0 8px;color:var(--c,var(--p2))}
+.card h2{text-align:center;margin-bottom:8px}
+.card p{font-size:18px}
+.tag{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--g);font-weight:700;margin-bottom:4px}
+.trio{display:grid;gap:10px;margin:12px 0}
+.trio div{border-radius:16px;padding:12px 14px;background:var(--b);border-left:6px solid var(--c);font-size:17px}
+.trio b{font-family:Georgia,serif;font-size:22px;color:var(--c);margin-right:6px}
+.flipgrid{display:grid;gap:12px;grid-template-columns:1fr 1fr;margin-top:12px}
+.flipgrid.one{grid-template-columns:1fr}
+.fl{perspective:700px;height:150px;cursor:pointer;border:0;background:none;padding:0;font:inherit;text-align:center}
+.fl .in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.fl.on .in{transform:rotateY(180deg)}
+.fl .f,.fl .b{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:10px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.fl .f{background:var(--c,var(--p2));color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.fl .f .g{font-size:38px;line-height:1}
+.fl .f b{font-family:Georgia,serif;font-weight:400;font-size:20px;margin-top:4px}
+.fl .f small{opacity:.85;font-size:13px}
+.fl .b{background:var(--b,#fff);color:var(--ink);transform:rotateY(180deg);border:3px solid var(--c);font-size:15px;line-height:1.3}
+.fl .b em{font-style:normal;font-weight:700;color:var(--c);display:block;margin-top:6px;font-size:14px}
+.hint{text-align:center;color:var(--mut);font-size:14px;margin-top:10px}
+.q{font-size:20px;font-family:Georgia,serif;color:var(--p);margin:2px 0 14px;line-height:1.3}
+.opts{display:grid;gap:10px}
+.opt{background:#fff;border:2px solid #e2d4f0;border-radius:16px;padding:14px 16px;font:inherit;text-align:left;cursor:pointer;color:var(--ink);transition:transform .08s}
+.opt:active{transform:scale(.98)}
+.opt.ok{background:#e1f5ec;border-color:var(--ok)}
+.opt.no{background:#fde7e3;border-color:var(--no);animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.why{margin-top:12px;background:#fff8e6;border-left:5px solid var(--g);border-radius:12px;padding:10px 12px;font-size:16px}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mi{background:#fff;border:2px solid #e2d4f0;border-radius:14px;padding:12px 10px;font:inherit;font-size:15px;cursor:pointer;min-height:58px;text-align:center;color:var(--ink)}
+.mi.sel{border-color:var(--p2);background:#f1e8fb}
+.mi.ok{background:#e1f5ec;border-color:var(--ok);pointer-events:none;opacity:.75}
+.mi.no{animation:sh .35s;border-color:var(--no)}
+.mi b{font-family:Georgia,serif;font-weight:400;font-size:17px;color:var(--p)}
+.slot{margin:10px 0}
+.slot label{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin-bottom:6px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid #e2d4f0;background:#fff;border-radius:99px;padding:8px 14px;font:inherit;font-size:15px;cursor:pointer;color:var(--ink)}
+.chip.sel{background:var(--p2);color:#fff;border-color:var(--p2)}
+.chip.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.chip.no{background:var(--no);border-color:var(--no);color:#fff}
+.scn{background:#f4ecfb;border-radius:16px;padding:12px 14px;font-size:17px;margin-bottom:6px}
+.mission{background:linear-gradient(145deg,#fff6df,#fff);border:3px dashed var(--g);border-radius:26px;padding:22px 20px;text-align:center}
+.mission .big{font-size:48px}
+.check{display:flex;align-items:center;gap:12px;justify-content:center;margin-top:14px;font-size:18px;cursor:pointer}
+.check input{width:28px;height:28px;accent-color:var(--p2)}
+.mine{background:linear-gradient(145deg,#efe6f7,#fff);border-radius:26px;padding:18px;border:2px solid var(--p3)}
+.mine ul{margin:8px 0 0;padding:0;list-style:none}
+.mine li{padding:9px 0;border-top:1px dashed #cdb8e4;font-size:16px}
+.mine li:first-child{border-top:0}
+.mine b{color:var(--p)}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid #e6d9f0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));z-index:5}
+.nav .in{max-width:560px;margin:0 auto;display:flex;gap:10px}
+.nav .btn{flex:1}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--p);color:#fff;padding:10px 18px;border-radius:99px;font-weight:700;z-index:30;box-shadow:0 6px 18px rgba(0,0,0,.2);animation:in .3s}
+.conf{position:fixed;top:-20px;z-index:40;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.9}}
+.tabs{display:flex;gap:8px;margin:12px 0 4px}
+.tab{flex:1;background:#fff;border:2px solid #e2d4f0;border-radius:14px;padding:10px;font:inherit;font-weight:700;color:var(--p);cursor:pointer}
+.tab.on{background:var(--p);color:#fff;border-color:var(--p)}
+.mp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.mp div{background:#fff;border-radius:16px;padding:10px 12px;border-left:6px solid var(--c);box-shadow:0 2px 8px rgba(74,35,112,.08);font-size:14px}
+.mp b{display:block;font-family:Georgia,serif;font-weight:400;font-size:17px;color:var(--p)}
+.cert{background:linear-gradient(150deg,#fff8e6,#fff);border:4px double var(--g);border-radius:26px;padding:26px 18px;text-align:center}
+.cert h1{margin:6px 0}
+
+.inp{width:100%;padding:12px 14px;border:2px solid #e2d4f0;border-radius:14px;font:inherit;background:#fff;color:var(--ink)}
+textarea.inp{min-height:96px;font-size:14px;word-break:break-all}
+.score{display:flex;gap:10px;margin-bottom:12px}
+.score div{flex:1;border-radius:16px;padding:8px 10px;background:#fff;text-align:center;border:3px solid transparent;font-weight:700;color:var(--mut)}
+.score div.on{border-color:var(--g);background:#fff8e6;color:var(--p)}
+.score b{display:block;font-size:26px;color:var(--p);font-family:Georgia,serif;font-weight:400}
+.codebox{background:#f4ecfb;border:2px dashed var(--p3);border-radius:14px;padding:12px;font-family:Menlo,monospace;font-size:24px;text-align:center;letter-spacing:.25em;color:var(--p);margin:8px 0}
+.cmp table{width:100%;border-collapse:collapse;margin-top:14px}
+.cmp th,.cmp td{border-bottom:1px solid #e2d4f0;padding:8px;text-align:center}
+.cmp .win{text-align:center;font-family:Georgia,serif;font-size:22px;color:var(--p);margin:12px 0 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== dados do mapa da Sarah ===== */
+var MAPA = {
+  'Sol':['Aquário',11],'Lua':['Sagitário',9],'Mercúrio':['Aquário',11],'Vênus':['Áries',1],'Marte':['Sagitário',9],
+  'Júpiter':['Áries',1],'Saturno':['Sagitário',9],'Urano':['Sagitário',9],'Netuno':['Capricórnio',10],'Plutão':['Escorpião',8],
+  'Ascendente':['Áries',1],'Meio do Céu':['Capricórnio',10]
+};
+var GL = {'Sol':'☉','Lua':'☽','Mercúrio':'☿','Vênus':'♀','Marte':'♂','Júpiter':'♃','Saturno':'♄','Urano':'♅','Netuno':'♆','Plutão':'♇'};
+var COL = {'Sol':'#f2b705','Lua':'#7d8fd1','Mercúrio':'#2fa58f','Vênus':'#e0679b','Marte':'#d9432f','Júpiter':'#e08a1e','Saturno':'#6b5b7b','Urano':'#1aa3c4','Netuno':'#5b6ee1','Plutão':'#8e2f6b'};
+var TXT = '︎';
+function g(n){return (GL[n]||'✦')+TXT}
+function mine(n){var m=MAPA[n];return m?('Seu '+n+': '+m[0]+', casa '+m[1]):''}
+
+/* ===== lições ===== */
+var P5=[
+ ['Sol','o Rei do show','O que te faz sentir viva. O seu brilho.'],
+ ['Lua','o Coração','Como você sente e se liga às pessoas. O seu cantinho seguro.'],
+ ['Mercúrio','o Mensageiro','Como você pensa, aprende e se comunica.'],
+ ['Vênus','a Amiga do prazer','Estilo, o que você gosta sem esforço, amor e prazer.'],
+ ['Marte','o Motorzinho','O que te apaixona e te acende. A vontade de ir lá e fazer.']
+];
+var PL=[
+ ['Júpiter','o Grande Sorriso','Crenças, sorte, abundância. Onde as coisas crescem.'],
+ ['Saturno','o Professor rígido','Disciplina e grandes desafios. Ensina pelo esforço.'],
+ ['Urano','o Inventor maluquinho','Mudança, liberdade e novidade.'],
+ ['Netuno','o Sonhador','Imaginação, arte, intuição e espiritualidade.'],
+ ['Plutão','o Mágico das transformações','Profundidade e renascimento.']
+];
+function flipP(list){return list.map(function(p){return {c:COL[p[0]],g:g(p[0]),t:p[0],s:p[1],back:p[2],em:mine(p[0])}})}
+
+var DAYS=[
+{id:1,emoji:'✦',c:'#6f3fa0',title:'A grande ideia',sub:'Planeta, signo e casa em 5 minutos',steps:[
+ {k:'card',big:'✦',tag:'Comece por aqui',title:'O mapa é uma foto do céu',body:'Uma foto do céu no momento em que você nasceu. Nela, cada planeta está em um signo e em uma casa.'},
+ {k:'trio'},
+ {k:'card',big:'☉'+TXT,tag:'Veja funcionando',title:'Sol em Aquário na casa 11',body:'O seu brilho (<b>Sol</b>), de um jeito original e livre (<b>Aquário</b>), entre amigos, grupos e sonhos de futuro (<b>casa 11</b>). Esse é o seu Sol.'},
+ {k:'build',rounds:[
+  {s:'Um coração que precisa de calma e conforto, e isso aparece no trabalho e na vida pública.',a:['Lua','Touro','10'],o:[['Sol','Lua','Marte'],['Touro','Leão','Peixes'],['4','10','7']],why:'Lua é o coração, Touro é calma e conforto, casa 10 é a vida pública.'},
+  {s:'A vontade de agir (o motorzinho), do jeito corajoso de quem vai primeiro, quando estuda e viaja.',a:['Marte','Áries','9'],o:[['Marte','Vênus','Saturno'],['Áries','Câncer','Libra'],['2','9','12']],why:'Marte é a ação, Áries vai primeiro, casa 9 é estudo e viagem.'}
+ ]},
+ {k:'mission',big:'🎙️',title:'Missão do dia',body:'Mande um áudio de 30 segundos para uma amiga explicando: <b>planeta é quem faz, signo é como faz, casa é onde faz.</b>'}
+]},
+{id:2,emoji:'☉',c:'#f2b705',title:'Os 5 planetas só seus',sub:'Sol, Lua, Mercúrio, Vênus e Marte',steps:[
+ {k:'flip',title:'Toque nas cartas',list:flipP(P5)},
+ {k:'match',title:'Ligue cada planeta ao que ele faz',pairs:[['Sol','O seu brilho'],['Lua','O seu coração'],['Mercúrio','Pensar e falar'],['Vênus','Amor e prazer'],['Marte','Ação e vontade']]},
+ {k:'quiz',q:'Qual planeta cuida de como você pensa e se comunica?',o:['Vênus','Mercúrio','Saturno'],a:1,why:'Mercúrio é o Mensageiro. O seu está em Aquário, na casa 11: pensa em rede, com amigos.'},
+ {k:'mission',big:'🔎',title:'Missão do dia',body:'Descubra o <b>Sol</b> de uma amiga e adivinhe, antes de ela contar, no que ela brilha.'}
+]},
+{id:3,emoji:'♄'+TXT,c:'#6b5b7b',title:'Os planetas grandes e lentos',sub:'Júpiter, Saturno, Urano, Netuno e Plutão',steps:[
+ {k:'card',big:'🐢',tag:'Curiosidade',title:'Eles andam devagar',body:'Júpiter e Saturno ensinam. Urano, Netuno e Plutão demoram tanto que valem para <b>uma geração inteira</b>.'},
+ {k:'flip',title:'Toque nas cartas',list:flipP(PL)},
+ {k:'quiz',q:'Quem é o Professor rígido, que ensina pelo esforço?',o:['Saturno','Urano','Netuno'],a:0,why:'Saturno. E o seu está colado em Urano, o Inventor, na casa 9: estrutura e liberdade nos estudos.'},
+ {k:'quiz',q:'Quem é o Inventor maluquinho, que quebra o velho?',o:['Júpiter','Plutão','Urano'],a:2,why:'Urano: mudança, liberdade e novidade.'},
+ {k:'mission',big:'🎙️',title:'Missão do dia',body:'Escolha <b>1 planeta lento</b> e conte em um áudio de 30 segundos quem ele é, com as suas palavras.'}
+]},
+{id:4,emoji:'♈'+TXT,c:'#d9542f',title:'Os 12 signos',sub:'Fogo, Terra, Ar e Água',steps:[
+ {k:'flip',title:'Os 4 elementos',one:true,list:[
+  {c:'#d9542f',g:'🔥',t:'Fogo',s:'Áries, Leão, Sagitário',back:'Energia e coragem. Vai e faz.',em:'Você tem 6 planetas em Fogo!'},
+  {c:'#5b8a3c',g:'🌱',t:'Terra',s:'Touro, Virgem, Capricórnio',back:'Pés no chão. Constrói e cuida.',em:''},
+  {c:'#2a8fbd',g:'💨',t:'Ar',s:'Gêmeos, Libra, Aquário',back:'Ideias e conversa. Conecta.',em:'O seu Sol e o seu Mercúrio estão aqui.'},
+  {c:'#5b5bd6',g:'🌊',t:'Água',s:'Câncer, Escorpião, Peixes',back:'Sentimentos. Sente fundo.',em:''}]},
+ {k:'match',title:'Ligue o signo ao seu jeito',pairs:[['Áries','Vai primeiro'],['Touro','Devagar e gostoso'],['Gêmeos','Pergunta e conversa'],['Leão','Brilha no palco'],['Escorpião','Mergulha fundo'],['Aquário','Inventa o futuro']]},
+ {k:'match',title:'Mais um: ligue de novo',pairs:[['Câncer','Abraça e cuida'],['Virgem','Arruma e ajuda'],['Libra','Procura o equilíbrio'],['Sagitário','Aventureiro'],['Capricórnio','Escala a montanha'],['Peixes','Sonha e sente tudo']]},
+ {k:'mission',big:'🕵️',title:'Missão do dia',body:'Escolha 3 pessoas e adivinhe o <b>elemento</b> de cada uma. Depois confira e veja quantas você acertou.'}
+]},
+{id:5,emoji:'🏠',c:'#2fa58f',title:'As 12 casas',sub:'Uma casa com 12 cômodos',steps:[
+ {k:'flip',title:'As 4 partes da casa',one:true,list:[
+  {c:'#f2b705',g:'1·2·3',t:'Eu',s:'Casas 1, 2 e 3',back:'O corpo, o que é meu e o meu jeito de falar.',em:''},
+  {c:'#2fa58f',g:'4·5·6',t:'O meu mundo',s:'Casas 4, 5 e 6',back:'Casa e família, o prazer de criar e a rotina.',em:''},
+  {c:'#e0679b',g:'7·8·9',t:'Os outros',s:'Casas 7, 8 e 9',back:'Parcerias, intimidade e o que vem de longe.',em:'A sua Lua, Marte, Saturno e Urano moram na casa 9.'},
+  {c:'#7d4fb5',g:'10·11·12',t:'O mundo e o invisível',s:'Casas 10, 11 e 12',back:'Carreira, a turma e o que é maior que eu.',em:'O seu Sol e o seu Mercúrio moram na casa 11.'}]},
+ {k:'quiz',q:'"Combinar o rolê com a turma." Em que casa isso acontece?',o:['Casa 11','Casa 4','Casa 8'],a:0,why:'Casa 11: amigos, grupos e sonhos de futuro. É a sua casa de Sol e Mercúrio!'},
+ {k:'quiz',q:'"Planejar uma viagem de estudos." Em que casa?',o:['Casa 3','Casa 9','Casa 12'],a:1,why:'Casa 9: estudar, ensinar, viajar longe e acreditar. A sua casa mais cheia de planetas.'},
+ {k:'quiz',q:'"Mostrar o meu trabalho para o mundo." Em que casa?',o:['Casa 10','Casa 2','Casa 6'],a:0,why:'Casa 10: carreira, vida pública e reputação.'},
+ {k:'quiz',q:'"Ficar quietinha, meditando sozinha." Em que casa?',o:['Casa 5','Casa 12','Casa 7'],a:1,why:'Casa 12: silêncio, bastidores e espiritualidade.'},
+ {k:'mission',big:'🗺️',title:'Missão do dia',body:'Escolha 1 coisa que você fez hoje e descubra a <b>casa</b> dela. Mande para uma amiga e veja se ela concorda.'}
+]},
+{id:6,emoji:'👑',c:'#8e2f6b',title:'Os regentes',sub:'O dono de cada signo',steps:[
+ {k:'card',big:'👑',tag:'A ideia',title:'Cada signo tem um dono',body:'O planeta que manda no signo é o <b>regente</b>. Ele é o chefe do jeito do signo e se sente <b>em casa</b> ali.'},
+ {k:'match',title:'Ligue o signo ao seu regente',pairs:[['Áries','Marte'],['Touro','Vênus'],['Gêmeos','Mercúrio'],['Câncer','Lua'],['Leão','Sol'],['Capricórnio','Saturno']]},
+ {k:'flip',title:'Os 3 com dois regentes',one:true,list:[
+  {c:'#8e2f6b',g:'♏'+TXT,t:'Escorpião',s:'Plutão (moderno)',back:'Tradicional: Marte.',em:''},
+  {c:'#1aa3c4',g:'♒'+TXT,t:'Aquário',s:'Urano (moderno)',back:'Tradicional: Saturno.',em:'É o regente do seu Sol e do seu Mercúrio!'},
+  {c:'#5b6ee1',g:'♓'+TXT,t:'Peixes',s:'Netuno (moderno)',back:'Tradicional: Júpiter.',em:''}]},
+ {k:'card',big:'🧭',tag:'O seu mapa',title:'O seu chefe é o Marte',body:'O seu Ascendente é Áries, e Áries é regido por Marte. Então o <b>chefe do seu mapa</b> é o Marte, que está em Sagitário, na casa 9: estudar, ensinar, explorar.'},
+ {k:'quiz',q:'Quem é o regente de Leão?',o:['Sol','Lua','Vênus'],a:0,why:'O Sol, o Rei do show, manda em Leão.'},
+ {k:'mission',big:'🎙️',title:'Missão do dia',body:'Explique em um áudio de 30 segundos o que é um <b>regente</b>. Use a palavra "chefe".'}
+]},
+{id:7,emoji:'⚖',c:'#7d4fb5',title:'Como os planetas conversam',sub:'Os aspectos e o seu mapa inteiro',steps:[
+ {k:'flip',title:'Os 5 jeitos de conversar',list:[
+  {c:'#c9a35b',g:'☌'+TXT,t:'Conjunção',s:'O Abraço',back:'Colados. As forças se misturam.',em:'Seu Sol está colado no Mercúrio.'},
+  {c:'#2fa58f',g:'⚹'+TXT,t:'Sextil',s:'O Aperto de mão',back:'Se ajudam, se você der o primeiro passo.',em:'Seu Mercúrio e seu Marte.'},
+  {c:'#5b8a3c',g:'△'+TXT,t:'Trígono',s:'Os Melhores amigos',back:'Fluem fácil. Talento natural.',em:''},
+  {c:'#d9432f',g:'□'+TXT,t:'Quadratura',s:'O Cabo de guerra',back:'Puxam para lados diferentes. Tensão e movimento.',em:''},
+  {c:'#7d4fb5',g:'☍'+TXT,t:'Oposição',s:'A Gangorra',back:'Dois lados do mesmo assunto. Equilibrar.',em:''}]},
+ {k:'match',title:'Ligue o aspecto ao apelido',pairs:[['Conjunção','O Abraço'],['Sextil','O Aperto de mão'],['Trígono','Os Melhores amigos'],['Quadratura','O Cabo de guerra'],['Oposição','A Gangorra']]},
+ {k:'mine'},
+ {k:'mission',big:'🏆',title:'Missão final',body:'Faça o mapa de uma amiga e conte para ela, em um áudio de 1 minuto: o <b>Sol</b>, a <b>Lua</b> e o <b>Ascendente</b>, cada um com planeta, signo e casa.'}
+]}
+];
+
+/* ===== estado ===== */
+var S={done:{},pts:0,best:{}};
+try{var raw=localStorage.getItem('missaoAstro');if(raw)S=JSON.parse(raw)}catch(e){}
+function save(){try{localStorage.setItem('missaoAstro',JSON.stringify(S))}catch(e){}}
+var app=document.getElementById('app');
+var cur=null; // {day,step,locked}
+
+function el(tag,attrs){var e=document.createElement(tag);for(var k in (attrs||{})){if(k==='class')e.className=attrs[k];else if(k==='html')e.innerHTML=attrs[k];else if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),attrs[k]);else e.setAttribute(k,attrs[k])}for(var i=2;i<arguments.length;i++){var c=arguments[i];if(c==null)continue;e.appendChild(typeof c==='string'?document.createTextNode(c):c)}return e}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function toast(t){var d=el('div',{class:'toast'},t);document.body.appendChild(d);setTimeout(function(){d.remove()},1400)}
+function addPts(n){S.pts+=n;save();var p=document.getElementById('pts');if(p)p.textContent='✦ '+S.pts}
+function confetti(){var cs=['✦','✧','★','◆'],cl=['#c9a35b','#b58fd6','#6f3fa0','#e0679b','#2fa58f'];for(var i=0;i<42;i++){var d=el('div',{class:'conf'},cs[i%4]);d.style.left=Math.random()*100+'vw';d.style.color=cl[i%5];d.style.fontSize=(14+Math.random()*16)+'px';d.style.animationDuration=(1.8+Math.random()*1.6)+'s';d.style.animationDelay=(Math.random()*.4)+'s';document.body.appendChild(d);(function(x){setTimeout(function(){x.remove()},4200)})(d)}}
+function doneCount(){var n=0;for(var k in S.done)if(S.done[k])n++;return n}
+
+/* ===== telas ===== */
+function topbar(){return el('header',{class:'top'},el('div',{class:'brand'},'Missão ',el('span',{},'Astro')),el('div',{class:'pts',id:'pts'},'✦ '+S.pts))}
+
+function home(){
+  cur=null;app.innerHTML='';app.appendChild(topbar());
+  var n=doneCount(),pct=Math.round(n/7*100);
+  app.appendChild(el('div',{class:'hero'},el('div',{class:'stars'},'✦ ✧ ✦'),
+    el('h1',{},'Oi, Sarah!'),
+    el('p',{},'7 microaulas de 5 minutos. Você escolhe a ordem, pula o que quiser e volta quando quiser.'),
+    el('div',{class:'bar'},el('i',{style:'width:'+pct+'%'})),el('div',{class:'bar-l'},n+' de 7 missões concluídas')));
+  if(n>0){app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},'Revisão rápida'),el('p',{},'3 perguntas sobre o que você já viu. Revisar no dia seguinte faz o cérebro gravar.'),el('button',{class:'btn gold wide',onclick:review},'Revisar agora')))}
+  var days=el('div',{class:'days'});
+  DAYS.forEach(function(d){
+    var done=S.done[d.id];
+    days.appendChild(el('button',{class:'day'+(done?' done':''),onclick:function(){startDay(d.id)}},
+      el('div',{class:'n glyph',style:'--c:'+d.c},d.emoji),
+      el('div',{},el('b',{},'Dia '+d.id+'. '+d.title),el('small',{},d.sub)),
+      el('div',{class:'st'},done?'✔':'›')));
+  });
+  app.appendChild(days);
+  app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},'Em dupla'),el('p',{},'Jogue com a Renata: na mesma tela em chamada, em duelo à distância ou criando perguntas uma para a outra.'),el('button',{class:'btn gold wide',onclick:together},'Jogar juntas')));
+  app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},'Feito para o seu jeito'),el('p',{},'Curto, com jogo, em ordem livre, com o seu mapa como exemplo e missões para fazer com as amigas. Quando você explica para alguém, aprende duas vezes.'),el('button',{class:'btn ghost wide',onclick:mapa},'Ver o meu mapa')));
+  bottom([]);
+}
+
+function bottom(btns){var old=document.querySelector('.nav');if(old)old.remove();if(!btns.length)return;var inn=el('div',{class:'in'});btns.forEach(function(b){inn.appendChild(b)});document.body.appendChild(el('div',{class:'nav'},inn))}
+
+function mapa(){
+  cur=null;app.innerHTML='';app.appendChild(topbar());
+  app.appendChild(el('div',{class:'row sp'},el('h2',{},'O seu mapa'),el('button',{class:'link',onclick:home},'Voltar')));
+  app.appendChild(el('p',{},'Nascimento: 12/02/1988, 08h50, São Paulo. Ascendente em Áries.'));
+  var mp=el('div',{class:'mp'});
+  ['Sol','Lua','Mercúrio','Vênus','Marte','Júpiter','Saturno','Urano','Netuno','Plutão'].forEach(function(n){
+    mp.appendChild(el('div',{style:'--c:'+COL[n]},el('b',{class:'glyph'},g(n)+' '+n),MAPA[n][0]+', casa '+MAPA[n][1]+(n==='Mercúrio'?' (retrógrado)':'')));
+  });
+  app.appendChild(mp);
+  app.appendChild(el('div',{class:'mine',style:'margin-top:16px'},el('div',{class:'tag'},'O seu jeito de aprender'),
+    el('ul',{},
+     el('li',{html:'<b>Veja o todo antes dos detalhes.</b> Primeiro o para quê, depois o como.'}),
+     el('li',{html:'<b>Pedaços curtos e jogos.</b> Uma ideia por vez, para o cérebro não ficar cheio.'}),
+     el('li',{html:'<b>Com a turma.</b> Seu Mercúrio mora na casa 11: aprender em grupo rende mais.'}),
+     el('li',{html:'<b>Ensinar para fixar.</b> Casa 9 cheia de planetas: você é professora de nascença.'}),
+     el('li',{html:'<b>Rever depois.</b> Mercúrio retrógrado pensa duas vezes. Voltar ao assunto ajuda.'}),
+     el('li',{html:'<b>Convites, não ordens.</b> Aquário gosta de escolher o próprio caminho.'}))));
+  bottom([el('button',{class:'btn wide',onclick:home},'Voltar às missões')]);
+}
+
+function startDay(id){cur={day:id,step:0,done:false};renderStep()}
+function dayObj(){return DAYS.filter(function(d){return d.id===cur.day})[0]}
+
+function renderStep(){
+  var d=dayObj();app.innerHTML='';app.appendChild(topbar());
+  var dots=el('div',{class:'dots'});d.steps.forEach(function(s,i){dots.appendChild(el('i',{class:i<cur.step?'on':(i===cur.step?'cur':'')}))});
+  app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:home,'aria-label':'Sair'},'✕'),dots));
+  var s=d.steps[cur.step];cur.ok=false;
+  var body=el('div',{});app.appendChild(body);
+  var next=el('button',{class:'btn wide',onclick:advance},cur.step===d.steps.length-1?'Concluir':'Continuar');
+  var back=el('button',{class:'btn ghost',onclick:function(){if(cur.step>0){cur.step--;renderStep()}else home()}},'‹');
+  var skip=null;
+  var gate=function(){next.removeAttribute('disabled');if(skip)skip.remove()};
+  var R=RENDER[s.k];
+  var needs=R(body,s,d,gate);
+  if(needs){next.setAttribute('disabled','');skip=el('button',{class:'link',onclick:function(){gate();cur.skipped=true;advance()}},'Pular esta');body.appendChild(el('div',{style:'text-align:center;margin-top:10px'},skip))}
+  bottom([back,next]);
+  window.scrollTo(0,0);
+}
+function advance(){
+  var d=dayObj();
+  if(cur.step<d.steps.length-1){cur.step++;renderStep();return}
+  finishDay(d);
+}
+function finishDay(d){
+  var first=!S.done[d.id];S.done[d.id]=true;if(first)S.pts+=30;save();
+  confetti();
+  app.innerHTML='';app.appendChild(topbar());
+  var all=doneCount()===7;
+  if(all){
+    app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},'Missão cumprida'),el('h1',{},'Sarah, Mestra Astro'),el('p',{},'Você completou as 7 missões. Agora você lê um mapa e sabe ensinar. O céu inteiro cabe na sua conversa.'),el('p',{class:'glyph',style:'font-size:34px;color:#c9a35b'},'✦ ✧ ✦'),el('p',{html:'<b>'+S.pts+'</b> estrelas'})));
+  }else{
+    app.appendChild(el('div',{class:'card'},el('div',{class:'big glyph',style:'--c:#c9a35b'},'✦'),el('h2',{},'Missão '+d.id+' concluída!'),el('p',{style:'text-align:center'},first?'+30 estrelas. Descanse a cabeça e volte quando quiser.':'Boa revisão!'),el('p',{style:'text-align:center;color:#7a6a88;font-size:15px'},'Amanhã, faça a Revisão rápida na tela inicial.')));
+  }
+  bottom([el('button',{class:'btn wide',onclick:home},'Voltar às missões')]);
+  window.scrollTo(0,0);
+}
+
+/* ===== renderizadores ===== */
+var RENDER={
+ card:function(b,s){b.appendChild(el('div',{class:'card'},el('div',{class:'big glyph',style:'--c:'+(dayObj().c)},s.big),el('div',{style:'text-align:center'},el('span',{class:'tag'},s.tag||'')),el('h2',{},s.title),el('p',{html:s.body})));return false},
+ trio:function(b){b.appendChild(el('div',{class:'card'},el('div',{style:'text-align:center'},el('span',{class:'tag'},'A fórmula')),el('h2',{},'Quem, como e onde'),
+   el('div',{class:'trio',html:'<div style="--c:#f2b705;--b:#fff6d6"><b>Planeta</b> é <b style="font-size:17px">QUEM</b> faz. O personagem.</div><div style="--c:#7d4fb5;--b:#efe6f7"><b>Signo</b> é <b style="font-size:17px">COMO</b> faz. A fantasia.</div><div style="--c:#2fa58f;--b:#dff5ef"><b>Casa</b> é <b style="font-size:17px">ONDE</b> faz. O cenário.</div>'}),
+   el('p',{style:'text-align:center;color:#7a6a88;font-size:15px'},'Se você guardar só isso, já entendeu o mapa.')));return false},
+ flip:function(b,s,d,gate){var wrap=el('div',{});wrap.appendChild(el('h2',{style:'text-align:center;margin-bottom:6px'},s.title));var gr=el('div',{class:'flipgrid'+(s.one?' one':'')});var seen={};
+   s.list.forEach(function(it,i){var f=el('button',{class:'fl',style:'--c:'+it.c+';--b:#fff'},el('div',{class:'in'},
+     el('div',{class:'f'},el('div',{class:'g glyph'},it.g),el('b',{},it.t),el('small',{},it.s)),
+     el('div',{class:'b'},el('span',{},it.back),it.em?el('em',{},it.em):null)));
+     f.addEventListener('click',function(){f.classList.toggle('on');seen[i]=1});gr.appendChild(f)});
+   wrap.appendChild(gr);wrap.appendChild(el('div',{class:'hint'},'Toque para virar a carta'));b.appendChild(wrap);return false},
+ quiz:function(b,s,d,gate){var c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},'Pergunta'));c.appendChild(el('div',{class:'q'},s.q));var os=el('div',{class:'opts'});var tries=0,done=false;
+   s.o.forEach(function(t,i){var o=el('button',{class:'opt'},t);o.addEventListener('click',function(){if(done)return;if(i===s.a){done=true;o.classList.add('ok');addPts(tries?5:10);c.appendChild(el('div',{class:'why',html:'<b>Isso!</b> '+s.why}));gate()}else{tries++;o.classList.add('no')}});os.appendChild(o)});
+   c.appendChild(os);b.appendChild(c);return true},
+ match:function(b,s,d,gate){var c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},'Jogo'));c.appendChild(el('div',{class:'q'},s.title));
+   var L=shuffle(s.pairs.map(function(p,i){return {i:i,t:p[0]}})),Rr=shuffle(s.pairs.map(function(p,i){return {i:i,t:p[1]}}));
+   var grid=el('div',{class:'match'});var colL=el('div',{style:'display:grid;gap:10px'}),colR=el('div',{style:'display:grid;gap:10px'});var sel=null,left=s.pairs.length,errs=0;
+   L.forEach(function(x){var e=el('button',{class:'mi'},el('b',{},x.t));e.dataset.i=x.i;e.addEventListener('click',function(){if(e.classList.contains('ok'))return;[].forEach.call(colL.children,function(k){k.classList.remove('sel')});e.classList.add('sel');sel=e});colL.appendChild(e)});
+   Rr.forEach(function(x){var e=el('button',{class:'mi'},x.t);e.dataset.i=x.i;e.addEventListener('click',function(){if(!sel||e.classList.contains('ok'))return;if(sel.dataset.i===e.dataset.i){sel.classList.remove('sel');sel.classList.add('ok');e.classList.add('ok');sel=null;left--;addPts(errs?2:4);if(!left){c.appendChild(el('div',{class:'why',html:'<b>Todas certas!</b> '+(errs?'Com '+errs+' tentativa(s) a mais, normal. Foi assim que o cérebro gravou.':'De primeira!')}));gate()}}else{errs++;e.classList.add('no');setTimeout(function(){e.classList.remove('no')},400)}});colR.appendChild(e)});
+   grid.appendChild(colL);grid.appendChild(colR);c.appendChild(grid);b.appendChild(c);return true},
+ build:function(b,s,d,gate){var c=el('div',{class:'card'});var ri=0;
+   function round(){c.innerHTML='';var r=s.rounds[ri];c.appendChild(el('div',{class:'tag'},'Monte a frase '+(ri+1)+'/'+s.rounds.length));c.appendChild(el('div',{class:'scn'},r.s));var picks=[null,null,null],labels=['Quem faz? (planeta)','Como faz? (signo)','Onde faz? (casa)'];var chipsEls=[];
+     r.o.forEach(function(opts,si){var slot=el('div',{class:'slot'},el('label',{},labels[si]));var ch=el('div',{class:'chips'});chipsEls[si]=[];opts.forEach(function(t){var chip=el('button',{class:'chip'},(si===2?'Casa ':'')+t);chip.addEventListener('click',function(){if(chk.disabled===false&&chk.dataset.done)return;chipsEls[si].forEach(function(x){x.classList.remove('sel')});chip.classList.add('sel');picks[si]=t;chk.disabled=picks.indexOf(null)>=0});chipsEls[si].push(chip);ch.appendChild(chip)});slot.appendChild(ch);c.appendChild(slot)});
+     var chk=el('button',{class:'btn gold wide',style:'margin-top:8px',disabled:''},'Conferir');chk.disabled=true;
+     chk.addEventListener('click',function(){var okAll=true;picks.forEach(function(p,si){chipsEls[si].forEach(function(x){var txt=x.textContent.replace('Casa ','');if(x.classList.contains('sel')){x.classList.remove('sel');x.classList.add(txt===r.a[si]?'ok':'no')}else if(txt===r.a[si]&&p!==r.a[si]){x.classList.add('ok')}});if(p!==r.a[si])okAll=false});
+       chk.dataset.done=1;addPts(okAll?15:5);c.appendChild(el('div',{class:'why',html:'<b>'+(okAll?'Perfeito!':'Quase!')+'</b> '+r.why}));
+       chk.remove();if(ri<s.rounds.length-1){c.appendChild(el('button',{class:'btn wide',style:'margin-top:10px',onclick:function(){ri++;round()}},'Próxima frase'))}else gate()});
+     c.appendChild(chk)}
+   round();b.appendChild(c);return true},
+ mission:function(b,s,d,gate){var c=el('div',{class:'mission'},el('div',{class:'big'},s.big),el('span',{class:'tag'},'Missão'),el('h2',{style:'margin:4px 0 8px'},s.title),el('p',{html:s.body,style:'font-size:18px'}));
+   var cb=el('input',{type:'checkbox'});var lab=el('label',{class:'check'},cb,'Fiz! (ou vou fazer hoje)');cb.addEventListener('change',function(){if(cb.checked&&!c.dataset.p){c.dataset.p=1;addPts(20);toast('+20 estrelas');confetti()}gate()});
+   c.appendChild(lab);c.appendChild(el('p',{style:'font-size:14px;color:#7a6a88;margin-top:10px'},'Ensinar para alguém é o jeito mais rápido de aprender.'));b.appendChild(c);return false},
+ mine:function(b){var l=[['Sol','☉',' em Aquário, casa 11: brilho original, entre amigos e grupos.'],['Mercúrio','☿',' em Aquário, casa 11 (retrógrado), colado no Sol: você precisa entender para se sentir você.'],['Lua','☽',' em Sagitário, casa 9: o coração quer liberdade, sentido e estudo.'],['Ascendente','↑',' em Áries: você chega ao mundo na frente, com coragem.']];
+   var ul=el('ul',{});l.forEach(function(x){ul.appendChild(el('li',{html:'<b>'+x[0]+'</b>'+x[2]}))});
+   b.appendChild(el('div',{class:'mine'},el('div',{class:'tag'},'Juntando tudo'),el('h2',{style:'margin-bottom:6px'},'O seu mapa em 4 frases'),ul,el('p',{style:'font-size:15px;color:#7a6a88;margin-top:10px'},'Uma curiosidade: Saturno e Urano estão colados no fim de Sagitário, na casa 9. É o encontro entre estrutura e liberdade nos estudos.')));return false}
+};
+
+/* ===== revisão ===== */
+var BANK=[
+ {d:1,q:'Planeta é quem faz, signo é como faz e casa é...',o:['onde faz','quando faz','por que faz'],a:0,why:'Casa é o cenário: em que parte da vida.'},
+ {d:2,q:'Qual planeta é o Mensageiro?',o:['Mercúrio','Marte','Vênus'],a:0,why:'Mercúrio: como você pensa e se comunica.'},
+ {d:2,q:'Quem é o Motorzinho, a vontade de agir?',o:['Marte','Lua','Saturno'],a:0,why:'Marte: o que te acende.'},
+ {d:3,q:'Quais planetas valem para uma geração inteira?',o:['Sol, Lua e Marte','Urano, Netuno e Plutão','Mercúrio e Vênus'],a:1,why:'São os lentos: a geração toda tem o mesmo signo.'},
+ {d:4,q:'Qual elemento sente tudo fundo?',o:['Fogo','Água','Ar'],a:1,why:'Água: Câncer, Escorpião e Peixes.'},
+ {d:5,q:'A casa 4 é o cômodo de quê?',o:['Carreira','Casa, família e raízes','Amigos'],a:1,why:'Casa 4: o fundo do coração.'},
+ {d:5,q:'Amigos, grupos e sonhos de futuro moram na casa...',o:['11','6','2'],a:0,why:'Casa 11: a casa do seu Sol e do seu Mercúrio.'},
+ {d:6,q:'Quem manda em Capricórnio?',o:['Saturno','Júpiter','Urano'],a:0,why:'Saturno, o Professor rígido.'},
+ {d:7,q:'Qual aspecto é o Cabo de guerra?',o:['Trígono','Quadratura','Sextil'],a:1,why:'Quadratura: puxam para lados diferentes.'}
+];
+function review(){
+  var pool=BANK.filter(function(q){return S.done[q.d]});if(pool.length<1)pool=BANK.slice(0,3);
+  var qs=shuffle(pool).slice(0,3);cur={review:true,i:0,ok:0};
+  function showQ(){
+    app.innerHTML='';app.appendChild(topbar());
+    var dots=el('div',{class:'dots'});qs.forEach(function(x,i){dots.appendChild(el('i',{class:i<cur.i?'on':(i===cur.i?'cur':'')}))});
+    app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:home},'✕'),dots));
+    var s=qs[cur.i],c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},'Revisão rápida'));c.appendChild(el('div',{class:'q'},s.q));var os=el('div',{class:'opts'}),done=false,tries=0;
+    shuffle(s.o.map(function(t,i){return {t:t,r:i===s.a}})).forEach(function(x){var o=el('button',{class:'opt'},x.t);o.addEventListener('click',function(){if(done)return;if(x.r){done=true;o.classList.add('ok');if(!tries)cur.ok++;addPts(tries?3:6);c.appendChild(el('div',{class:'why',html:'<b>Isso!</b> '+s.why}));nx.removeAttribute('disabled')}else{tries++;o.classList.add('no')}});os.appendChild(o)});
+    c.appendChild(os);app.appendChild(c);
+    var nx=el('button',{class:'btn wide',disabled:'',onclick:function(){cur.i++;if(cur.i<qs.length)showQ();else{confetti();app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'card'},el('div',{class:'big glyph',style:'--c:#c9a35b'},'✦'),el('h2',{},'Revisão feita!'),el('p',{style:'text-align:center'},'Você acertou '+cur.ok+' de '+qs.length+' de primeira. Revisar é o que faz ficar.')));bottom([el('button',{class:'btn wide',onclick:home},'Voltar às missões')])}}},'Continuar');
+    bottom([nx]);window.scrollTo(0,0);
+  }
+  showQ();
+}
+
+/* ===== jogar juntas ===== */
+BANK=BANK.concat([
+ {d:1,q:'No mapa, o que é o signo?',o:['O jeito, como faz','O lugar, onde faz','O personagem, quem faz'],a:0,why:'Signo é a fantasia: o jeito do planeta agir.'},
+ {d:2,q:'Qual planeta é o Rei do show?',o:['Sol','Lua','Marte'],a:0,why:'O Sol: o que te faz sentir viva.'},
+ {d:2,q:'Qual planeta cuida do amor e do prazer?',o:['Vênus','Saturno','Urano'],a:0,why:'Vênus: estilo, amor e prazer.'},
+ {d:2,q:'O Coração, que sente e se liga às pessoas, é...',o:['Lua','Mercúrio','Júpiter'],a:0,why:'A Lua: como você se vincula emocionalmente.'},
+ {d:3,q:'Quem é o Sonhador, da imaginação e da arte?',o:['Netuno','Plutão','Saturno'],a:0,why:'Netuno: sonhos, arte e intuição.'},
+ {d:3,q:'Quem é o Mágico das transformações?',o:['Plutão','Júpiter','Vênus'],a:0,why:'Plutão: profundidade e renascimento.'},
+ {d:4,q:'Áries, Leão e Sagitário são do elemento...',o:['Fogo','Terra','Água'],a:0,why:'Fogo: energia e coragem.'},
+ {d:4,q:'Touro, Virgem e Capricórnio são do elemento...',o:['Terra','Ar','Fogo'],a:0,why:'Terra: pés no chão.'},
+ {d:4,q:'Qual signo inventa o futuro?',o:['Aquário','Virgem','Câncer'],a:0,why:'Aquário: original, livre, pensa diferente.'},
+ {d:5,q:'A casa 9 é a casa de...',o:['Estudos, viagens e crenças','Dinheiro','Rotina'],a:0,why:'Casa 9: estudar, ensinar, viajar e acreditar.'},
+ {d:5,q:'Rotina e trabalho do dia a dia: casa...',o:['6','3','8'],a:0,why:'Casa 6: rotina, trabalho e saúde.'},
+ {d:5,q:'Parcerias e casamento: casa...',o:['7','5','12'],a:0,why:'Casa 7: as relações a dois.'},
+ {d:6,q:'Quem manda em Touro e em Libra?',o:['Vênus','Marte','Mercúrio'],a:0,why:'Vênus rege os dois.'},
+ {d:6,q:'Quem é o regente moderno de Aquário?',o:['Urano','Saturno','Netuno'],a:0,why:'Urano (o tradicional é Saturno).'},
+ {d:7,q:'Qual aspecto é a Gangorra, dois lados do mesmo assunto?',o:['Oposição','Conjunção','Sextil'],a:0,why:'Oposição: equilibrar os dois lados.'},
+ {d:7,q:'Qual aspecto é o Abraço, planetas colados?',o:['Conjunção','Trígono','Quadratura'],a:0,why:'Conjunção: as forças se misturam.'},
+ {d:7,q:'Os Melhores amigos, que fluem fácil, são o...',o:['Trígono','Oposição','Quadratura'],a:0,why:'Trígono: talento natural.'}
+]);
+var EXPLAIN=['O que é um regente?','Qual a diferença entre planeta, signo e casa?','O que o Mercúrio mostra no mapa?','O que é um trígono e o que é uma quadratura?','O que a casa 11 representa?','Por que o Saturno é o Professor rígido?','Quais são os 4 elementos?','O que é o Ascendente?'];
+function hashS(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function mul(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function sshuf(arr,r){arr=arr.slice();for(var i=arr.length-1;i>0;i--){var j=Math.floor(r()*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t}return arr}
+function qopts(q,r){return sshuf(q.o.map(function(t,i){return {t:t,c:i===q.a}}),r)}
+function newCode(){var a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',c='';for(var i=0;i<4;i++)c+=a[Math.floor(Math.random()*a.length)];return c}
+function cleanName(n){return (n||'').replace(/[^A-Za-zÀ-ÿ0-9 ]/g,'').trim().slice(0,12)||'Jogadora'}
+function copyText(t){var okc=false;try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){toast('Copiado!')},function(){fallbackCopy(t)});return}}catch(e){}fallbackCopy(t)}
+function fallbackCopy(t){var ta=el('textarea',{style:'position:fixed;left:-999px;top:0'});ta.value=t;document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();toast(ok?'Copiado!':'Segure o código e escolha Copiar')}
+function choiceCard(q,opts,tagTxt,onDone){var c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},tagTxt));c.appendChild(el('div',{class:'q'},q.q));var box=el('div',{class:'opts'});var done=false;
+ opts.forEach(function(x){var b=el('button',{class:'opt'},x.t);b.addEventListener('click',function(){if(done)return;done=true;b.classList.add(x.c?'ok':'no');if(!x.c){[].forEach.call(box.children,function(k,i){if(opts[i].c)k.classList.add('ok')})}c.appendChild(el('div',{class:'why',html:(x.c?'<b>Isso!</b> ':'<b>Quase.</b> ')+q.why}));onDone(x.c)});box.appendChild(b)});c.appendChild(box);return c}
+function dotsBar(n,i){var d=el('div',{class:'dots'});for(var k=0;k<n;k++)d.appendChild(el('i',{class:k<i?'on':(k===i?'cur':'')}));return d}
+function screen(title,backFn){app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:backFn||together,'aria-label':'Voltar'},'‹'),el('h2',{style:'flex:1'},title)))}
+
+function together(){
+  cur=null;app.innerHTML='';app.appendChild(topbar());
+  app.appendChild(el('div',{class:'row sp'},el('h2',{},'Jogar juntas'),el('button',{class:'link',onclick:home},'Voltar')));
+  app.appendChild(el('p',{},'Para a Sarah e a Renata aprenderem uma com a outra. Escolham como jogar.'));
+  var tiles=[
+   ['📞','Na mesma tela','Em chamada de vídeo ou lado a lado. Por turnos, com placar e desafios de explicar em voz alta.',liveSetup],
+   ['⚔️','Duelo à distância','Cada uma no seu celular, com as mesmas perguntas. Depois vocês comparam o resultado.',duelMenu],
+   ['💌','Pergunta para a outra','Crie uma pergunta e mande o código. Ensinar é aprender duas vezes.',askMenu]
+  ];
+  tiles.forEach(function(t){app.appendChild(el('button',{class:'day',style:'margin-top:12px',onclick:t[3]},el('div',{class:'n',style:'--c:#c9a35b'},t[0]),el('div',{},el('b',{},t[1]),el('small',{},t[2])),el('div',{class:'st'},'›')))});
+  bottom([el('button',{class:'btn wide',onclick:home},'Voltar às missões')]);
+}
+
+/* --- 1. mesma tela --- */
+function liveSetup(){
+  screen('Na mesma tela',together);
+  var c=el('div',{class:'card'});c.appendChild(el('p',{},'Quem joga? Vocês se revezam. A cada 3 turnos tem um desafio de explicar em voz alta, e a outra dá a nota.'));
+  var a=el('input',{class:'inp',value:S.name||'Renata',maxlength:12}),b=el('input',{class:'inp',value:'Sarah',maxlength:12});
+  c.appendChild(el('div',{class:'slot'},el('label',{},'Jogadora 1'),a));c.appendChild(el('div',{class:'slot'},el('label',{},'Jogadora 2'),b));
+  c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:8px',id:'go-live',onclick:function(){S.name=cleanName(a.value);save();liveStart([cleanName(a.value),cleanName(b.value)])}},'Começar'));
+  app.appendChild(c);bottom([]);
+}
+function liveStart(names){
+  var N=9,qs=shuffle(BANK).slice(0,N),ex=shuffle(EXPLAIN),pts=[0,0],i=0;
+  function show(){
+    if(i>=N)return end();
+    app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:together},'✕'),dotsBar(N,i)));
+    var p=i%2;var sc=el('div',{class:'score'});names.forEach(function(n,k){sc.appendChild(el('div',{class:k===p?'on':''},n,el('b',{},String(pts[k]))))});app.appendChild(sc);
+    var explain=(i%3===2);
+    if(!explain){
+      var q=qs[i],r=mul(hashS('live'+i+Date.now()));
+      var card=choiceCard(q,qopts(q,r),'Vez de '+names[p],function(ok){if(ok)pts[p]+=10;sc.children[p].lastChild.textContent=pts[p];nx.removeAttribute('disabled')});
+      app.appendChild(card);
+    }else{
+      var topic=ex[Math.floor(i/3)%ex.length],judge=names[1-p];
+      var card=el('div',{class:'mission'},el('div',{class:'big'},'🎙️'),el('span',{class:'tag'},'Desafio de explicar'),el('h2',{style:'margin:4px 0 8px'},names[p]+', explique em 20 segundos:'),el('p',{style:'font-size:20px;font-family:Georgia,serif;color:#4a2370'},topic),el('p',{style:'font-size:15px;color:#7a6a88'},judge+' dá a nota:'));
+      var row=el('div',{class:'row',style:'justify-content:center;margin-top:10px'});
+      [['Mandou bem! +10',10],['Quase +5',5],['Vamos rever +0',0]].forEach(function(o){row.appendChild(el('button',{class:'btn '+(o[1]?'gold':'ghost'),style:'padding:10px 12px;font-size:14px',onclick:function(){pts[p]+=o[1];sc.children[p].lastChild.textContent=pts[p];[].forEach.call(row.children,function(k){k.setAttribute('disabled','')});nx.removeAttribute('disabled');if(o[1]===10)confetti()}},o[0]))});
+      card.appendChild(row);app.appendChild(card);
+    }
+    var nx=el('button',{class:'btn wide',disabled:'',onclick:function(){i++;show()}},i===N-1?'Ver o placar final':'Passar a vez');
+    bottom([nx]);window.scrollTo(0,0);
+  }
+  function end(){
+    confetti();app.innerHTML='';app.appendChild(topbar());
+    var w=pts[0]===pts[1]?-1:(pts[0]>pts[1]?0:1);
+    app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},'Fim de jogo'),el('h1',{},w<0?'Empate!':names[w]+' venceu!'),el('p',{html:'<b>'+names[0]+'</b> '+pts[0]+' x '+pts[1]+' <b>'+names[1]+'</b>'}),el('p',{},w<0?'As duas sabem igual. Dá para desempatar na revanche.':'Quem perdeu ganhou uma aula. Mostrem o que erraram uma para a outra.')));
+    bottom([el('button',{class:'btn ghost',onclick:together},'Outros jogos'),el('button',{class:'btn gold',onclick:function(){liveStart(names)}},'Revanche')]);window.scrollTo(0,0);
+  }
+  show();
+}
+
+/* --- 2. duelo à distância --- */
+function duelMenu(){
+  screen('Duelo à distância',together);
+  var c=el('div',{class:'card'});
+  c.appendChild(el('p',{},'Cada uma joga no seu celular as mesmas 8 perguntas. No fim, vocês trocam o código do resultado e comparam.'));
+  var nm=el('input',{class:'inp',value:S.name||'',placeholder:'Seu nome',maxlength:12,id:'duel-name'});
+  c.appendChild(el('div',{class:'slot'},el('label',{},'Seu nome'),nm));
+  c.appendChild(el('button',{class:'btn gold wide',onclick:function(){S.name=cleanName(nm.value);save();var code=newCode();duelIntro(code,true)}},'Criar um duelo novo'));
+  c.appendChild(el('p',{style:'text-align:center;color:#7a6a88;margin:14px 0 4px'},'ou entre no duelo da outra'));
+  var cd=el('input',{class:'inp',placeholder:'Código do duelo (4 letras)',maxlength:4,style:'text-transform:uppercase;text-align:center;letter-spacing:.3em',id:'duel-code'});
+  c.appendChild(cd);
+  c.appendChild(el('button',{class:'btn wide',style:'margin-top:10px',id:'duel-join',onclick:function(){var v=cd.value.trim().toUpperCase();if(v.length!==4){toast('O código tem 4 letras');return}S.name=cleanName(nm.value);save();duelIntro(v,false)}},'Entrar no duelo'));
+  app.appendChild(c);bottom([]);
+}
+function duelIntro(code,creator){
+  screen('Duelo '+code,duelMenu);
+  var c=el('div',{class:'card'});
+  c.appendChild(el('div',{style:'text-align:center'},el('span',{class:'tag'},'Código do duelo')));
+  c.appendChild(el('div',{class:'codebox'},code));
+  c.appendChild(el('p',{style:'text-align:center'},creator?'Mande este código para a outra. Quando as duas estiverem prontas, jogue!':'Joguem o mesmo código para comparar.'));
+  if(creator)c.appendChild(el('button',{class:'btn ghost wide',onclick:function(){copyText('Duelo Missão Astro! Código: '+code)}},'Copiar convite'));
+  c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:10px',id:'duel-start',onclick:function(){playDuel(code)}},'Jogar agora'));
+  app.appendChild(c);bottom([]);
+}
+function playDuel(code){
+  var N=8,pool=sshuf(BANK,mul(hashS(code))).slice(0,N),i=0,score=0,t0=Date.now(),name=cleanName(S.name);
+  function show(){
+    if(i>=N)return finish();
+    app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:function(){duelIntro(code,false)}},'✕'),dotsBar(N,i)));
+    var q=pool[i];app.appendChild(choiceCard(q,qopts(q,mul(hashS(code+':'+i))),'Duelo '+code+' · '+(i+1)+'/'+N,function(ok){if(ok)score+=10;nx.removeAttribute('disabled')}));
+    var nx=el('button',{class:'btn wide',disabled:'',onclick:function(){i++;show()}},i===N-1?'Ver o resultado':'Próxima');bottom([nx]);window.scrollTo(0,0);
+  }
+  function finish(){
+    var secs=Math.round((Date.now()-t0)/1000),res=code+'-'+score+'-'+secs+'-'+name.replace(/ /g,'_');
+    confetti();app.innerHTML='';app.appendChild(topbar());
+    var c=el('div',{class:'card'});c.appendChild(el('div',{style:'text-align:center'},el('span',{class:'tag'},'O seu resultado')));
+    c.appendChild(el('h2',{},score+' pontos em '+secs+'s'));
+    c.appendChild(el('p',{style:'text-align:center'},'Mande este código para a outra:'));c.appendChild(el('div',{class:'codebox',style:'font-size:16px;letter-spacing:.08em',id:'res-code'},res));
+    c.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText('Meu resultado no duelo '+code+': '+res)}},'Copiar meu resultado'));
+    c.appendChild(el('p',{style:'text-align:center;margin:14px 0 4px'},'Cole aqui o código dela para comparar:'));
+    var inp=el('input',{class:'inp',placeholder:'Ex.: '+code+'-80-74-Renata',id:'cmp-in'});c.appendChild(inp);
+    var out=el('div',{id:'cmp-out'});
+    c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:10px',id:'cmp-go',onclick:function(){out.innerHTML='';compare(res,inp.value,code,out)}},'Comparar'));
+    c.appendChild(out);app.appendChild(c);
+    bottom([el('button',{class:'btn ghost',onclick:together},'Outros jogos'),el('button',{class:'btn',onclick:home},'Início')]);window.scrollTo(0,0);
+  }
+  show();
+}
+function parseRes(s){var p=(s||'').trim().split(/\s+/).pop().split('-');if(p.length<4)return null;return {code:p[0].toUpperCase(),score:+p[1],secs:+p[2],name:p.slice(3).join('-').replace(/_/g,' ')}}
+function compare(mine,theirs,code,out){
+  var a=parseRes(mine),b=parseRes(theirs);
+  if(!b||isNaN(b.score)||isNaN(b.secs)){out.appendChild(el('div',{class:'why'},'Não entendi esse código. Cole o resultado inteiro que ela mandou.'));return}
+  if(b.code!==code.toUpperCase()){out.appendChild(el('div',{class:'why'},'Esse resultado é de outro duelo ('+b.code+'). Joguem o mesmo código.'));return}
+  var w=a.score===b.score?(a.secs===b.secs?-1:(a.secs<b.secs?0:1)):(a.score>b.score?0:1);
+  var msg=w<0?'Empate total!':(w===0?a.name:b.name)+' venceu'+(a.score===b.score?' no tempo':'')+'!';
+  out.appendChild(el('div',{class:'cmp',html:'<table><tr><th></th><th>Pontos</th><th>Tempo</th></tr><tr><td><b>'+a.name+'</b></td><td>'+a.score+'</td><td>'+a.secs+'s</td></tr><tr><td><b>'+b.name+'</b></td><td>'+b.score+'</td><td>'+b.secs+'s</td></tr></table><p class="win">'+msg+'</p>'}));
+  if(w>=0)confetti();
+}
+
+/* --- 3. pergunta para a outra --- */
+function askMenu(){
+  screen('Pergunta para a outra',together);
+  var c=el('div',{class:'card'});c.appendChild(el('p',{},'Quem ensina aprende duas vezes. Crie uma pergunta com o que você sabe, ou responda a que a outra mandou.'));
+  c.appendChild(el('button',{class:'btn gold wide',id:'ask-new',onclick:askCreate},'Criar uma pergunta'));
+  c.appendChild(el('button',{class:'btn wide',style:'margin-top:10px',id:'ask-recv',onclick:askReceive},'Responder a uma pergunta'));
+  app.appendChild(c);bottom([]);
+}
+function askCreate(){
+  screen('Criar pergunta',askMenu);
+  var c=el('div',{class:'card'});
+  var q=el('input',{class:'inp',placeholder:'Sua pergunta',id:'ask-q'});var o=[0,1,2].map(function(i){return el('input',{class:'inp',placeholder:'Opção '+(i+1),style:'margin-top:8px',id:'ask-o'+i})});
+  var w=el('input',{class:'inp',placeholder:'Por que essa é a certa? (uma frase)',id:'ask-w'});
+  var sel=el('div',{class:'chips',style:'margin:8px 0'});var ans=0;[0,1,2].forEach(function(i){var ch=el('button',{class:'chip'+(i===0?' sel':''),onclick:function(){ans=i;[].forEach.call(sel.children,function(k,j){k.classList.toggle('sel',j===i)})}},'A certa é a '+(i+1));sel.appendChild(ch)});
+  c.appendChild(el('div',{class:'slot'},el('label',{},'Pergunta'),q));c.appendChild(el('div',{class:'slot'},el('label',{},'Opções'),o[0],o[1],o[2]));c.appendChild(sel);c.appendChild(el('div',{class:'slot'},el('label',{},'Explicação'),w));
+  var out=el('div',{id:'ask-out'});
+  c.appendChild(el('button',{class:'btn gold wide',id:'ask-make',onclick:function(){
+    var obj={q:q.value.trim(),o:o.map(function(x){return x.value.trim()}),a:ans,w:w.value.trim(),n:cleanName(S.name)};
+    if(!obj.q||obj.o.some(function(x){return !x})){toast('Preencha a pergunta e as 3 opções');return}
+    var code='Q-'+btoa(unescape(encodeURIComponent(JSON.stringify(obj))));out.innerHTML='';
+    out.appendChild(el('p',{style:'text-align:center;margin-top:12px'},'Pronto! Mande este código para a outra:'));out.appendChild(el('div',{class:'codebox',style:'font-size:12px;letter-spacing:0;word-break:break-all',id:'ask-code'},code));
+    out.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText(code)}},'Copiar código'));addPts(10)
+  }},'Gerar código'));c.appendChild(out);app.appendChild(c);bottom([]);
+}
+function parseAsk(s){try{s=(s||'').trim().split(/\s+/).pop();if(s.indexOf('Q-')!==0)return null;var o=JSON.parse(decodeURIComponent(escape(atob(s.slice(2)))));if(!o.q||!o.o||o.o.length!==3)return null;return o}catch(e){return null}}
+function askReceive(){
+  screen('Responder pergunta',askMenu);
+  var c=el('div',{class:'card'});c.appendChild(el('p',{},'Cole aqui o código que a outra mandou.'));
+  var ta=el('textarea',{class:'inp',placeholder:'Q-...',id:'ask-in'});c.appendChild(ta);
+  c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:10px',id:'ask-play',onclick:function(){
+    var o=parseAsk(ta.value);if(!o){toast('Não entendi esse código');return}
+    screen('Pergunta de '+(o.n||'uma amiga'),askMenu);
+    var q={q:o.q,o:o.o,a:o.a,why:o.w||'Peça a explicação para ela!'};
+    var card=choiceCard(q,qopts(q,mul(hashS(o.q))),'Pergunta de '+(o.n||'uma amiga'),function(ok){addPts(ok?10:3);if(ok)confetti()});app.appendChild(card);bottom([el('button',{class:'btn wide',onclick:askMenu},'Voltar')]);
+  }},'Jogar'));app.appendChild(c);bottom([]);
+}
+
+/* ===== início, com atalhos para teste ===== */
+(function(){
+  var h=location.hash||'';var m=h.match(/#d(\d)s(\d+)/);
+  if(h==='#mapa'){mapa();return}
+  if(h==='#juntas'){together();return}
+  if(m){cur={day:+m[1],step:+m[2]};renderStep();return}
+  home();
+})();
+</script>
+</body>
+</html>
