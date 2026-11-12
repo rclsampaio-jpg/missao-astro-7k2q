@@ -879,7 +879,7 @@ function duelIntro(code,creator){
   c.appendChild(el('div',{style:'text-align:center'},el('span',{class:'tag'},L('Código do duelo','Duel code'))));
   c.appendChild(el('div',{class:'codebox'},code));
   c.appendChild(el('p',{style:'text-align:center'},creator?L('Mande este código para a outra. Quando as duas estiverem prontas, jogue!','Send this code to the other. When you are both ready, play!'):L('Joguem o mesmo código para comparar.','Play the same code to compare.')));
-  if(creator)c.appendChild(el('button',{class:'btn ghost wide',onclick:function(){copyText(L('Duelo Missão Astro! Código: ','Astro Mission duel! Code: ')+code)}},L('Copiar convite','Copy invite')));
+  if(creator)c.appendChild(el('button',{class:'btn ghost wide',id:'duel-share',onclick:function(){shareLink(L('Duelo Missão Astro! Toque no link para jogar comigo (código '+code+'):','Astro Mission duel! Tap the link to play with me (code '+code+'):'),linkFor('duelo',code))}},L('📨 Enviar convite (link)','📨 Send invite (link)')));
   c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:10px',id:'duel-start',onclick:function(){playDuel(code)}},L('Jogar agora','Play now')));
   app.appendChild(c);bottom([]);
 }
@@ -896,13 +896,14 @@ function playDuel(code){
     confetti();app.innerHTML='';app.appendChild(topbar());
     var c=el('div',{class:'card'});c.appendChild(el('div',{style:'text-align:center'},el('span',{class:'tag'},L('O seu resultado','Your result'))));
     c.appendChild(el('h2',{},L(score+' pontos em '+secs+'s',score+' points in '+secs+'s')));
-    c.appendChild(el('p',{style:'text-align:center'},L('Mande este código para a outra:','Send this code to the other:')));c.appendChild(el('div',{class:'codebox',style:'font-size:16px;letter-spacing:.08em',id:'res-code'},res));
-    c.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText(res)}},L('Copiar meu resultado','Copy my result')));
-    c.appendChild(el('p',{style:'text-align:center;margin:14px 0 4px'},L('Cole aqui o código dela para comparar:','Paste her code here to compare:')));
+    c.appendChild(el('div',{class:'codebox',style:'font-size:16px;letter-spacing:.08em',id:'res-code'},res));
+    c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:8px',id:'res-share',onclick:function(){shareLink(L('Meu resultado no duelo '+code+': '+score+' pontos em '+secs+'s. Toque no link para comparar:','My result in duel '+code+': '+score+' points in '+secs+'s. Tap the link to compare:'),linkFor('resultado',res))}},L('📨 Enviar meu resultado (link)','📨 Send my result (link)')));c.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText(res)}},L('Copiar só o código','Copy just the code')));
+    c.appendChild(el('p',{style:'text-align:center;margin:14px 0 4px'},L('Se ela ainda não mandou o link, cole aqui o código dela:','If she has not sent the link yet, paste her code here:')));
     var inp=el('input',{class:'inp',placeholder:L('Ex.: ','E.g.: ')+code+'-80-74-Renata',id:'cmp-in'});c.appendChild(inp);
     var out=el('div',{id:'cmp-out'});
     c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:10px',id:'cmp-go',onclick:function(){out.innerHTML='';compare(res,inp.value,code,out)}},L('Comparar','Compare')));
     c.appendChild(out);app.appendChild(c);
+    try{localStorage.setItem('missaoAstroMine_'+code,res);var th=localStorage.getItem('missaoAstroTheirs_'+code);if(th){inp.value=th;compare(res,th,code,out)}}catch(e){}
     bottom([el('button',{class:'btn ghost',onclick:together},L('Outros jogos','Other games')),el('button',{class:'btn',onclick:home},L('Início','Home'))]);window.scrollTo(0,0);
   }
   show();
@@ -925,6 +926,18 @@ function askMenu(){
   c.appendChild(el('button',{class:'btn wide',style:'margin-top:10px',id:'ask-recv',onclick:askReceive},L('Responder às perguntas dela','Answer her questions')));
   app.appendChild(c);bottom([]);
 }
+/* ===== links para compartilhar ===== */
+var PENDING=null;
+function afterLogin(){if(PENDING){var p=PENDING;PENDING=null;p()}else home()}
+function linkFor(kind,payload){return location.href.split('#')[0]+'#'+kind+'='+encodeURIComponent(payload)}
+function shareLink(text,url){if(navigator.share){navigator.share({text:text,url:url}).catch(function(){})}else copyText(text+' '+url)}
+function openResult(res){
+  var t=parseRes(res);if(!t||isNaN(t.score)||isNaN(t.secs)){toast(L('Link de resultado inválido','Invalid result link'));home();return}
+  var mine=null;try{localStorage.setItem('missaoAstroTheirs_'+t.code,res);mine=localStorage.getItem('missaoAstroMine_'+t.code)}catch(e){}
+  if(mine){screen(L('Resultado do duelo ','Duel result ')+t.code,home);var c=el('div',{class:'card'}),out=el('div',{id:'cmp-out'});c.appendChild(out);app.appendChild(c);bottom([el('button',{class:'btn wide',onclick:home},L('Início','Home'))]);compare(mine,res,t.code,out);return}
+  duelIntro(t.code,false);app.appendChild(el('div',{class:'why',id:'res-banner'},L(t.name+' já jogou o duelo '+t.code+' e fez '+t.score+' pontos! Jogue também para ver quem ganhou.',t.name+' already played duel '+t.code+' and scored '+t.score+' points! Play it too to see who won.')))}
+function openPack(code){var o=parseAsk(code);if(!o){toast(L('Link de perguntas inválido','Invalid questions link'));home();return}playPack(o)}
+
 /* ===== início, com atalhos para teste ===== */
 function chooser(){
   LANGBACK=chooser;cur=null;app.innerHTML='';bottom([]);
@@ -932,14 +945,18 @@ function chooser(){
   app.appendChild(el('header',{class:'top'},BRAND(),lr));
   app.appendChild(el('div',{class:'hero'},el('div',{class:'stars'},'✦ ✧ ✦'),el('h1',{},L('Quem está jogando?','Who is playing?')),el('p',{},L('Escolha o seu nome. O curso inteiro vai usar o seu mapa nos exemplos.','Pick your name. The whole course will use your chart in the examples.'))));
   var box=el('div',{class:'days'});
-  ['renata','sarah'].forEach(function(k){var c=CHARTS[k];box.appendChild(el('button',{class:'day',id:'pick-'+k,onclick:function(){setProfile(k);home()}},el('div',{class:'n glyph',style:'--c:#6f3fa0'},c.name.charAt(0)),el('div',{},el('b',{},L('Sou a ','I am ')+c.name),el('small',{},L('Entrar com o meu mapa','Enter with my chart'))),el('div',{class:'st'},'›')))});
-  loadGuests().forEach(function(gx){var c=CHARTS[gx.id];if(!c)return;box.appendChild(el('button',{class:'day',id:'pick-'+gx.id,onclick:function(){setProfile(gx.id);home()}},el('div',{class:'n glyph',style:'--c:#c9a35b'},c.name.charAt(0)),el('div',{},el('b',{},L('Sou a ','I am ')+c.name),el('small',{},L('Meu mapa neste aparelho','My chart on this device'))),el('div',{class:'st'},'›')))});
+  ['renata','sarah'].forEach(function(k){var c=CHARTS[k];box.appendChild(el('button',{class:'day',id:'pick-'+k,onclick:function(){setProfile(k);afterLogin()}},el('div',{class:'n glyph',style:'--c:#6f3fa0'},c.name.charAt(0)),el('div',{},el('b',{},L('Sou a ','I am ')+c.name),el('small',{},L('Entrar com o meu mapa','Enter with my chart'))),el('div',{class:'st'},'›')))});
+  loadGuests().forEach(function(gx){var c=CHARTS[gx.id];if(!c)return;box.appendChild(el('button',{class:'day',id:'pick-'+gx.id,onclick:function(){setProfile(gx.id);afterLogin()}},el('div',{class:'n glyph',style:'--c:#c9a35b'},c.name.charAt(0)),el('div',{},el('b',{},L('Sou a ','I am ')+c.name),el('small',{},L('Meu mapa neste aparelho','My chart on this device'))),el('div',{class:'st'},'›')))});
   box.appendChild(el('button',{class:'day',id:'create-map',onclick:createMap},el('div',{class:'n',style:'--c:#c9a35b'},'＋'),el('div',{},el('b',{},L('Criar o meu mapa','Create my chart')),el('small',{},L('Para quem ainda não está aqui: nome, cidade, data e hora','For anyone not listed: name, city, date and time'))),el('div',{class:'st'},'›')));
   app.appendChild(box);
   app.appendChild(el('p',{style:'text-align:center;color:#7a6a88;font-size:14px;margin-top:14px'},L('O seu progresso fica só neste aparelho. Dá para trocar de pessoa a qualquer momento.','Your progress stays only on this device. You can switch person at any time.')));
 }
 (function(){
-  var h=location.hash||'',key=null,lg=null;
+  var h=location.hash||'',key=null,lg=null,mm2;
+  if(mm2=h.match(/^#duelo=([A-Za-z0-9]{4})$/))PENDING=(function(c){return function(){duelIntro(c,false)}})(mm2[1].toUpperCase());
+  else if(mm2=h.match(/^#resultado=(.+)$/))PENDING=(function(r){return function(){openResult(r)}})(decodeURIComponent(mm2[1]));
+  else if(mm2=h.match(/^#perguntas=(.+)$/))PENDING=(function(r){return function(){openPack(r)}})(decodeURIComponent(mm2[1]));
+  if(PENDING){h='';try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}
   var m0=h.match(/^#(sarah|renata|criar)?-?(en|pt)?$/);
   if(m0&&(m0[1]||m0[2])){key=m0[1]||null;lg=m0[2]||null;h=key?'#'+key:''}
   if(!lg){try{lg=localStorage.getItem('missaoAstroLang')}catch(e){}}
@@ -952,6 +969,7 @@ function chooser(){
   if(!CHARTS[key]&&dbg)key='sarah';
   if(!CHARTS[key]){chooser();return}
   setProfile(key);
+  if(PENDING){afterLogin();return}
   var m=h.match(/#d(\d)s(\d+)/);
   if(h==='#mapa'){mapa();return}
   if(h==='#leitura'){leitura();return}
@@ -995,8 +1013,8 @@ function askCreate(){
     if(total()<3){toast(L('Marque pelo menos 3 perguntas','Select at least 3 questions'));return}
     var obj={n:cleanName(S.name),b:Object.keys(sel).map(Number),c:customs};
     var code='QS-'+btoa(unescape(encodeURIComponent(JSON.stringify(obj))));out.innerHTML='';
-    out.appendChild(el('p',{style:'text-align:center;margin-top:12px'},L('Pronto! '+total()+' perguntas. Mande este código para a outra:',"Done! "+total()+' questions. Send this code to the other:')));out.appendChild(el('div',{class:'codebox',style:'font-size:12px;letter-spacing:0;word-break:break-all',id:'ask-code'},code));
-    out.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText(code)}},L('Copiar código','Copy code')));addPts(5*total())
+    out.appendChild(el('p',{style:'text-align:center;margin-top:12px'},L('Pronto! '+total()+' perguntas. Envie o link para a outra:','Done! '+total()+' questions. Send the link to the other:')));out.appendChild(el('div',{class:'codebox',style:'font-size:12px;letter-spacing:0;word-break:break-all',id:'ask-code'},code));
+    out.appendChild(el('button',{class:'btn gold wide',style:'margin-top:8px',id:'ask-share',onclick:function(){shareLink(L('Tenho '+total()+' perguntas de astrologia para você! Toque no link para responder:','I have '+total()+' astrology questions for you! Tap the link to answer:'),linkFor('perguntas',code))}},L('📨 Enviar as perguntas (link)','📨 Send the questions (link)')));out.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText(code)}},L('Copiar só o código','Copy just the code')));addPts(5*total())
   }},L('Gerar código com as perguntas','Generate the code with the questions')));
   c.appendChild(out);app.appendChild(c);bottom([]);draw(true);
 }
@@ -1009,16 +1027,7 @@ function askReceive(){
   var ta=el('textarea',{class:'inp',placeholder:'QS-...',id:'ask-in'});c.appendChild(ta);
   c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:10px',id:'ask-play',onclick:function(){
     var o=parseAsk(ta.value);if(!o){toast(L('Não entendi esse código','I did not understand that code'));return}
-    var who=o.n||L('uma amiga','a friend'),items=o.items,i=0,okc=0;
-    function show(){
-      if(i>=items.length)return fin();
-      screen(L('Perguntas de ','Questions from ')+who,askMenu);app.appendChild(el('div',{style:'margin-bottom:10px'},dotsBar(items.length,i)));
-      var q=items[i];
-      var card=choiceCard(q,qopts(q,mul(hashS(q.q+i))),L('Pergunta ','Question ')+(i+1)+'/'+items.length+' · '+who,function(ok){addPts(ok?10:3);if(ok){okc++;confetti()}nx.removeAttribute('disabled')});
-      app.appendChild(card);
-      var nx=el('button',{class:'btn wide',disabled:'',id:'ask-next',onclick:function(){i++;show()}},i===items.length-1?L('Ver o resultado','See the result'):L('Próxima','Next'));bottom([nx]);window.scrollTo(0,0)}
-    function fin(){app.innerHTML='';app.appendChild(topbar());confetti();app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},L('Perguntas respondidas','Questions answered')),el('h1',{},L('Você acertou '+okc+' de '+items.length,'You got '+okc+' of '+items.length)),el('p',{},L('Agora é a sua vez de desafiar '+who+'.','Now it is your turn to challenge '+who+'.'))));bottom([el('button',{class:'btn ghost',onclick:together},L('Outros jogos','Other games')),el('button',{class:'btn gold',id:'ask-back',onclick:askCreate},L('Mandar as minhas','Send mine'))])}
-    show();
+    playPack(o);
   }},L('Jogar','Play')));app.appendChild(c);bottom([]);
 }
 
@@ -1067,10 +1076,23 @@ function createMap(){
     if(!place){toast(L('Busque e escolha a cidade','Search and pick the city'));return}
     var r;try{r=computeChart({y:y,mo:mo,d:d,hh:h,mm:m,tz:place.tz,lat:place.lat,lon:place.lon,noTime:noT})}catch(e){toast(L('Não consegui calcular esse mapa','I could not work out this chart'));return}
     var id='g_'+Date.now().toString(36),gx={id:id,name:cleanName(nm.value),birth:{d:d,mo:mo,y:y,hh:h,mm:m,place:place.short},pl:r.pl,lons:r.lons,cusp:r.cusp,retro:r.retro,noTime:noT,moonAlt:r.moonAlt||null};
-    var gs=loadGuests();gs.push(gx);saveGuests(gs);PROFILE=null;setLang(LANG);setProfile(id);home();confetti()
+    var gs=loadGuests();gs.push(gx);saveGuests(gs);PROFILE=null;setLang(LANG);setProfile(id);afterLogin();confetti()
   }},L('Criar o meu mapa e começar','Create my chart and start')));
   c.appendChild(el('p',{style:'text-align:center;margin-top:10px'},el('button',{class:'link',id:'cm-back',onclick:chooser},L('Voltar','Back'))));
   app.appendChild(c);
+}
+
+function playPack(o){
+    var who=o.n||L('uma amiga','a friend'),items=o.items,i=0,okc=0;
+    function show(){
+      if(i>=items.length)return fin();
+      screen(L('Perguntas de ','Questions from ')+who,askMenu);app.appendChild(el('div',{style:'margin-bottom:10px'},dotsBar(items.length,i)));
+      var q=items[i];
+      var card=choiceCard(q,qopts(q,mul(hashS(q.q+i))),L('Pergunta ','Question ')+(i+1)+'/'+items.length+' · '+who,function(ok){addPts(ok?10:3);if(ok){okc++;confetti()}nx.removeAttribute('disabled')});
+      app.appendChild(card);
+      var nx=el('button',{class:'btn wide',disabled:'',id:'ask-next',onclick:function(){i++;show()}},i===items.length-1?L('Ver o resultado','See the result'):L('Próxima','Next'));bottom([nx]);window.scrollTo(0,0)}
+    function fin(){app.innerHTML='';app.appendChild(topbar());confetti();app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},L('Perguntas respondidas','Questions answered')),el('h1',{},L('Você acertou '+okc+' de '+items.length,'You got '+okc+' of '+items.length)),el('p',{},L('Agora é a sua vez de desafiar '+who+'.','Now it is your turn to challenge '+who+'.'))));bottom([el('button',{class:'btn ghost',onclick:together},L('Outros jogos','Other games')),el('button',{class:'btn gold',id:'ask-back',onclick:askCreate},L('Mandar as minhas','Send mine'))])}
+    show();
 }
 </script>
 </body>
