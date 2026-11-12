@@ -38,11 +38,12 @@ p{margin:6px 0}
 .day.done{border-color:#bfe6d3}
 .day.done .st{color:var(--ok)}
 .tile{background:#fff;border-radius:22px;padding:16px;margin-top:16px;box-shadow:0 2px 10px rgba(74,35,112,.10)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--p);color:#fff;border:0;border-radius:16px;padding:14px 20px;font:inherit;font-weight:700;font-size:17px;cursor:pointer;box-shadow:0 4px 0 #2f1550;transition:transform .08s,box-shadow .08s}
-.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #2f1550}
-.btn.gold{background:var(--g);color:#2b1c05;box-shadow:0 4px 0 #8d6d2c}
-.btn.gold:active{box-shadow:0 1px 0 #8d6d2c}
-.btn.ghost{background:#fff;color:var(--p);box-shadow:0 0 0 2px var(--p3) inset;border:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--p2);color:#fff;border:0;border-radius:14px;padding:9px 16px;font:inherit;font-weight:600;font-size:15px;letter-spacing:.01em;cursor:pointer;box-shadow:0 2px 8px rgba(74,35,112,.16);transition:transform .08s,box-shadow .08s,opacity .15s}
+.btn:active{transform:scale(.98);box-shadow:0 1px 4px rgba(74,35,112,.18)}
+.btn.gold{background:linear-gradient(180deg,#f3e0b0,#e6c982);color:#4a3412;box-shadow:0 2px 8px rgba(201,163,91,.28)}
+.btn.ghost{background:#fff;color:var(--p2);box-shadow:0 0 0 1.5px var(--p3) inset;border:0}
+.btn.soft{background:transparent;box-shadow:none;color:var(--p2);font-weight:500;font-size:14px;padding:6px 10px;text-decoration:underline;text-underline-offset:3px}
+.btn.soft:active{box-shadow:none}
 .btn[disabled]{opacity:.4;pointer-events:none}
 .btn.wide{width:100%}
 .row{display:flex;gap:10px;align-items:center}
@@ -108,9 +109,10 @@ p{margin:6px 0}
 .mine li{padding:9px 0;border-top:1px dashed #cdb8e4;font-size:16px}
 .mine li:first-child{border-top:0}
 .mine b{color:var(--p)}
-.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid #e6d9f0;padding:10px 16px calc(10px + env(safe-area-inset-bottom));z-index:5}
-.nav .in{max-width:560px;margin:0 auto;display:flex;gap:10px}
-.nav .btn{flex:1}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-top:1px solid #efe6f6;padding:8px 16px calc(8px + env(safe-area-inset-bottom));z-index:5}
+.nav .in{max-width:560px;margin:0 auto;display:flex;gap:8px;justify-content:center}
+.nav .btn{flex:1;max-width:320px;padding:9px 14px;font-size:14.5px}
+.nav .btn.ghost:first-child:not(:last-child){flex:0 0 auto;padding:9px 16px}
 .toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--p);color:#fff;padding:10px 18px;border-radius:99px;font-weight:700;z-index:30;box-shadow:0 6px 18px rgba(0,0,0,.2);animation:in .3s}
 .conf{position:fixed;top:-20px;z-index:40;pointer-events:none;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.9}}
@@ -924,7 +926,7 @@ function playDuel(code){
     var c=el('div',{class:'card'});c.appendChild(el('div',{style:'text-align:center'},el('span',{class:'tag'},L('O seu resultado','Your result'))));
     c.appendChild(el('h2',{},L(score+' pontos em '+secs+'s',score+' points in '+secs+'s')));
     c.appendChild(el('p',{style:'text-align:center;font-size:15px;color:#7a6a88'},L('Envie o link para quem criou o duelo. O resultado aparece lá, na comparação e em "Resultados recebidos".','Send the link to whoever created the duel. The result shows up there, in the comparison and in "Received results".')));c.appendChild(el('div',{class:'codebox',style:'font-size:16px;letter-spacing:.08em',id:'res-code'},res));
-    c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:8px',id:'res-share',onclick:function(){shareLink(L('Meu resultado no duelo '+code+': '+score+' pontos em '+secs+'s. Toque no link para comparar:','My result in duel '+code+': '+score+' points in '+secs+'s. Tap the link to compare:'),linkFor('resultado',res))}},L('📨 Enviar meu resultado (link)','📨 Send my result (link)')));c.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText(res)}},L('Copiar só o código','Copy just the code')));
+    c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:8px',id:'res-share',onclick:function(){shareLink(L('Meu resultado no duelo '+code+': '+score+' pontos em '+secs+'s. Toque no link para comparar:','My result in duel '+code+': '+score+' points in '+secs+'s. Tap the link to compare:'),linkFor('resultado',res))}},L('📨 Enviar meu resultado (link)','📨 Send my result (link)')));c.appendChild(el('button',{class:'btn soft wide',style:'margin-top:4px',onclick:function(){copyText(res)}},L('Copiar só o código','Copy just the code')));
     c.appendChild(el('p',{style:'text-align:center;margin:14px 0 4px'},L('Se ela ainda não mandou o link, cole aqui o código dela:','If she has not sent the link yet, paste her code here:')));
     var inp=el('input',{class:'inp',placeholder:L('Ex.: ','E.g.: ')+code+'-80-74-Renata',id:'cmp-in'});c.appendChild(inp);
     var out=el('div',{id:'cmp-out'});
@@ -1043,7 +1045,7 @@ function askCreate(){
     var obj={n:cleanName(S.name),b:Object.keys(sel).map(Number),c:customs};
     var code='QS-'+btoa(unescape(encodeURIComponent(JSON.stringify(obj))));out.innerHTML='';
     out.appendChild(el('p',{style:'text-align:center;margin-top:12px'},L('Pronto! '+total()+' perguntas. Envie o link para a outra:','Done! '+total()+' questions. Send the link to the other:')));out.appendChild(el('div',{class:'codebox',style:'font-size:12px;letter-spacing:0;word-break:break-all',id:'ask-code'},code));
-    out.appendChild(el('button',{class:'btn gold wide',style:'margin-top:8px',id:'ask-share',onclick:function(){shareLink(L('Tenho '+total()+' perguntas de astrologia para você! Toque no link para responder:','I have '+total()+' astrology questions for you! Tap the link to answer:'),linkFor('perguntas',code))}},L('📨 Enviar as perguntas (link)','📨 Send the questions (link)')));out.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText(code)}},L('Copiar só o código','Copy just the code')));addPts(5*total())
+    out.appendChild(el('button',{class:'btn gold wide',style:'margin-top:8px',id:'ask-share',onclick:function(){shareLink(L('Tenho '+total()+' perguntas de astrologia para você! Toque no link para responder:','I have '+total()+' astrology questions for you! Tap the link to answer:'),linkFor('perguntas',code))}},L('📨 Enviar as perguntas (link)','📨 Send the questions (link)')));out.appendChild(el('button',{class:'btn soft wide',style:'margin-top:4px',onclick:function(){copyText(code)}},L('Copiar só o código','Copy just the code')));addPts(5*total())
   }},L('Gerar código com as perguntas','Generate the code with the questions')));
   c.appendChild(out);app.appendChild(c);bottom([]);draw(true);
 }
@@ -1125,7 +1127,7 @@ function playPack(o){
       var code='RS-'+btoa(unescape(encodeURIComponent(JSON.stringify({n:cleanName(S.name),f:who,r:rows}))));
       app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},L('Perguntas respondidas','Questions answered')),el('h1',{},L('Você acertou '+okc+' de '+items.length,'You got '+okc+' of '+items.length)),el('p',{},L('Agora envie as suas respostas de volta para '+who+', para ela ver o resultado.','Now send your answers back to '+who+' so she can see the result.'))));
       bottom([el('button',{class:'btn ghost',onclick:together},L('Outros jogos','Other games')),el('button',{class:'btn gold',id:'ans-share',onclick:function(){shareLink(L('Respondi as suas perguntas! Acertei '+okc+' de '+items.length+'. Toque no link para ver as minhas respostas:','I answered your questions! I got '+okc+' of '+items.length+'. Tap the link to see my answers:'),linkFor('respostas',code))}},L('📨 Enviar respostas para '+who,'📨 Send answers to '+who))]);
-      app.appendChild(el('div',{style:'margin-top:12px'},el('button',{class:'btn ghost wide',id:'ans-code',onclick:function(){copyText(code)}},L('Copiar só o código','Copy just the code')),el('button',{class:'btn wide',style:'margin-top:8px',id:'ask-back',onclick:askCreate},L('Criar as minhas perguntas para ela','Create my questions for her'))))}
+      app.appendChild(el('div',{style:'margin-top:12px'},el('button',{class:'btn soft wide',id:'ans-code',onclick:function(){copyText(code)}},L('Copiar só o código','Copy just the code')),el('button',{class:'btn ghost wide',style:'margin-top:8px',id:'ask-back',onclick:askCreate},L('Criar as minhas perguntas para ela','Create my questions for her'))))}
     show();
 }
 
