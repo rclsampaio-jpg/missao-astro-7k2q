@@ -139,16 +139,50 @@ textarea.inp{min-height:96px;font-size:14px;word-break:break-all}
 <div id="app"></div>
 <script>
 /* ===== dados do mapa da Sarah ===== */
-var MAPA = {
-  'Sol':['Aquário',11],'Lua':['Sagitário',9],'Mercúrio':['Aquário',11],'Vênus':['Áries',1],'Marte':['Sagitário',9],
-  'Júpiter':['Áries',1],'Saturno':['Sagitário',9],'Urano':['Sagitário',9],'Netuno':['Capricórnio',10],'Plutão':['Escorpião',8],
-  'Ascendente':['Áries',1],'Meio do Céu':['Capricórnio',10]
-};
 var GL = {'Sol':'☉','Lua':'☽','Mercúrio':'☿','Vênus':'♀','Marte':'♂','Júpiter':'♃','Saturno':'♄','Urano':'♅','Netuno':'♆','Plutão':'♇'};
 var COL = {'Sol':'#f2b705','Lua':'#7d8fd1','Mercúrio':'#2fa58f','Vênus':'#e0679b','Marte':'#d9432f','Júpiter':'#e08a1e','Saturno':'#6b5b7b','Urano':'#1aa3c4','Netuno':'#5b6ee1','Plutão':'#8e2f6b'};
 var TXT = '︎';
 function g(n){return (GL[n]||'✦')+TXT}
 function mine(n){var m=MAPA[n];return m?('Seu '+n+': '+m[0]+', casa '+m[1]):''}
+/* ===== mapas ===== */
+var CHARTS={
+ sarah:{name:'Sarah',other:'renata',nasc:'12/02/1988, 08h50, São Paulo',
+  pl:{'Sol':['Aquário',11],'Lua':['Sagitário',9],'Mercúrio':['Aquário',11],'Vênus':['Áries',1],'Marte':['Sagitário',9],'Júpiter':['Áries',1],'Saturno':['Sagitário',9],'Urano':['Sagitário',9],'Netuno':['Capricórnio',10],'Plutão':['Escorpião',8],'Ascendente':['Áries',1],'Meio do Céu':['Capricórnio',10]},
+  retro:['Mercúrio'],
+  merc:'pensa em rede, com amigos',
+  sat:'O seu está colado em Urano, o Inventor, na casa 9: estrutura e liberdade nos estudos.',
+  asp:{conj:'No seu mapa: Saturno e Urano, colados.',sext:'No seu mapa: Sol e Marte.',trig:'No seu mapa: Marte e Júpiter.',quad:'No seu mapa: Vênus e Saturno.',opos:'Você não tem planetas em oposição. Uma gangorra a menos!'},
+  learn:[['Veja o todo antes dos detalhes.',' Primeiro o para quê, depois o como.'],['Pedaços curtos e jogos.',' Uma ideia por vez, para o cérebro não ficar cheio.'],['Com a turma.',' Seu Mercúrio mora na casa 11: aprender em grupo rende mais.'],['Ensinar para fixar.',' Casa 9 cheia de planetas: você é professora de nascença.'],['Rever depois.',' Mercúrio retrógrado pensa duas vezes. Voltar ao assunto ajuda.'],['Convites, não ordens.',' Aquário gosta de escolher o próprio caminho.']],
+  four:[['Sol',' em Aquário, casa 11: brilho original, entre amigos e grupos.'],['Mercúrio',' em Aquário, casa 11 (retrógrado), colado no Sol: você precisa entender para se sentir você.'],['Lua',' em Sagitário, casa 9: o coração quer liberdade, sentido e estudo.'],['Ascendente',' em Áries: você chega ao mundo na frente, com coragem.']],
+  curio:'Uma curiosidade: Saturno e Urano estão colados no fim de Sagitário, na casa 9. É o encontro entre estrutura e liberdade nos estudos.'},
+ renata:{name:'Renata',other:'sarah',nasc:'10/04/1990, 07h24, São Paulo',
+  pl:{'Sol':['Áries',12],'Lua':['Libra',6],'Mercúrio':['Touro',1],'Vênus':['Peixes',10],'Marte':['Aquário',10],'Júpiter':['Câncer',3],'Saturno':['Capricórnio',9],'Urano':['Capricórnio',9],'Netuno':['Capricórnio',9],'Plutão':['Escorpião',7],'Ascendente':['Touro',1],'Meio do Céu':['Aquário',10]},
+  retro:['Plutão'],
+  merc:'pensa com calma, de forma prática e firme',
+  sat:'O seu está em Capricórnio, o signo que ele rege, na casa 9: estrutura e paciência nos estudos.',
+  asp:{conj:'No seu mapa: Mercúrio e o Ascendente.',sext:'No seu mapa: o Ascendente e Vênus.',trig:'No seu mapa: Vênus e Júpiter, e Mercúrio e Urano.',quad:'No seu mapa: a Lua e Saturno.',opos:'No seu mapa: o Sol e a Lua.'},
+  learn:[['Uma ideia por vez, com calma.',' Mercúrio em Touro aprende devagar e firme, e depois não esquece.'],['Aprender fazendo e sentindo.',' Em Touro, o corpo e os sentidos ajudam: escreva à mão, caminhe, use cores.'],['Rotina de estudo em blocos.',' A Lua na casa 6 e Saturno na 9 gostam de horário certo e meta de longo prazo.'],['Espaço para os insights.',' O trígono de Mercúrio com Urano traz ideias súbitas: deixe um caderno ou um áudio por perto.'],['Ensinar do seu jeito acolhedor.',' Júpiter em Câncer na casa 3: a palavra que cuida faz você aprender e prosperar.'],['Silêncio para pensar.',' Sol na casa 12: pausas e solitude organizam a cabeça.']],
+  four:[['Sol',' em Áries, casa 12: coragem para começar, que vem do silêncio e dos bastidores.'],['Mercúrio',' em Touro, casa 1: pensa com calma e firmeza, e as ideias fazem parte de quem você é.'],['Lua',' em Libra, casa 6: o coração se organiza pela rotina, pela harmonia e pelo cuidado diário.'],['Ascendente',' em Touro: você chega ao mundo com presença estável e sensorial.']],
+  curio:'Uma curiosidade: o seu Sol e a sua Lua estão em oposição, a gangorra, e Saturno aperta os dois como um cabo de guerra. É o equilíbrio que o seu mapa pede.'}
+};
+var CH=null,PROFILE=null,MAPA={};
+var ROLE={'Sol':'o seu brilho','Lua':'o seu coração','Mercúrio':'o seu jeito de pensar e falar','Vênus':'o seu amor e o seu prazer','Marte':'a sua vontade de agir','Júpiter':'a sua sorte e a sua fé','Saturno':'a sua disciplina','Urano':'a sua liberdade','Netuno':'os seus sonhos','Plutão':'a sua transformação'};
+var SSTYLE={'Áries':'de um jeito corajoso, de quem vai primeiro','Touro':'com calma, conforto e firmeza','Gêmeos':'com curiosidade e conversa','Câncer':'com cuidado e acolhimento','Leão':'com brilho e coração grande','Virgem':'com atenção aos detalhes','Libra':'buscando equilíbrio e harmonia','Escorpião':'indo fundo, com intensidade','Sagitário':'com aventura e vontade de explorar','Capricórnio':'com paciência, disciplina e foco','Aquário':'de um jeito original e livre','Peixes':'com imaginação e sensibilidade'};
+var HAREA={1:'no seu corpo e na sua personalidade',2:'no dinheiro e no que é seu',3:'na comunicação e no aprendizado',4:'em casa, na família e nas raízes',5:'na criação, na brincadeira e no romance',6:'na rotina, no trabalho e na saúde',7:'nas parcerias e nas relações a dois',8:'na intimidade e nas transformações',9:'nos estudos, nas viagens e nas crenças',10:'na carreira e na vida pública',11:'entre amigos, grupos e sonhos de futuro',12:'no silêncio, nos bastidores e na espiritualidade'};
+var HSHORT={1:'o seu jeito de chegar ao mundo',2:'dinheiro e valores',3:'comunicar e aprender',4:'casa e família',5:'criar e brincar',6:'rotina e trabalho',7:'parcerias',8:'intimidade e transformação',9:'estudar, ensinar e explorar',10:'carreira e vida pública',11:'amigos e grupos',12:'silêncio e espiritualidade'};
+var ELEM_OF={'Áries':'Fogo','Leão':'Fogo','Sagitário':'Fogo','Touro':'Terra','Virgem':'Terra','Capricórnio':'Terra','Gêmeos':'Ar','Libra':'Ar','Aquário':'Ar','Câncer':'Água','Escorpião':'Água','Peixes':'Água'};
+var RULER={'Áries':'Marte','Touro':'Vênus','Gêmeos':'Mercúrio','Câncer':'Lua','Leão':'Sol','Virgem':'Mercúrio','Libra':'Vênus','Escorpião':'Plutão','Sagitário':'Júpiter','Capricórnio':'Saturno','Aquário':'Urano','Peixes':'Netuno'};
+var TEN=['Sol','Lua','Mercúrio','Vênus','Marte','Júpiter','Saturno','Urano','Netuno','Plutão'];
+function listPT(a){return a.length<2?(a[0]||''):a.slice(0,-1).join(', ')+' e '+a[a.length-1]}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function inHouse(h){return TEN.filter(function(p){return MAPA[p][1]===h})}
+function inSign(sg){return TEN.filter(function(p){return MAPA[p][0]===sg})}
+function inElem(e){return TEN.filter(function(p){return ELEM_OF[MAPA[p][0]]===e})}
+function houseNote(h){var a=inHouse(h);return a.length?' No seu mapa moram aqui: '+listPT(a)+'.':''}
+function elemNote(e){var a=inElem(e);return a.length?'Você tem '+a.length+' planeta'+(a.length>1?'s':'')+' em '+e+': '+listPT(a)+'.':'Nenhum planeta seu mora aqui. É um elemento para aprender com as outras pessoas.'}
+function groupNote(hs){var out=[];hs.forEach(function(h){var a=inHouse(h);if(a.length)out.push(listPT(a)+' (casa '+h+')')});return out.length?'Moram aqui: '+out.join('; ')+'.':''}
+function dualNote(sg,modern){var a=inSign(sg);if(!a.length)return '';if(a.length===1&&a[0]===modern)return 'O seu '+modern+' está em casa aqui!';var o=a.filter(function(x){return x!==modern});return modern+' rege '+o.map(function(x){return 'o seu '+x}).join(' e ')+'.'}
+function ex(p){var m=MAPA[p];return cap(ROLE[p])+' (<b>'+p+'</b>), '+SSTYLE[m[0]]+' (<b>'+m[0]+'</b>), '+HAREA[m[1]]+' (<b>casa '+m[1]+'</b>).'}
 
 /* ===== lições ===== */
 var P5=[
@@ -167,11 +201,14 @@ var PL=[
 ];
 function flipP(list){return list.map(function(p){return {c:COL[p[0]],g:g(p[0]),t:p[0],s:p[1],back:p[2],em:mine(p[0])}})}
 
-var DAYS=[
+var DAYS=[];
+function buildDays(){
+var asc=MAPA['Ascendente'][0],chef=RULER[asc],chefM=MAPA[chef],sol=MAPA['Sol'],merc=MAPA['Mercúrio'];
+DAYS=[
 {id:1,emoji:'✦',c:'#6f3fa0',title:'A grande ideia',sub:'Planeta, signo e casa em 5 minutos',steps:[
  {k:'card',big:'✦',tag:'Comece por aqui',title:'O mapa é uma foto do céu',body:'Uma foto do céu no momento em que você nasceu. Nela, cada planeta está em um signo e em uma casa.'},
  {k:'trio'},
- {k:'card',big:'☉'+TXT,tag:'Veja funcionando',title:'Sol em Aquário na casa 11',body:'O seu brilho (<b>Sol</b>), de um jeito original e livre (<b>Aquário</b>), entre amigos, grupos e sonhos de futuro (<b>casa 11</b>). Esse é o seu Sol.'},
+ {k:'card',big:'☉'+TXT,tag:'Veja funcionando',title:'Sol em '+sol[0]+' na casa '+sol[1],body:ex('Sol')+' Esse é o seu Sol.'},
  {k:'build',rounds:[
   {s:'Um coração que precisa de calma e conforto, e isso aparece no trabalho e na vida pública.',a:['Lua','Touro','10'],o:[['Sol','Lua','Marte'],['Touro','Leão','Peixes'],['4','10','7']],why:'Lua é o coração, Touro é calma e conforto, casa 10 é a vida pública.'},
   {s:'A vontade de agir (o motorzinho), do jeito corajoso de quem vai primeiro, quando estuda e viaja.',a:['Marte','Áries','9'],o:[['Marte','Vênus','Saturno'],['Áries','Câncer','Libra'],['2','9','12']],why:'Marte é a ação, Áries vai primeiro, casa 9 é estudo e viagem.'}
@@ -181,66 +218,69 @@ var DAYS=[
 {id:2,emoji:'☉',c:'#f2b705',title:'Os 5 planetas só seus',sub:'Sol, Lua, Mercúrio, Vênus e Marte',steps:[
  {k:'flip',title:'Toque nas cartas',list:flipP(P5)},
  {k:'match',title:'Ligue cada planeta ao que ele faz',pairs:[['Sol','O seu brilho'],['Lua','O seu coração'],['Mercúrio','Pensar e falar'],['Vênus','Amor e prazer'],['Marte','Ação e vontade']]},
- {k:'quiz',q:'Qual planeta cuida de como você pensa e se comunica?',o:['Vênus','Mercúrio','Saturno'],a:1,why:'Mercúrio é o Mensageiro. O seu está em Aquário, na casa 11: pensa em rede, com amigos.'},
+ {k:'quiz',q:'Qual planeta cuida de como você pensa e se comunica?',o:['Vênus','Mercúrio','Saturno'],a:1,why:'Mercúrio é o Mensageiro. O seu está em '+merc[0]+', na casa '+merc[1]+': '+CH.merc+'.'},
  {k:'mission',big:'🔎',title:'Missão do dia',body:'Descubra o <b>Sol</b> de uma amiga e adivinhe, antes de ela contar, no que ela brilha.'}
 ]},
 {id:3,emoji:'♄'+TXT,c:'#6b5b7b',title:'Os planetas grandes e lentos',sub:'Júpiter, Saturno, Urano, Netuno e Plutão',steps:[
  {k:'card',big:'🐢',tag:'Curiosidade',title:'Eles andam devagar',body:'Júpiter e Saturno ensinam. Urano, Netuno e Plutão demoram tanto que valem para <b>uma geração inteira</b>.'},
  {k:'flip',title:'Toque nas cartas',list:flipP(PL)},
- {k:'quiz',q:'Quem é o Professor rígido, que ensina pelo esforço?',o:['Saturno','Urano','Netuno'],a:0,why:'Saturno. E o seu está colado em Urano, o Inventor, na casa 9: estrutura e liberdade nos estudos.'},
+ {k:'quiz',q:'Quem é o Professor rígido, que ensina pelo esforço?',o:['Saturno','Urano','Netuno'],a:0,why:'Saturno. '+CH.sat},
  {k:'quiz',q:'Quem é o Inventor maluquinho, que quebra o velho?',o:['Júpiter','Plutão','Urano'],a:2,why:'Urano: mudança, liberdade e novidade.'},
  {k:'mission',big:'🎙️',title:'Missão do dia',body:'Escolha <b>1 planeta lento</b> e conte em um áudio de 30 segundos quem ele é, com as suas palavras.'}
 ]},
 {id:4,emoji:'♈'+TXT,c:'#d9542f',title:'Os 12 signos',sub:'Fogo, Terra, Ar e Água',steps:[
  {k:'flip',title:'Os 4 elementos',one:true,list:[
-  {c:'#d9542f',g:'🔥',t:'Fogo',s:'Áries, Leão, Sagitário',back:'Energia e coragem. Vai e faz.',em:'Você tem 6 planetas em Fogo!'},
-  {c:'#5b8a3c',g:'🌱',t:'Terra',s:'Touro, Virgem, Capricórnio',back:'Pés no chão. Constrói e cuida.',em:''},
-  {c:'#2a8fbd',g:'💨',t:'Ar',s:'Gêmeos, Libra, Aquário',back:'Ideias e conversa. Conecta.',em:'O seu Sol e o seu Mercúrio estão aqui.'},
-  {c:'#5b5bd6',g:'🌊',t:'Água',s:'Câncer, Escorpião, Peixes',back:'Sentimentos. Sente fundo.',em:''}]},
+  {c:'#d9542f',g:'🔥',t:'Fogo',s:'Áries, Leão, Sagitário',back:'Energia e coragem. Vai e faz.',em:elemNote('Fogo')},
+  {c:'#5b8a3c',g:'🌱',t:'Terra',s:'Touro, Virgem, Capricórnio',back:'Pés no chão. Constrói e cuida.',em:elemNote('Terra')},
+  {c:'#2a8fbd',g:'💨',t:'Ar',s:'Gêmeos, Libra, Aquário',back:'Ideias e conversa. Conecta.',em:elemNote('Ar')},
+  {c:'#5b5bd6',g:'🌊',t:'Água',s:'Câncer, Escorpião, Peixes',back:'Sentimentos. Sente fundo.',em:elemNote('Água')}]},
  {k:'match',title:'Ligue o signo ao seu jeito',pairs:[['Áries','Vai primeiro'],['Touro','Devagar e gostoso'],['Gêmeos','Pergunta e conversa'],['Leão','Brilha no palco'],['Escorpião','Mergulha fundo'],['Aquário','Inventa o futuro']]},
  {k:'match',title:'Mais um: ligue de novo',pairs:[['Câncer','Abraça e cuida'],['Virgem','Arruma e ajuda'],['Libra','Procura o equilíbrio'],['Sagitário','Aventureiro'],['Capricórnio','Escala a montanha'],['Peixes','Sonha e sente tudo']]},
  {k:'mission',big:'🕵️',title:'Missão do dia',body:'Escolha 3 pessoas e adivinhe o <b>elemento</b> de cada uma. Depois confira e veja quantas você acertou.'}
 ]},
 {id:5,emoji:'🏠',c:'#2fa58f',title:'As 12 casas',sub:'Uma casa com 12 cômodos',steps:[
  {k:'flip',title:'As 4 partes da casa',one:true,list:[
-  {c:'#f2b705',g:'1·2·3',t:'Eu',s:'Casas 1, 2 e 3',back:'O corpo, o que é meu e o meu jeito de falar.',em:''},
-  {c:'#2fa58f',g:'4·5·6',t:'O meu mundo',s:'Casas 4, 5 e 6',back:'Casa e família, o prazer de criar e a rotina.',em:''},
-  {c:'#e0679b',g:'7·8·9',t:'Os outros',s:'Casas 7, 8 e 9',back:'Parcerias, intimidade e o que vem de longe.',em:'A sua Lua, Marte, Saturno e Urano moram na casa 9.'},
-  {c:'#7d4fb5',g:'10·11·12',t:'O mundo e o invisível',s:'Casas 10, 11 e 12',back:'Carreira, a turma e o que é maior que eu.',em:'O seu Sol e o seu Mercúrio moram na casa 11.'}]},
- {k:'quiz',q:'"Combinar o rolê com a turma." Em que casa isso acontece?',o:['Casa 11','Casa 4','Casa 8'],a:0,why:'Casa 11: amigos, grupos e sonhos de futuro. É a sua casa de Sol e Mercúrio!'},
- {k:'quiz',q:'"Planejar uma viagem de estudos." Em que casa?',o:['Casa 3','Casa 9','Casa 12'],a:1,why:'Casa 9: estudar, ensinar, viajar longe e acreditar. A sua casa mais cheia de planetas.'},
- {k:'quiz',q:'"Mostrar o meu trabalho para o mundo." Em que casa?',o:['Casa 10','Casa 2','Casa 6'],a:0,why:'Casa 10: carreira, vida pública e reputação.'},
- {k:'quiz',q:'"Ficar quietinha, meditando sozinha." Em que casa?',o:['Casa 5','Casa 12','Casa 7'],a:1,why:'Casa 12: silêncio, bastidores e espiritualidade.'},
+  {c:'#f2b705',g:'1·2·3',t:'Eu',s:'Casas 1, 2 e 3',back:'O corpo, o que é meu e o meu jeito de falar.',em:groupNote([1,2,3])},
+  {c:'#2fa58f',g:'4·5·6',t:'O meu mundo',s:'Casas 4, 5 e 6',back:'Casa e família, o prazer de criar e a rotina.',em:groupNote([4,5,6])},
+  {c:'#e0679b',g:'7·8·9',t:'Os outros',s:'Casas 7, 8 e 9',back:'Parcerias, intimidade e o que vem de longe.',em:groupNote([7,8,9])},
+  {c:'#7d4fb5',g:'10·11·12',t:'O mundo e o invisível',s:'Casas 10, 11 e 12',back:'Carreira, a turma e o que é maior que eu.',em:groupNote([10,11,12])}]},
+ {k:'quiz',q:'"Combinar o rolê com a turma." Em que casa isso acontece?',o:['Casa 11','Casa 4','Casa 8'],a:0,why:'Casa 11: amigos, grupos e sonhos de futuro.'+houseNote(11)},
+ {k:'quiz',q:'"Planejar uma viagem de estudos." Em que casa?',o:['Casa 3','Casa 9','Casa 12'],a:1,why:'Casa 9: estudar, ensinar, viajar longe e acreditar.'+houseNote(9)},
+ {k:'quiz',q:'"Mostrar o meu trabalho para o mundo." Em que casa?',o:['Casa 10','Casa 2','Casa 6'],a:0,why:'Casa 10: carreira, vida pública e reputação.'+houseNote(10)},
+ {k:'quiz',q:'"Ficar quietinha, meditando sozinha." Em que casa?',o:['Casa 5','Casa 12','Casa 7'],a:1,why:'Casa 12: silêncio, bastidores e espiritualidade.'+houseNote(12)},
  {k:'mission',big:'🗺️',title:'Missão do dia',body:'Escolha 1 coisa que você fez hoje e descubra a <b>casa</b> dela. Mande para uma amiga e veja se ela concorda.'}
 ]},
 {id:6,emoji:'👑',c:'#8e2f6b',title:'Os regentes',sub:'O dono de cada signo',steps:[
  {k:'card',big:'👑',tag:'A ideia',title:'Cada signo tem um dono',body:'O planeta que manda no signo é o <b>regente</b>. Ele é o chefe do jeito do signo e se sente <b>em casa</b> ali.'},
  {k:'match',title:'Ligue o signo ao seu regente',pairs:[['Áries','Marte'],['Touro','Vênus'],['Gêmeos','Mercúrio'],['Câncer','Lua'],['Leão','Sol'],['Capricórnio','Saturno']]},
  {k:'flip',title:'Os 3 com dois regentes',one:true,list:[
-  {c:'#8e2f6b',g:'♏'+TXT,t:'Escorpião',s:'Plutão (moderno)',back:'Tradicional: Marte.',em:''},
-  {c:'#1aa3c4',g:'♒'+TXT,t:'Aquário',s:'Urano (moderno)',back:'Tradicional: Saturno.',em:'É o regente do seu Sol e do seu Mercúrio!'},
-  {c:'#5b6ee1',g:'♓'+TXT,t:'Peixes',s:'Netuno (moderno)',back:'Tradicional: Júpiter.',em:''}]},
- {k:'card',big:'🧭',tag:'O seu mapa',title:'O seu chefe é o Marte',body:'O seu Ascendente é Áries, e Áries é regido por Marte. Então o <b>chefe do seu mapa</b> é o Marte, que está em Sagitário, na casa 9: estudar, ensinar, explorar.'},
+  {c:'#8e2f6b',g:'♏'+TXT,t:'Escorpião',s:'Plutão (moderno)',back:'Tradicional: Marte.',em:dualNote('Escorpião','Plutão')},
+  {c:'#1aa3c4',g:'♒'+TXT,t:'Aquário',s:'Urano (moderno)',back:'Tradicional: Saturno.',em:dualNote('Aquário','Urano')},
+  {c:'#5b6ee1',g:'♓'+TXT,t:'Peixes',s:'Netuno (moderno)',back:'Tradicional: Júpiter.',em:dualNote('Peixes','Netuno')}]},
+ {k:'card',big:'🧭',tag:'O seu mapa',title:'O seu chefe é '+chef,body:'O seu Ascendente é '+asc+', e '+asc+' é regido por '+chef+'. Então o <b>chefe do seu mapa</b> é '+chef+', que está em '+chefM[0]+', na casa '+chefM[1]+': '+HSHORT[chefM[1]]+'.'},
  {k:'quiz',q:'Quem é o regente de Leão?',o:['Sol','Lua','Vênus'],a:0,why:'O Sol, o Rei do show, manda em Leão.'},
  {k:'mission',big:'🎙️',title:'Missão do dia',body:'Explique em um áudio de 30 segundos o que é um <b>regente</b>. Use a palavra "chefe".'}
 ]},
 {id:7,emoji:'⚖',c:'#7d4fb5',title:'Como os planetas conversam',sub:'Os aspectos e o seu mapa inteiro',steps:[
  {k:'flip',title:'Os 5 jeitos de conversar',list:[
-  {c:'#c9a35b',g:'☌'+TXT,t:'Conjunção',s:'O Abraço',back:'Colados. As forças se misturam.',em:'Seu Sol está colado no Mercúrio.'},
-  {c:'#2fa58f',g:'⚹'+TXT,t:'Sextil',s:'O Aperto de mão',back:'Se ajudam, se você der o primeiro passo.',em:'Seu Mercúrio e seu Marte.'},
-  {c:'#5b8a3c',g:'△'+TXT,t:'Trígono',s:'Os Melhores amigos',back:'Fluem fácil. Talento natural.',em:''},
-  {c:'#d9432f',g:'□'+TXT,t:'Quadratura',s:'O Cabo de guerra',back:'Puxam para lados diferentes. Tensão e movimento.',em:''},
-  {c:'#7d4fb5',g:'☍'+TXT,t:'Oposição',s:'A Gangorra',back:'Dois lados do mesmo assunto. Equilibrar.',em:''}]},
+  {c:'#c9a35b',g:'☌'+TXT,t:'Conjunção',s:'O Abraço',back:'Colados. As forças se misturam.',em:CH.asp.conj},
+  {c:'#2fa58f',g:'⚹'+TXT,t:'Sextil',s:'O Aperto de mão',back:'Se ajudam, se você der o primeiro passo.',em:CH.asp.sext},
+  {c:'#5b8a3c',g:'△'+TXT,t:'Trígono',s:'Os Melhores amigos',back:'Fluem fácil. Talento natural.',em:CH.asp.trig},
+  {c:'#d9432f',g:'□'+TXT,t:'Quadratura',s:'O Cabo de guerra',back:'Puxam para lados diferentes. Tensão e movimento.',em:CH.asp.quad},
+  {c:'#7d4fb5',g:'☍'+TXT,t:'Oposição',s:'A Gangorra',back:'Dois lados do mesmo assunto. Equilibrar.',em:CH.asp.opos}]},
  {k:'match',title:'Ligue o aspecto ao apelido',pairs:[['Conjunção','O Abraço'],['Sextil','O Aperto de mão'],['Trígono','Os Melhores amigos'],['Quadratura','O Cabo de guerra'],['Oposição','A Gangorra']]},
  {k:'mine'},
  {k:'mission',big:'🏆',title:'Missão final',body:'Faça o mapa de uma amiga e conte para ela, em um áudio de 1 minuto: o <b>Sol</b>, a <b>Lua</b> e o <b>Ascendente</b>, cada um com planeta, signo e casa.'}
 ]}
 ];
+}
 
 /* ===== estado ===== */
 var S={done:{},pts:0,best:{}};
-try{var raw=localStorage.getItem('missaoAstro');if(raw)S=JSON.parse(raw)}catch(e){}
-function save(){try{localStorage.setItem('missaoAstro',JSON.stringify(S))}catch(e){}}
+function stateKey(){return 'missaoAstro_'+PROFILE}
+function loadState(){S={done:{},pts:0,best:{}};try{var raw=localStorage.getItem(stateKey());if(raw)S=JSON.parse(raw)}catch(e){}}
+function save(){try{localStorage.setItem(stateKey(),JSON.stringify(S))}catch(e){}}
+function setProfile(key){CH=CHARTS[key];PROFILE=key;MAPA=CH.pl;loadState();S.name=CH.name;try{localStorage.setItem('missaoAstroProfile',key)}catch(e){}buildDays()}
 var app=document.getElementById('app');
 var cur=null; // {day,step,locked}
 
@@ -258,7 +298,7 @@ function home(){
   cur=null;app.innerHTML='';app.appendChild(topbar());
   var n=doneCount(),pct=Math.round(n/7*100);
   app.appendChild(el('div',{class:'hero'},el('div',{class:'stars'},'✦ ✧ ✦'),
-    el('h1',{},'Oi, Sarah!'),
+    el('h1',{},'Oi, '+CH.name+'!'),
     el('p',{},'7 microaulas de 5 minutos. Você escolhe a ordem, pula o que quiser e volta quando quiser.'),
     el('div',{class:'bar'},el('i',{style:'width:'+pct+'%'})),el('div',{class:'bar-l'},n+' de 7 missões concluídas')));
   if(n>0){app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},'Revisão rápida'),el('p',{},'3 perguntas sobre o que você já viu. Revisar no dia seguinte faz o cérebro gravar.'),el('button',{class:'btn gold wide',onclick:review},'Revisar agora')))}
@@ -273,6 +313,7 @@ function home(){
   app.appendChild(days);
   app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},'Em dupla'),el('p',{},'Jogue com a Renata: na mesma tela em chamada, em duelo à distância ou criando perguntas uma para a outra.'),el('button',{class:'btn gold wide',onclick:together},'Jogar juntas')));
   app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},'Feito para o seu jeito'),el('p',{},'Curto, com jogo, em ordem livre, com o seu mapa como exemplo e missões para fazer com as amigas. Quando você explica para alguém, aprende duas vezes.'),el('button',{class:'btn ghost wide',onclick:mapa},'Ver o meu mapa')));
+  app.appendChild(el('div',{style:'text-align:center;margin-top:14px'},el('button',{class:'link',id:'switch-prof',onclick:chooser},'Não é '+CH.name+'? Trocar de pessoa')));
   bottom([]);
 }
 
@@ -281,20 +322,14 @@ function bottom(btns){var old=document.querySelector('.nav');if(old)old.remove()
 function mapa(){
   cur=null;app.innerHTML='';app.appendChild(topbar());
   app.appendChild(el('div',{class:'row sp'},el('h2',{},'O seu mapa'),el('button',{class:'link',onclick:home},'Voltar')));
-  app.appendChild(el('p',{},'Nascimento: 12/02/1988, 08h50, São Paulo. Ascendente em Áries.'));
+  app.appendChild(el('p',{},'Nascimento: '+CH.nasc+'. Ascendente em '+MAPA['Ascendente'][0]+'.'));
   var mp=el('div',{class:'mp'});
   ['Sol','Lua','Mercúrio','Vênus','Marte','Júpiter','Saturno','Urano','Netuno','Plutão'].forEach(function(n){
-    mp.appendChild(el('div',{style:'--c:'+COL[n]},el('b',{class:'glyph'},g(n)+' '+n),MAPA[n][0]+', casa '+MAPA[n][1]+(n==='Mercúrio'?' (retrógrado)':'')));
+    mp.appendChild(el('div',{style:'--c:'+COL[n]},el('b',{class:'glyph'},g(n)+' '+n),MAPA[n][0]+', casa '+MAPA[n][1]+(CH.retro.indexOf(n)>=0?' (retrógrado)':'')));
   });
   app.appendChild(mp);
-  app.appendChild(el('div',{class:'mine',style:'margin-top:16px'},el('div',{class:'tag'},'O seu jeito de aprender'),
-    el('ul',{},
-     el('li',{html:'<b>Veja o todo antes dos detalhes.</b> Primeiro o para quê, depois o como.'}),
-     el('li',{html:'<b>Pedaços curtos e jogos.</b> Uma ideia por vez, para o cérebro não ficar cheio.'}),
-     el('li',{html:'<b>Com a turma.</b> Seu Mercúrio mora na casa 11: aprender em grupo rende mais.'}),
-     el('li',{html:'<b>Ensinar para fixar.</b> Casa 9 cheia de planetas: você é professora de nascença.'}),
-     el('li',{html:'<b>Rever depois.</b> Mercúrio retrógrado pensa duas vezes. Voltar ao assunto ajuda.'}),
-     el('li',{html:'<b>Convites, não ordens.</b> Aquário gosta de escolher o próprio caminho.'}))));
+  var lul=el('ul',{});CH.learn.forEach(function(x){lul.appendChild(el('li',{html:'<b>'+x[0]+'</b>'+x[1]}))});
+  app.appendChild(el('div',{class:'mine',style:'margin-top:16px'},el('div',{class:'tag'},'O seu jeito de aprender'),lul));
   bottom([el('button',{class:'btn wide',onclick:home},'Voltar às missões')]);
 }
 
@@ -328,7 +363,7 @@ function finishDay(d){
   app.innerHTML='';app.appendChild(topbar());
   var all=doneCount()===7;
   if(all){
-    app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},'Missão cumprida'),el('h1',{},'Sarah, Mestra Astro'),el('p',{},'Você completou as 7 missões. Agora você lê um mapa e sabe ensinar. O céu inteiro cabe na sua conversa.'),el('p',{class:'glyph',style:'font-size:34px;color:#c9a35b'},'✦ ✧ ✦'),el('p',{html:'<b>'+S.pts+'</b> estrelas'})));
+    app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},'Missão cumprida'),el('h1',{},CH.name+', Mestra Astro'),el('p',{},'Você completou as 7 missões. Agora você lê um mapa e sabe ensinar. O céu inteiro cabe na sua conversa.'),el('p',{class:'glyph',style:'font-size:34px;color:#c9a35b'},'✦ ✧ ✦'),el('p',{html:'<b>'+S.pts+'</b> estrelas'})));
   }else{
     app.appendChild(el('div',{class:'card'},el('div',{class:'big glyph',style:'--c:#c9a35b'},'✦'),el('h2',{},'Missão '+d.id+' concluída!'),el('p',{style:'text-align:center'},first?'+30 estrelas. Descanse a cabeça e volte quando quiser.':'Boa revisão!'),el('p',{style:'text-align:center;color:#7a6a88;font-size:15px'},'Amanhã, faça a Revisão rápida na tela inicial.')));
   }
@@ -369,9 +404,9 @@ var RENDER={
  mission:function(b,s,d,gate){var c=el('div',{class:'mission'},el('div',{class:'big'},s.big),el('span',{class:'tag'},'Missão'),el('h2',{style:'margin:4px 0 8px'},s.title),el('p',{html:s.body,style:'font-size:18px'}));
    var cb=el('input',{type:'checkbox'});var lab=el('label',{class:'check'},cb,'Fiz! (ou vou fazer hoje)');cb.addEventListener('change',function(){if(cb.checked&&!c.dataset.p){c.dataset.p=1;addPts(20);toast('+20 estrelas');confetti()}gate()});
    c.appendChild(lab);c.appendChild(el('p',{style:'font-size:14px;color:#7a6a88;margin-top:10px'},'Ensinar para alguém é o jeito mais rápido de aprender.'));b.appendChild(c);return false},
- mine:function(b){var l=[['Sol','☉',' em Aquário, casa 11: brilho original, entre amigos e grupos.'],['Mercúrio','☿',' em Aquário, casa 11 (retrógrado), colado no Sol: você precisa entender para se sentir você.'],['Lua','☽',' em Sagitário, casa 9: o coração quer liberdade, sentido e estudo.'],['Ascendente','↑',' em Áries: você chega ao mundo na frente, com coragem.']];
+ mine:function(b){var l=CH.four.map(function(x){return [x[0],'',x[1]]});
    var ul=el('ul',{});l.forEach(function(x){ul.appendChild(el('li',{html:'<b>'+x[0]+'</b>'+x[2]}))});
-   b.appendChild(el('div',{class:'mine'},el('div',{class:'tag'},'Juntando tudo'),el('h2',{style:'margin-bottom:6px'},'O seu mapa em 4 frases'),ul,el('p',{style:'font-size:15px;color:#7a6a88;margin-top:10px'},'Uma curiosidade: Saturno e Urano estão colados no fim de Sagitário, na casa 9. É o encontro entre estrutura e liberdade nos estudos.')));return false}
+   b.appendChild(el('div',{class:'mine'},el('div',{class:'tag'},'Juntando tudo'),el('h2',{style:'margin-bottom:6px'},'O seu mapa em 4 frases'),ul,el('p',{style:'font-size:15px;color:#7a6a88;margin-top:10px'},CH.curio)));return false}
 };
 
 /* ===== revisão ===== */
@@ -382,7 +417,7 @@ var BANK=[
  {d:3,q:'Quais planetas valem para uma geração inteira?',o:['Sol, Lua e Marte','Urano, Netuno e Plutão','Mercúrio e Vênus'],a:1,why:'São os lentos: a geração toda tem o mesmo signo.'},
  {d:4,q:'Qual elemento sente tudo fundo?',o:['Fogo','Água','Ar'],a:1,why:'Água: Câncer, Escorpião e Peixes.'},
  {d:5,q:'A casa 4 é o cômodo de quê?',o:['Carreira','Casa, família e raízes','Amigos'],a:1,why:'Casa 4: o fundo do coração.'},
- {d:5,q:'Amigos, grupos e sonhos de futuro moram na casa...',o:['11','6','2'],a:0,why:'Casa 11: a casa do seu Sol e do seu Mercúrio.'},
+ {d:5,q:'Amigos, grupos e sonhos de futuro moram na casa...',o:['11','6','2'],a:0,why:'Casa 11: amigos, grupos e sonhos de futuro.'},
  {d:6,q:'Quem manda em Capricórnio?',o:['Saturno','Júpiter','Urano'],a:0,why:'Saturno, o Professor rígido.'},
  {d:7,q:'Qual aspecto é o Cabo de guerra?',o:['Trígono','Quadratura','Sextil'],a:1,why:'Quadratura: puxam para lados diferentes.'}
 ];
@@ -453,7 +488,7 @@ function together(){
 function liveSetup(){
   screen('Na mesma tela',together);
   var c=el('div',{class:'card'});c.appendChild(el('p',{},'Quem joga? Vocês se revezam. A cada 3 turnos tem um desafio de explicar em voz alta, e a outra dá a nota.'));
-  var a=el('input',{class:'inp',value:S.name||'Renata',maxlength:12}),b=el('input',{class:'inp',value:'Sarah',maxlength:12});
+  var a=el('input',{class:'inp',value:CH.name,maxlength:12}),b=el('input',{class:'inp',value:CHARTS[CH.other].name,maxlength:12});
   c.appendChild(el('div',{class:'slot'},el('label',{},'Jogadora 1'),a));c.appendChild(el('div',{class:'slot'},el('label',{},'Jogadora 2'),b));
   c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:8px',id:'go-live',onclick:function(){S.name=cleanName(a.value);save();liveStart([cleanName(a.value),cleanName(b.value)])}},'Começar'));
   app.appendChild(c);bottom([]);
@@ -585,8 +620,25 @@ function askReceive(){
 }
 
 /* ===== início, com atalhos para teste ===== */
+function chooser(){
+  cur=null;app.innerHTML='';bottom([]);
+  app.appendChild(el('header',{class:'top'},el('div',{class:'brand'},'Missão ',el('span',{},'Astro')),el('div',{})));
+  app.appendChild(el('div',{class:'hero'},el('div',{class:'stars'},'✦ ✧ ✦'),el('h1',{},'Quem está jogando?'),el('p',{},'Escolha o seu nome. O curso inteiro vai usar o seu mapa nos exemplos.')));
+  var box=el('div',{class:'days'});
+  ['renata','sarah'].forEach(function(k){var c=CHARTS[k];box.appendChild(el('button',{class:'day',id:'pick-'+k,onclick:function(){setProfile(k);home()}},el('div',{class:'n glyph',style:'--c:#6f3fa0'},c.name.charAt(0)),el('div',{},el('b',{},'Sou a '+c.name),el('small',{},'Entrar com o meu mapa')),el('div',{class:'st'},'›')))});
+  app.appendChild(box);
+  app.appendChild(el('p',{style:'text-align:center;color:#7a6a88;font-size:14px;margin-top:14px'},'O seu progresso fica só neste aparelho. Dá para trocar de pessoa a qualquer momento.'));
+}
 (function(){
-  var h=location.hash||'';var m=h.match(/#d(\d)s(\d+)/);
+  var h=location.hash||'';var key=null;
+  if(h==='#escolher'){chooser();return}
+  if(h==='#sarah'||h==='#renata')key=h.slice(1);
+  else{try{key=localStorage.getItem('missaoAstroProfile')}catch(e){}}
+  var dbg=/^#(d\d+s\d+|mapa|juntas)$/.test(h);
+  if(!CHARTS[key]&&dbg)key='sarah';
+  if(!CHARTS[key]){chooser();return}
+  setProfile(key);
+  var m=h.match(/#d(\d)s(\d+)/);
   if(h==='#mapa'){mapa();return}
   if(h==='#juntas'){together();return}
   if(m){cur={day:+m[1],step:+m[2]};renderStep();return}
