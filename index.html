@@ -118,7 +118,7 @@ p{margin:6px 0}
 .tab{flex:1;background:#fff;border:2px solid #e2d4f0;border-radius:14px;padding:10px;font:inherit;font-weight:700;color:var(--p);cursor:pointer}
 .tab.on{background:var(--p);color:#fff;border-color:var(--p)}
 .mp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.mp div{background:#fff;border-radius:16px;padding:10px 12px;border-left:6px solid var(--c);box-shadow:0 2px 8px rgba(74,35,112,.08);font-size:14px}
+.mp>div{cursor:pointer;background:#fff;border-radius:16px;padding:10px 12px;border-left:6px solid var(--c);box-shadow:0 2px 8px rgba(74,35,112,.08);font-size:14px}
 .mp b{display:block;font-family:Georgia,serif;font-weight:400;font-size:17px;color:var(--p)}
 .cert{background:linear-gradient(150deg,#fff8e6,#fff);border:4px double var(--g);border-radius:26px;padding:26px 18px;text-align:center}
 .cert h1{margin:6px 0}
@@ -148,6 +148,13 @@ textarea.inp{min-height:96px;font-size:14px;word-break:break-all}
 .sugbtn{display:block;width:100%;text-align:left;background:#fff;border:2px solid #e2d4f0;border-radius:12px;padding:10px 12px;font:inherit;font-size:15px;margin-bottom:8px;cursor:pointer;color:var(--ink)}
 .sugbtn.sel{border-color:var(--p2);background:#f1e8fb}
 .sugbtn.sel::before{content:"✓ ";color:var(--ok);font-weight:700}
+.mp>div.open{grid-column:1/-1}
+.mp .more{font-size:12px;color:var(--mut)}
+.mp .open .more{display:none}
+.mp .det{display:none;margin-top:8px;font-size:14px;line-height:1.4;border-top:1px dashed #cdb8e4;padding-top:6px}
+.mp .open .det{display:block}
+.mp .det p{margin:5px 0}
+.mp .det .sum{background:#fff8e6;border-radius:8px;padding:6px 8px}
 </style>
 </head>
 <body>
@@ -568,9 +575,17 @@ function mapa(){
   if(CH.noTime)app.appendChild(el('div',{class:'why'},L('Sem a hora de nascimento não dá para calcular o Ascendente nem as casas. O curso mostra o que cada casa significa, e você pode criar o mapa de novo quando souber a hora.','Without the birth time we cannot work out the Ascendant or the houses. The course shows what each house means, and you can create your chart again when you know the time.')));
   if(CH.moonAlt)app.appendChild(el('div',{class:'why'},L('A Lua mudou de signo nesse dia ('+CH.moonAlt[0]+' para '+CH.moonAlt[1]+'). Sem a hora, o app usou o meio-dia.','The Moon changed sign that day ('+N(CH.moonAlt[0])+' to '+N(CH.moonAlt[1])+'). Without the time, the app used noon.')));
   var mp=el('div',{class:'mp'});
-  TEN.forEach(function(n){
-    mp.appendChild(el('div',{style:'--c:'+COL[n]},el('b',{class:'glyph'},g(n)+' '+N(n)),N(MAPA[n][0])+(MAPA[n][1]?', '+houseTxt(MAPA[n][1]):'')+(CH.retro.indexOf(n)>=0?L(' (retrógrado)',' (retrograde)'):'')));
-  });
+  function detail(n){var m=MAPA[n],h='';
+    if(n==='Ascendente'){h='<p><b>'+N(n)+'</b>: '+L('a porta de entrada do mapa: o seu corpo, a sua personalidade e como as pessoas veem você chegar.','the front door of the chart: your body, your personality and how people see you arrive.')+'</p>'}
+    else if(n==='Meio do Céu'){h='<p><b>'+N(n)+'</b>: '+L('o ponto mais alto do mapa: a sua carreira, a vida pública e o que você quer construir no mundo.','the highest point of the chart: your career, your public life and what you want to build in the world.')+'</p>'}
+    else{h='<p><b>'+g(n)+' '+N(n)+'</b> ('+L('quem faz','who does it')+'): '+MEAN[n]+'.</p>';if(CH.retro.indexOf(n)>=0)h+='<p>'+L('<b>Retrógrado</b>: visto da Terra, parece andar para trás. A energia dele vira para dentro: revisar, repensar, refazer.','<b>Retrograde</b>: seen from Earth, it seems to move backwards. Its energy turns inward: reviewing, rethinking, redoing.')+'</p>'}
+    h+='<p><b>'+N(m[0])+'</b> ('+L('como faz','how it is done')+'): '+MEAN[m[0]]+'. '+L('Jeito: ','Style: ')+SSTYLE[m[0]]+'.</p>';
+    if(m[1])h+='<p><b>'+Hc(m[1])+'</b> ('+L('onde faz','where it is done')+'): '+HFULL[m[1]]+'</p>';
+    if(TEN.indexOf(n)>=0)h+='<p class="sum">'+ex(n)+'</p>';
+    return h}
+  TEN.concat(CH.noTime?[]:['Ascendente','Meio do Céu']).forEach(function(n){
+    var card=el('div',{style:'--c:'+(COL[n]||'#6f3fa0'),class:'pc',id:'pc-'+n,role:'button',tabindex:'0'},el('b',{class:'glyph'},(GL[n]?g(n)+' ':'')+N(n)),N(MAPA[n][0])+(MAPA[n][1]?', '+houseTxt(MAPA[n][1]):'')+(CH.retro.indexOf(n)>=0?L(' (retrógrado)',' (retrograde)'):''),el('span',{class:'more'},L(' · toque para entender',' · tap to understand')),el('div',{class:'det',html:detail(n)}));
+    card.addEventListener('click',function(){card.classList.toggle('open')});mp.appendChild(card)});
   app.appendChild(mp);
   var lul=el('ul',{});CH.learn.forEach(function(x){lul.appendChild(el('li',{html:'<b>'+x[0]+'</b>'+x[1]}))});
   app.appendChild(el('div',{class:'mine',style:'margin-top:16px'},el('div',{class:'tag'},L('O seu jeito de aprender','Your way of learning')),lul));
