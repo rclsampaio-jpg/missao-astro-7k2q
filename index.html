@@ -617,7 +617,13 @@ var BRAND=function(){return el('div',{class:'brand'},L('Missão ','Mission '),el
 function esc(x){return String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function optLabel(t){var m=String(t).match(/^(?:Casa |House )?(\d+)$/);return m?Hc(+m[1]):esc(N(t))}
 function meaningOf(t){var m=String(t).match(/^(?:Casa |House )?(\d+)$/);if(m)return HFULL[+m[1]]||'';return MEAN[pk(t)]||''}
-function optMeaning(q,i){return (q.ox&&q.ox[i])||meaningOf(q.o[i])}
+var TRADR={'Marte':'Escorpião','Saturno':'Aquário','Júpiter':'Peixes'};
+function rulesText(p){var s=SIGNS.filter(function(x){return RULER[x]===p});if(!s.length)return '';var sn=s.map(N),w=L(' e ',' and '),lst=sn.length>1?sn.slice(0,-1).join(', ')+w+sn[sn.length-1]:sn[0];
+  var tr=TRADR[p];if(tr)return L(p+' rege '+lst+' (e, no sistema tradicional, também '+tr+').',N(p)+' rules '+lst+' (and, in the traditional system, also '+N(tr)+').');
+  if(p==='Urano'||p==='Netuno'||p==='Plutão')return L(p+' é o regente moderno de '+lst+'.',N(p)+' is the modern ruler of '+lst+'.');
+  return L(p+' rege '+lst+'.',N(p)+' rules '+lst+'.')}
+function isRulerQ(q){return /Quem manda|regente|Who rules|ruler/i.test(q.q)}
+function optMeaning(q,i){if(isRulerQ(q)&&TEN.indexOf(q.o[i])>=0){var r=rulesText(q.o[i]);if(r)return r}return (q.ox&&q.ox[i])||meaningOf(q.o[i])}
 function othersHtml(q){var li='';q.o.forEach(function(t,i){if(i===q.a)return;var m=optMeaning(q,i);if(m)li+='<li><b>'+optLabel(t)+'</b>: '+m+'</li>'});return li?'<div class="oth"><b>'+L('E as outras respostas:','And the other answers:')+'</b><ul>'+li+'</ul></div>':''}
 
 /* ===== telas ===== */
