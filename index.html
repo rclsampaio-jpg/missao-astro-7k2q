@@ -614,7 +614,8 @@ function doneCount(){var n=0;for(var k in S.done)if(S.done[k])n++;return n}
 var BRAND=function(){return el('div',{class:'brand'},L('Missão ','Mission '),el('span',{},'Astro'))};
 
 /* ===== significado das respostas ===== */
-function optLabel(t){var m=String(t).match(/^(?:Casa |House )?(\d+)$/);return m?Hc(+m[1]):N(t)}
+function esc(x){return String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function optLabel(t){var m=String(t).match(/^(?:Casa |House )?(\d+)$/);return m?Hc(+m[1]):esc(N(t))}
 function meaningOf(t){var m=String(t).match(/^(?:Casa |House )?(\d+)$/);if(m)return HFULL[+m[1]]||'';return MEAN[pk(t)]||''}
 function optMeaning(q,i){return (q.ox&&q.ox[i])||meaningOf(q.o[i])}
 function othersHtml(q){var li='';q.o.forEach(function(t,i){if(i===q.a)return;var m=optMeaning(q,i);if(m)li+='<li><b>'+optLabel(t)+'</b>: '+m+'</li>'});return li?'<div class="oth"><b>'+L('E as outras respostas:','And the other answers:')+'</b><ul>'+li+'</ul></div>':''}
@@ -792,12 +793,12 @@ function choiceCard(q,opts,tagTxt,onDone,secs){
   opts.forEach(function(x){var b=el('button',{class:'opt'},N(x.t));b.addEventListener('click',function(){if(done)return;done=true;if(iv)clearInterval(iv);if(tm)tm.classList.add('stop');b.classList.add(x.c?'ok':'no');if(!x.c)reveal();
     if(x.c)c.appendChild(el('div',{class:'why',html:'<b>'+L('Isso!','Yes!')+'</b> '+q.why+(secs?' ⚡':'')}));
     else{finishMsg('<b>'+L('Quase.','Almost.')+'</b>')}
-    onDone(x.c,false)});box.appendChild(b)});
+    onDone(x.c,false,x.i)});box.appendChild(b)});
   c.appendChild(box);
   if(secs){iv=setInterval(function(){if(done){clearInterval(iv);return}
     if(!c.isConnected&&Date.now()-t0>1500){clearInterval(iv);return}
     var left=secs-(Date.now()-t0)/1000;if(left<0)left=0;tm.firstChild.style.width=(left/secs*100)+'%';tl.textContent=String(Math.ceil(left));if(left<=3)tm.classList.add('hurry');
-    if(left<=0){clearInterval(iv);done=true;[].forEach.call(box.children,function(k){k.classList.add('lock')});reveal();finishMsg('<b>⏰ '+L('Acabou o tempo!','Time is up!')+'</b>');onDone(false,true)}},100)}
+    if(left<=0){clearInterval(iv);done=true;[].forEach.call(box.children,function(k){k.classList.add('lock')});reveal();finishMsg('<b>⏰ '+L('Acabou o tempo!','Time is up!')+'</b>');onDone(false,true,-1)}},100)}
   return c}
 function dotsBar(n,i){var d=el('div',{class:'dots'});for(var k=0;k<n;k++)d.appendChild(el('i',{class:k<i?'on':(k===i?'cur':'')}));return d}
 function screen(title,backFn){app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:backFn||together,'aria-label':L('Voltar','Back')},'‹'),el('h2',{style:'flex:1'},title)))}
@@ -809,7 +810,8 @@ function together(){
   var tiles=[
    ['📞',L('Na mesma tela','On the same screen'),L('Em chamada de vídeo ou lado a lado. Por turnos, com placar e desafios de explicar em voz alta.','On a video call or side by side. In turns, with a scoreboard and out-loud explaining challenges.'),liveSetup],
    ['⚔️',L('Duelo à distância','Long-distance duel'),L('Cada uma no seu celular, com as mesmas perguntas e rodadas relâmpago. Depois vocês comparam o resultado.','Each on your own phone, with the same questions and lightning rounds. Then you compare results.'),duelMenu],
-   ['💌',L('Pergunta para a outra','A question for the other'),L('Crie uma pergunta e mande o código. Ensinar é aprender duas vezes.','Create a question and send the code. Teaching is learning twice.'),askMenu]
+   ['💌',L('Pergunta para a outra','A question for the other'),L('Escolha várias perguntas e mande o link. Ensinar é aprender duas vezes.','Pick several questions and send the link. Teaching is learning twice.'),askMenu],
+   ['📬',L('Resultados recebidos','Received results')+(unseenCount()?' ('+unseenCount()+')':''),L('Os resultados de duelos e as respostas às suas perguntas aparecem aqui.','Duel results and the answers to your questions show up here.'),inbox]
   ];
   tiles.forEach(function(t){app.appendChild(el('button',{class:'day',style:'margin-top:12px',onclick:t[3]},el('div',{class:'n',style:'--c:#c9a35b'},t[0]),el('div',{},el('b',{},t[1]),el('small',{},t[2])),el('div',{class:'st'},'›')))});
   bottom([el('button',{class:'btn wide',onclick:home},L('Voltar às missões','Back to missions'))]);
@@ -896,7 +898,7 @@ function playDuel(code){
     confetti();app.innerHTML='';app.appendChild(topbar());
     var c=el('div',{class:'card'});c.appendChild(el('div',{style:'text-align:center'},el('span',{class:'tag'},L('O seu resultado','Your result'))));
     c.appendChild(el('h2',{},L(score+' pontos em '+secs+'s',score+' points in '+secs+'s')));
-    c.appendChild(el('div',{class:'codebox',style:'font-size:16px;letter-spacing:.08em',id:'res-code'},res));
+    c.appendChild(el('p',{style:'text-align:center;font-size:15px;color:#7a6a88'},L('Envie o link para quem criou o duelo. O resultado aparece lá, na comparação e em "Resultados recebidos".','Send the link to whoever created the duel. The result shows up there, in the comparison and in "Received results".')));c.appendChild(el('div',{class:'codebox',style:'font-size:16px;letter-spacing:.08em',id:'res-code'},res));
     c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:8px',id:'res-share',onclick:function(){shareLink(L('Meu resultado no duelo '+code+': '+score+' pontos em '+secs+'s. Toque no link para comparar:','My result in duel '+code+': '+score+' points in '+secs+'s. Tap the link to compare:'),linkFor('resultado',res))}},L('📨 Enviar meu resultado (link)','📨 Send my result (link)')));c.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText(res)}},L('Copiar só o código','Copy just the code')));
     c.appendChild(el('p',{style:'text-align:center;margin:14px 0 4px'},L('Se ela ainda não mandou o link, cole aqui o código dela:','If she has not sent the link yet, paste her code here:')));
     var inp=el('input',{class:'inp',placeholder:L('Ex.: ','E.g.: ')+code+'-80-74-Renata',id:'cmp-in'});c.appendChild(inp);
@@ -915,7 +917,7 @@ function compare(mine,theirs,code,out){
   if(b.code!==code.toUpperCase()){out.appendChild(el('div',{class:'why'},L('Esse resultado é de outro duelo ('+b.code+'). Joguem o mesmo código.','That result is from another duel ('+b.code+'). Play the same code.')));return}
   var w=a.score===b.score?(a.secs===b.secs?-1:(a.secs<b.secs?0:1)):(a.score>b.score?0:1);
   var msg=w<0?L('Empate total!','Total tie!'):(w===0?a.name:b.name)+L(' venceu'+(a.score===b.score?' no tempo':'')+'!',' wins'+(a.score===b.score?' on time':'')+'!');
-  out.appendChild(el('div',{class:'cmp',html:'<table><tr><th></th><th>'+L('Pontos','Points')+'</th><th>'+L('Tempo','Time')+'</th></tr><tr><td><b>'+a.name+'</b></td><td>'+a.score+'</td><td>'+a.secs+'s</td></tr><tr><td><b>'+b.name+'</b></td><td>'+b.score+'</td><td>'+b.secs+'s</td></tr></table><p class="win">'+msg+'</p>'}));
+  out.appendChild(el('div',{class:'cmp',html:'<table><tr><th></th><th>'+L('Pontos','Points')+'</th><th>'+L('Tempo','Time')+'</th></tr><tr><td><b>'+esc(a.name)+'</b></td><td>'+a.score+'</td><td>'+a.secs+'s</td></tr><tr><td><b>'+esc(b.name)+'</b></td><td>'+b.score+'</td><td>'+b.secs+'s</td></tr></table><p class="win">'+esc(msg)+'</p>'}));
   if(w>=0)confetti();
 }
 
@@ -933,6 +935,7 @@ function linkFor(kind,payload){return location.href.split('#')[0]+'#'+kind+'='+e
 function shareLink(text,url){if(navigator.share){navigator.share({text:text,url:url}).catch(function(){})}else copyText(text+' '+url)}
 function openResult(res){
   var t=parseRes(res);if(!t||isNaN(t.score)||isNaN(t.secs)){toast(L('Link de resultado inválido','Invalid result link'));home();return}
+  inboxAdd({key:'d'+t.code+t.name,type:'duel',from:t.name,title:L('Duelo '+t.code+': '+t.score+' pontos em '+t.secs+'s','Duel '+t.code+': '+t.score+' points in '+t.secs+'s'),payload:res});
   var mine=null;try{localStorage.setItem('missaoAstroTheirs_'+t.code,res);mine=localStorage.getItem('missaoAstroMine_'+t.code)}catch(e){}
   if(mine){screen(L('Resultado do duelo ','Duel result ')+t.code,home);var c=el('div',{class:'card'}),out=el('div',{id:'cmp-out'});c.appendChild(out);app.appendChild(c);bottom([el('button',{class:'btn wide',onclick:home},L('Início','Home'))]);compare(mine,res,t.code,out);return}
   duelIntro(t.code,false);app.appendChild(el('div',{class:'why',id:'res-banner'},L(t.name+' já jogou o duelo '+t.code+' e fez '+t.score+' pontos! Jogue também para ver quem ganhou.',t.name+' already played duel '+t.code+' and scored '+t.score+' points! Play it too to see who won.')))}
@@ -955,6 +958,7 @@ function chooser(){
   var h=location.hash||'',key=null,lg=null,mm2;
   if(mm2=h.match(/^#duelo=([A-Za-z0-9]{4})$/))PENDING=(function(c){return function(){duelIntro(c,false)}})(mm2[1].toUpperCase());
   else if(mm2=h.match(/^#resultado=(.+)$/))PENDING=(function(r){return function(){openResult(r)}})(decodeURIComponent(mm2[1]));
+  else if(mm2=h.match(/^#respostas=(.+)$/))PENDING=(function(r){return function(){openAnswers(r)}})(decodeURIComponent(mm2[1]));
   else if(mm2=h.match(/^#perguntas=(.+)$/))PENDING=(function(r){return function(){openPack(r)}})(decodeURIComponent(mm2[1]));
   if(PENDING){h='';try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}
   var m0=h.match(/^#(sarah|renata|criar)?-?(en|pt)?$/);
@@ -1019,8 +1023,8 @@ function askCreate(){
   c.appendChild(out);app.appendChild(c);bottom([]);draw(true);
 }
 function parseAsk(s){try{s=(s||'').trim().split(/\s+/).pop();var pack=s.indexOf('QS-')===0;if(!pack&&s.indexOf('Q-')!==0)return null;var o=JSON.parse(decodeURIComponent(escape(atob(s.slice(pack?3:2)))));
-  if(pack){var items=[];(o.b||[]).forEach(function(i){if(BANK[i])items.push(BANK[i])});(o.c||[]).forEach(function(x){if(x.q&&x.o&&x.o.length===3)items.push({q:x.q,o:x.o,a:x.a,why:x.w||L('Peça a explicação para ela!','Ask her for the explanation!')})});return items.length?{n:o.n,items:items}:null}
-  if(!o.q||!o.o||o.o.length!==3)return null;return {n:o.n,items:[{q:o.q,o:o.o,a:o.a,why:o.w||L('Peça a explicação para ela!','Ask her for the explanation!')}]}}catch(e){return null}}
+  if(pack){var items=[];(o.b||[]).forEach(function(i){if(BANK[i]){var it=Object.assign({},BANK[i]);it.bi=i;items.push(it)}});(o.c||[]).forEach(function(x){if(x.q&&x.o&&x.o.length===3)items.push({q:x.q,o:x.o,a:x.a,why:esc(x.w||L('Peça a explicação para ela!','Ask her for the explanation!'))})});return items.length?{n:o.n,items:items}:null}
+  if(!o.q||!o.o||o.o.length!==3)return null;return {n:o.n,items:[{q:o.q,o:o.o,a:o.a,why:esc(o.w||L('Peça a explicação para ela!','Ask her for the explanation!'))}]}}catch(e){return null}}
 function askReceive(){
   screen(L('Responder perguntas','Answer questions'),askMenu);
   var c=el('div',{class:'card'});c.appendChild(el('p',{},L('Cole aqui o código que a outra mandou.','Paste the code the other sent here.')));
@@ -1083,17 +1087,49 @@ function createMap(){
 }
 
 function playPack(o){
-    var who=o.n||L('uma amiga','a friend'),items=o.items,i=0,okc=0;
+    var who=o.n||L('uma amiga','a friend'),items=o.items,i=0,okc=0,picks=[];
     function show(){
       if(i>=items.length)return fin();
       screen(L('Perguntas de ','Questions from ')+who,askMenu);app.appendChild(el('div',{style:'margin-bottom:10px'},dotsBar(items.length,i)));
       var q=items[i];
-      var card=choiceCard(q,qopts(q,mul(hashS(q.q+i))),L('Pergunta ','Question ')+(i+1)+'/'+items.length+' · '+who,function(ok){addPts(ok?10:3);if(ok){okc++;confetti()}nx.removeAttribute('disabled')});
+      var card=choiceCard(q,qopts(q,mul(hashS(q.q+i))),L('Pergunta ','Question ')+(i+1)+'/'+items.length+' · '+who,function(ok,to,pk){picks[i]=pk;addPts(ok?10:3);if(ok){okc++;confetti()}nx.removeAttribute('disabled')});
       app.appendChild(card);
       var nx=el('button',{class:'btn wide',disabled:'',id:'ask-next',onclick:function(){i++;show()}},i===items.length-1?L('Ver o resultado','See the result'):L('Próxima','Next'));bottom([nx]);window.scrollTo(0,0)}
-    function fin(){app.innerHTML='';app.appendChild(topbar());confetti();app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},L('Perguntas respondidas','Questions answered')),el('h1',{},L('Você acertou '+okc+' de '+items.length,'You got '+okc+' of '+items.length)),el('p',{},L('Agora é a sua vez de desafiar '+who+'.','Now it is your turn to challenge '+who+'.'))));bottom([el('button',{class:'btn ghost',onclick:together},L('Outros jogos','Other games')),el('button',{class:'btn gold',id:'ask-back',onclick:askCreate},L('Mandar as minhas','Send mine'))])}
+    function fin(){app.innerHTML='';app.appendChild(topbar());confetti();
+      var rows=items.map(function(it,k){return it.bi!=null?[it.bi,picks[k]]:{q:it.q,o:it.o,a:it.a,p:picks[k]}});
+      var code='RS-'+btoa(unescape(encodeURIComponent(JSON.stringify({n:cleanName(S.name),f:who,r:rows}))));
+      app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},L('Perguntas respondidas','Questions answered')),el('h1',{},L('Você acertou '+okc+' de '+items.length,'You got '+okc+' of '+items.length)),el('p',{},L('Agora envie as suas respostas de volta para '+who+', para ela ver o resultado.','Now send your answers back to '+who+' so she can see the result.'))));
+      bottom([el('button',{class:'btn ghost',onclick:together},L('Outros jogos','Other games')),el('button',{class:'btn gold',id:'ans-share',onclick:function(){shareLink(L('Respondi as suas perguntas! Acertei '+okc+' de '+items.length+'. Toque no link para ver as minhas respostas:','I answered your questions! I got '+okc+' of '+items.length+'. Tap the link to see my answers:'),linkFor('respostas',code))}},L('📨 Enviar respostas para '+who,'📨 Send answers to '+who))]);
+      app.appendChild(el('div',{style:'margin-top:12px'},el('button',{class:'btn ghost wide',id:'ans-code',onclick:function(){copyText(code)}},L('Copiar só o código','Copy just the code')),el('button',{class:'btn wide',style:'margin-top:8px',id:'ask-back',onclick:askCreate},L('Criar as minhas perguntas para ela','Create my questions for her'))))}
     show();
 }
+
+/* ===== caixa de entrada: resultados recebidos ===== */
+function inboxKey(){return 'missaoAstroInbox_'+PROFILE}
+function inboxLoad(){try{return JSON.parse(localStorage.getItem(inboxKey())||'[]')}catch(e){return []}}
+function inboxSave(a){try{localStorage.setItem(inboxKey(),JSON.stringify(a.slice(0,30)))}catch(e){}}
+function inboxAdd(e){var a=inboxLoad().filter(function(x){return x.key!==e.key});e.when=Date.now();e.seen=true;a.unshift(e);inboxSave(a)}
+function unseenCount(){return inboxLoad().filter(function(x){return !x.seen}).length}
+function parseAnswers(s){try{s=(s||'').trim().split(/\s+/).pop();if(s.indexOf('RS-')!==0)return null;var o=JSON.parse(decodeURIComponent(escape(atob(s.slice(3)))));var rows=[];
+  (o.r||[]).forEach(function(r){if(Array.isArray(r)){var q=BANK[r[0]];if(q)rows.push({q:q.q,o:q.o,a:q.a,why:q.why,p:r[1],ox:q.ox})}else if(r&&r.q&&r.o&&r.o.length===3)rows.push({q:r.q,o:r.o,a:r.a,p:r.p})});
+  return rows.length?{n:cleanName(o.n),rows:rows}:null}catch(e){return null}}
+function openAnswers(code){var d=parseAnswers(code);if(!d){toast(L('Link de respostas inválido','Invalid answers link'));home();return}
+  var okc=d.rows.filter(function(r){return r.p===r.a}).length;
+  inboxAdd({key:'a'+d.n+code.length+code.slice(-8),type:'pack',from:d.n,title:L(d.n+' acertou '+okc+' de '+d.rows.length,d.n+' got '+okc+' of '+d.rows.length),payload:code});showAnswers(d)}
+function showAnswers(d){
+  var okc=d.rows.filter(function(r){return r.p===r.a}).length;
+  screen(L('Respostas de ','Answers from ')+d.n,inbox);
+  app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},L('Resultado','Result')),el('h1',{id:'ans-score'},L(d.n+' acertou '+okc+' de '+d.rows.length,d.n+' got '+okc+' of '+d.rows.length))));
+  d.rows.forEach(function(r){var right=r.p===r.a,pk=(r.p>=0&&r.p<3)?r.o[r.p]:null;
+    app.appendChild(el('div',{class:'rd-card',style:'--c:'+(right?'#2f9e6e':'#d9432f')},el('h4',{},(right?'✔ ':'✘ ')+r.q),
+      el('div',{html:'<p style="margin:4px 0">'+L('Respondeu: ','Answered: ')+'<b>'+(pk==null?L('(o tempo acabou)','(time ran out)'):esc(N(pk)))+'</b></p>'+(right?'':'<p style="margin:4px 0">'+L('Certa: ','Correct: ')+'<b>'+esc(N(r.o[r.a]))+'</b></p>')+(r.why?'<p style="margin:4px 0;font-size:14px;color:#7a6a88">'+r.why+'</p>':'')})))});
+  bottom([el('button',{class:'btn ghost',onclick:inbox},L('Resultados','Results')),el('button',{class:'btn gold',id:'ans-reply',onclick:askCreate},L('Mandar perguntas para ela','Send questions to her'))]);window.scrollTo(0,0)}
+function inbox(){
+  screen(L('Resultados recebidos','Received results'),together);
+  var a=inboxLoad(),c=el('div',{class:'card'});
+  if(!a.length)c.appendChild(el('p',{id:'inbox-empty'},L('Ainda não chegou nada. Quando a outra responder as suas perguntas ou jogar um duelo seu e enviar o link de volta, o resultado aparece aqui.','Nothing yet. When the other answers your questions or plays your duel and sends the link back, the result shows up here.')));
+  a.forEach(function(e,ix){c.appendChild(el('button',{class:'sugbtn',id:'inb'+ix,onclick:function(){if(e.type==='pack'){var d=parseAnswers(e.payload);if(d)showAnswers(d)}else openResult(e.payload)}},(e.type==='pack'?'📝 ':'⚔️ ')+e.title))});
+  app.appendChild(c);bottom([el('button',{class:'btn wide',onclick:together},L('Voltar','Back'))])}
 </script>
 </body>
 </html>
