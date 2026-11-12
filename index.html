@@ -133,156 +133,273 @@ textarea.inp{min-height:96px;font-size:14px;word-break:break-all}
 .cmp table{width:100%;border-collapse:collapse;margin-top:14px}
 .cmp th,.cmp td{border-bottom:1px solid #e2d4f0;padding:8px;text-align:center}
 .cmp .win{text-align:center;font-family:Georgia,serif;font-size:22px;color:var(--p);margin:12px 0 0}
+.hr{display:flex;align-items:center;gap:8px}
+.langbtn{background:#fff;border:2px solid var(--p3);color:var(--p);font:inherit;font-weight:700;font-size:13px;border-radius:99px;padding:4px 10px;cursor:pointer}
+.tmr{position:relative;height:22px;background:#eadff6;border-radius:99px;overflow:hidden;margin:2px 0 10px}
+.tmr i{position:absolute;left:0;top:0;bottom:0;width:100%;background:linear-gradient(90deg,var(--g),var(--g2));transition:width .1s linear}
+.tmr span{position:relative;display:block;text-align:center;font-size:13px;font-weight:700;line-height:22px;color:var(--p)}
+.tmr.hurry i{background:var(--no)}.tmr.hurry span{color:#fff}
+.opt.lock{pointer-events:none}
+.why.bad{background:#fde7e3;border-left-color:var(--no)}
+.oth{margin-top:10px;background:#f4ecfb;border-radius:12px;padding:10px 12px;font-size:15px}
+.oth ul{margin:6px 0 0;padding-left:18px}.oth li{margin:4px 0}
+.bigtime{font-family:Georgia,serif;font-size:54px;color:var(--p);margin:6px 0}
+.bigtime.hurry{color:var(--no)}
+.sugbtn{display:block;width:100%;text-align:left;background:#fff;border:2px solid #e2d4f0;border-radius:12px;padding:10px 12px;font:inherit;font-size:15px;margin-bottom:8px;cursor:pointer;color:var(--ink)}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
-/* ===== dados do mapa da Sarah ===== */
+/* ===== idioma ===== */
+var LANG='pt';
+function L(pt,en){return LANG==='en'?en:pt}
+var NM={'Sol':'Sun','Lua':'Moon','Mercúrio':'Mercury','Vênus':'Venus','Marte':'Mars','Júpiter':'Jupiter','Saturno':'Saturn','Urano':'Uranus','Netuno':'Neptune','Plutão':'Pluto','Ascendente':'Ascendant','Meio do Céu':'Midheaven',
+ 'Áries':'Aries','Touro':'Taurus','Gêmeos':'Gemini','Câncer':'Cancer','Leão':'Leo','Virgem':'Virgo','Libra':'Libra','Escorpião':'Scorpio','Sagitário':'Sagittarius','Capricórnio':'Capricorn','Aquário':'Aquarius','Peixes':'Pisces',
+ 'Fogo':'Fire','Terra':'Earth','Ar':'Air','Água':'Water','Conjunção':'Conjunction','Sextil':'Sextile','Trígono':'Trine','Quadratura':'Square','Oposição':'Opposition'};
+var NMR={};for(var _k in NM)NMR[NM[_k]]=_k;
+function N(x){return LANG==='en'&&NM[x]?NM[x]:x}
+function pk(x){return NMR[x]||x}
+function houseTxt(h){return L('casa ','house ')+h}
+function Hc(h){return L('Casa ','House ')+h}
+
+/* ===== dados do mapa ===== */
 var GL = {'Sol':'☉','Lua':'☽','Mercúrio':'☿','Vênus':'♀','Marte':'♂','Júpiter':'♃','Saturno':'♄','Urano':'♅','Netuno':'♆','Plutão':'♇'};
 var COL = {'Sol':'#f2b705','Lua':'#7d8fd1','Mercúrio':'#2fa58f','Vênus':'#e0679b','Marte':'#d9432f','Júpiter':'#e08a1e','Saturno':'#6b5b7b','Urano':'#1aa3c4','Netuno':'#5b6ee1','Plutão':'#8e2f6b'};
 var TXT = '︎';
 function g(n){return (GL[n]||'✦')+TXT}
-function mine(n){var m=MAPA[n];return m?('Seu '+n+': '+m[0]+', casa '+m[1]):''}
-/* ===== mapas ===== */
-var CHARTS={
- sarah:{name:'Sarah',other:'renata',nasc:'12/02/1988, 08h50, São Paulo',
+function mine(n){var m=MAPA[n];return m?(L('Seu ','Your ')+N(n)+': '+N(m[0])+', '+houseTxt(m[1])):''}
+
+var CHARTS={},ROLE={},SSTYLE={},HAREA={},HSHORT={},HFULL={},SIGNDESC={},MEAN={},P5=[],PL=[],EXPLAIN=[],BANK=[],DAYS=[];
+function buildData(){
+CHARTS={
+ sarah:{name:'Sarah',other:'renata',nasc:L('12/02/1988, 08h50, São Paulo','Feb 12, 1988, 8:50 am, São Paulo'),
   pl:{'Sol':['Aquário',11],'Lua':['Sagitário',9],'Mercúrio':['Aquário',11],'Vênus':['Áries',1],'Marte':['Sagitário',9],'Júpiter':['Áries',1],'Saturno':['Sagitário',9],'Urano':['Sagitário',9],'Netuno':['Capricórnio',10],'Plutão':['Escorpião',8],'Ascendente':['Áries',1],'Meio do Céu':['Capricórnio',10]},
   retro:['Mercúrio'],
-  merc:'pensa em rede, com amigos',
-  sat:'O seu está colado em Urano, o Inventor, na casa 9: estrutura e liberdade nos estudos.',
-  asp:{conj:'No seu mapa: Saturno e Urano, colados.',sext:'No seu mapa: Sol e Marte.',trig:'No seu mapa: Marte e Júpiter.',quad:'No seu mapa: Vênus e Saturno.',opos:'Você não tem planetas em oposição. Uma gangorra a menos!'},
-  learn:[['Veja o todo antes dos detalhes.',' Primeiro o para quê, depois o como.'],['Pedaços curtos e jogos.',' Uma ideia por vez, para o cérebro não ficar cheio.'],['Com a turma.',' Seu Mercúrio mora na casa 11: aprender em grupo rende mais.'],['Ensinar para fixar.',' Casa 9 cheia de planetas: você é professora de nascença.'],['Rever depois.',' Mercúrio retrógrado pensa duas vezes. Voltar ao assunto ajuda.'],['Convites, não ordens.',' Aquário gosta de escolher o próprio caminho.']],
-  four:[['Sol',' em Aquário, casa 11: brilho original, entre amigos e grupos.'],['Mercúrio',' em Aquário, casa 11 (retrógrado), colado no Sol: você precisa entender para se sentir você.'],['Lua',' em Sagitário, casa 9: o coração quer liberdade, sentido e estudo.'],['Ascendente',' em Áries: você chega ao mundo na frente, com coragem.']],
-  curio:'Uma curiosidade: Saturno e Urano estão colados no fim de Sagitário, na casa 9. É o encontro entre estrutura e liberdade nos estudos.'},
- renata:{name:'Renata',other:'sarah',nasc:'10/04/1990, 07h24, São Paulo',
+  merc:L('pensa em rede, com amigos','thinks in networks, with friends'),
+  sat:L('O seu está colado em Urano, o Inventor, na casa 9: estrutura e liberdade nos estudos.','Yours sits right next to Uranus, the Inventor, in house 9: structure and freedom in your studies.'),
+  asp:{conj:L('No seu mapa: Saturno e Urano, colados.','In your chart: Saturn and Uranus, stuck together.'),sext:L('No seu mapa: Sol e Marte.','In your chart: Sun and Mars.'),trig:L('No seu mapa: Marte e Júpiter.','In your chart: Mars and Jupiter.'),quad:L('No seu mapa: Vênus e Saturno.','In your chart: Venus and Saturn.'),opos:L('Você não tem planetas em oposição. Uma gangorra a menos!','You have no planets in opposition. One less seesaw!')},
+  learn:[
+   [L('Veja o todo antes dos detalhes.','See the whole before the details.'),L(' Primeiro o para quê, depois o como.',' First the why, then the how.')],
+   [L('Pedaços curtos e jogos.','Short pieces and games.'),L(' Uma ideia por vez, para o cérebro não ficar cheio.',' One idea at a time, so your brain does not get full.')],
+   [L('Com a turma.','With the crew.'),L(' Seu Mercúrio mora na casa 11: aprender em grupo rende mais.',' Your Mercury lives in house 11: learning in a group works better.')],
+   [L('Ensinar para fixar.','Teach it to lock it in.'),L(' Casa 9 cheia de planetas: você é professora de nascença.',' House 9 full of planets: you are a born teacher.')],
+   [L('Rever depois.','Review later.'),L(' Mercúrio retrógrado pensa duas vezes. Voltar ao assunto ajuda.',' Retrograde Mercury thinks twice. Coming back to a topic helps.')],
+   [L('Convites, não ordens.','Invitations, not orders.'),L(' Aquário gosta de escolher o próprio caminho.',' Aquarius likes to choose its own path.')]],
+  four:[
+   ['Sol',L(' em Aquário, casa 11: brilho original, entre amigos e grupos.',' in Aquarius, house 11: original shine, among friends and groups.')],
+   ['Mercúrio',L(' em Aquário, casa 11 (retrógrado), colado no Sol: você precisa entender para se sentir você.',' in Aquarius, house 11 (retrograde), next to the Sun: you need to understand in order to feel like yourself.')],
+   ['Lua',L(' em Sagitário, casa 9: o coração quer liberdade, sentido e estudo.',' in Sagittarius, house 9: the heart wants freedom, meaning and study.')],
+   ['Ascendente',L(' em Áries: você chega ao mundo na frente, com coragem.',' in Aries: you arrive in the world out front, with courage.')]],
+  curio:L('Uma curiosidade: Saturno e Urano estão colados no fim de Sagitário, na casa 9. É o encontro entre estrutura e liberdade nos estudos.','A curiosity: Saturn and Uranus sit together at the end of Sagittarius, in house 9. It is the meeting of structure and freedom in your studies.')},
+ renata:{name:'Renata',other:'sarah',nasc:L('10/04/1990, 07h24, São Paulo','Apr 10, 1990, 7:24 am, São Paulo'),
   pl:{'Sol':['Áries',12],'Lua':['Libra',6],'Mercúrio':['Touro',1],'Vênus':['Peixes',10],'Marte':['Aquário',10],'Júpiter':['Câncer',3],'Saturno':['Capricórnio',9],'Urano':['Capricórnio',9],'Netuno':['Capricórnio',9],'Plutão':['Escorpião',7],'Ascendente':['Touro',1],'Meio do Céu':['Aquário',10]},
   retro:['Plutão'],
-  merc:'pensa com calma, de forma prática e firme',
-  sat:'O seu está em Capricórnio, o signo que ele rege, na casa 9: estrutura e paciência nos estudos.',
-  asp:{conj:'No seu mapa: Mercúrio e o Ascendente.',sext:'No seu mapa: o Ascendente e Vênus.',trig:'No seu mapa: Vênus e Júpiter, e Mercúrio e Urano.',quad:'No seu mapa: a Lua e Saturno.',opos:'No seu mapa: o Sol e a Lua.'},
-  learn:[['Uma ideia por vez, com calma.',' Mercúrio em Touro aprende devagar e firme, e depois não esquece.'],['Aprender fazendo e sentindo.',' Em Touro, o corpo e os sentidos ajudam: escreva à mão, caminhe, use cores.'],['Rotina de estudo em blocos.',' A Lua na casa 6 e Saturno na 9 gostam de horário certo e meta de longo prazo.'],['Espaço para os insights.',' O trígono de Mercúrio com Urano traz ideias súbitas: deixe um caderno ou um áudio por perto.'],['Ensinar do seu jeito acolhedor.',' Júpiter em Câncer na casa 3: a palavra que cuida faz você aprender e prosperar.'],['Silêncio para pensar.',' Sol na casa 12: pausas e solitude organizam a cabeça.']],
-  four:[['Sol',' em Áries, casa 12: coragem para começar, que vem do silêncio e dos bastidores.'],['Mercúrio',' em Touro, casa 1: pensa com calma e firmeza, e as ideias fazem parte de quem você é.'],['Lua',' em Libra, casa 6: o coração se organiza pela rotina, pela harmonia e pelo cuidado diário.'],['Ascendente',' em Touro: você chega ao mundo com presença estável e sensorial.']],
-  curio:'Uma curiosidade: o seu Sol e a sua Lua estão em oposição, a gangorra, e Saturno aperta os dois como um cabo de guerra. É o equilíbrio que o seu mapa pede.'}
+  merc:L('pensa com calma, de forma prática e firme','thinks calmly, in a practical and steady way'),
+  sat:L('O seu está em Capricórnio, o signo que ele rege, na casa 9: estrutura e paciência nos estudos.','Yours is in Capricorn, the sign it rules, in house 9: structure and patience in your studies.'),
+  asp:{conj:L('No seu mapa: Mercúrio e o Ascendente.','In your chart: Mercury and the Ascendant.'),sext:L('No seu mapa: o Ascendente e Vênus.','In your chart: the Ascendant and Venus.'),trig:L('No seu mapa: Vênus e Júpiter, e Mercúrio e Urano.','In your chart: Venus and Jupiter, and Mercury and Uranus.'),quad:L('No seu mapa: a Lua e Saturno.','In your chart: the Moon and Saturn.'),opos:L('No seu mapa: o Sol e a Lua.','In your chart: the Sun and the Moon.')},
+  learn:[
+   [L('Uma ideia por vez, com calma.','One idea at a time, calmly.'),L(' Mercúrio em Touro aprende devagar e firme, e depois não esquece.',' Mercury in Taurus learns slowly and steadily, and then never forgets.')],
+   [L('Aprender fazendo e sentindo.','Learn by doing and feeling.'),L(' Em Touro, o corpo e os sentidos ajudam: escreva à mão, caminhe, use cores.',' In Taurus the body and senses help: write by hand, walk, use colors.')],
+   [L('Rotina de estudo em blocos.','A study routine in blocks.'),L(' A Lua na casa 6 e Saturno na 9 gostam de horário certo e meta de longo prazo.',' The Moon in house 6 and Saturn in 9 like a set time and a long-term goal.')],
+   [L('Espaço para os insights.','Room for insights.'),L(' O trígono de Mercúrio com Urano traz ideias súbitas: deixe um caderno ou um áudio por perto.',' The trine of Mercury with Uranus brings sudden ideas: keep a notebook or a voice memo nearby.')],
+   [L('Ensinar do seu jeito acolhedor.','Teach in your warm way.'),L(' Júpiter em Câncer na casa 3: a palavra que cuida faz você aprender e prosperar.',' Jupiter in Cancer in house 3: caring words help you learn and prosper.')],
+   [L('Silêncio para pensar.','Silence to think.'),L(' Sol na casa 12: pausas e solitude organizam a cabeça.',' Sun in house 12: breaks and solitude organize your mind.')]],
+  four:[
+   ['Sol',L(' em Áries, casa 12: coragem para começar, que vem do silêncio e dos bastidores.',' in Aries, house 12: courage to begin, which comes from silence and from behind the scenes.')],
+   ['Mercúrio',L(' em Touro, casa 1: pensa com calma e firmeza, e as ideias fazem parte de quem você é.',' in Taurus, house 1: thinks with calm and firmness, and your ideas are part of who you are.')],
+   ['Lua',L(' em Libra, casa 6: o coração se organiza pela rotina, pela harmonia e pelo cuidado diário.',' in Libra, house 6: the heart organizes itself through routine, harmony and daily care.')],
+   ['Ascendente',L(' em Touro: você chega ao mundo com presença estável e sensorial.',' in Taurus: you arrive in the world with a steady, sensory presence.')]],
+  curio:L('Uma curiosidade: o seu Sol e a sua Lua estão em oposição, a gangorra, e Saturno aperta os dois como um cabo de guerra. É o equilíbrio que o seu mapa pede.','A curiosity: your Sun and Moon are in opposition, the seesaw, and Saturn squeezes both like a tug of war. It is the balance your chart asks for.')}
 };
-var CH=null,PROFILE=null,MAPA={};
-var ROLE={'Sol':'o seu brilho','Lua':'o seu coração','Mercúrio':'o seu jeito de pensar e falar','Vênus':'o seu amor e o seu prazer','Marte':'a sua vontade de agir','Júpiter':'a sua sorte e a sua fé','Saturno':'a sua disciplina','Urano':'a sua liberdade','Netuno':'os seus sonhos','Plutão':'a sua transformação'};
-var SSTYLE={'Áries':'de um jeito corajoso, de quem vai primeiro','Touro':'com calma, conforto e firmeza','Gêmeos':'com curiosidade e conversa','Câncer':'com cuidado e acolhimento','Leão':'com brilho e coração grande','Virgem':'com atenção aos detalhes','Libra':'buscando equilíbrio e harmonia','Escorpião':'indo fundo, com intensidade','Sagitário':'com aventura e vontade de explorar','Capricórnio':'com paciência, disciplina e foco','Aquário':'de um jeito original e livre','Peixes':'com imaginação e sensibilidade'};
-var HAREA={1:'no seu corpo e na sua personalidade',2:'no dinheiro e no que é seu',3:'na comunicação e no aprendizado',4:'em casa, na família e nas raízes',5:'na criação, na brincadeira e no romance',6:'na rotina, no trabalho e na saúde',7:'nas parcerias e nas relações a dois',8:'na intimidade e nas transformações',9:'nos estudos, nas viagens e nas crenças',10:'na carreira e na vida pública',11:'entre amigos, grupos e sonhos de futuro',12:'no silêncio, nos bastidores e na espiritualidade'};
-var HSHORT={1:'o seu jeito de chegar ao mundo',2:'dinheiro e valores',3:'comunicar e aprender',4:'casa e família',5:'criar e brincar',6:'rotina e trabalho',7:'parcerias',8:'intimidade e transformação',9:'estudar, ensinar e explorar',10:'carreira e vida pública',11:'amigos e grupos',12:'silêncio e espiritualidade'};
+ROLE={'Sol':L('o seu brilho','your shine'),'Lua':L('o seu coração','your heart'),'Mercúrio':L('o seu jeito de pensar e falar','the way you think and talk'),'Vênus':L('o seu amor e o seu prazer','your love and your pleasure'),'Marte':L('a sua vontade de agir','your drive to act'),'Júpiter':L('a sua sorte e a sua fé','your luck and your faith'),'Saturno':L('a sua disciplina','your discipline'),'Urano':L('a sua liberdade','your freedom'),'Netuno':L('os seus sonhos','your dreams'),'Plutão':L('a sua transformação','your transformation')};
+SSTYLE={'Áries':L('de um jeito corajoso, de quem vai primeiro','in a brave way, going first'),'Touro':L('com calma, conforto e firmeza','with calm, comfort and steadiness'),'Gêmeos':L('com curiosidade e conversa','with curiosity and conversation'),'Câncer':L('com cuidado e acolhimento','with care and warmth'),'Leão':L('com brilho e coração grande','with sparkle and a big heart'),'Virgem':L('com atenção aos detalhes','with attention to detail'),'Libra':L('buscando equilíbrio e harmonia','seeking balance and harmony'),'Escorpião':L('indo fundo, com intensidade','going deep, with intensity'),'Sagitário':L('com aventura e vontade de explorar','with adventure and a wish to explore'),'Capricórnio':L('com paciência, disciplina e foco','with patience, discipline and focus'),'Aquário':L('de um jeito original e livre','in an original, free way'),'Peixes':L('com imaginação e sensibilidade','with imagination and sensitivity')};
+HAREA={1:L('no seu corpo e na sua personalidade','in your body and your personality'),2:L('no dinheiro e no que é seu','in money and what is yours'),3:L('na comunicação e no aprendizado','in communication and everyday learning'),4:L('em casa, na família e nas raízes','at home, in family and roots'),5:L('na criação, na brincadeira e no romance','in creating, playing and romance'),6:L('na rotina, no trabalho e na saúde','in routine, work and health'),7:L('nas parcerias e nas relações a dois','in partnerships and one-to-one relationships'),8:L('na intimidade e nas transformações','in intimacy and transformations'),9:L('nos estudos, nas viagens e nas crenças','in studies, travel and beliefs'),10:L('na carreira e na vida pública','in career and public life'),11:L('entre amigos, grupos e sonhos de futuro','among friends, groups and dreams of the future'),12:L('no silêncio, nos bastidores e na espiritualidade','in silence, behind the scenes and in spirituality')};
+HSHORT={1:L('o seu jeito de chegar ao mundo','how you arrive in the world'),2:L('dinheiro e valores','money and values'),3:L('comunicar e aprender','communicating and learning'),4:L('casa e família','home and family'),5:L('criar e brincar','creating and playing'),6:L('rotina e trabalho','routine and work'),7:L('parcerias','partnerships'),8:L('intimidade e transformação','intimacy and transformation'),9:L('estudar, ensinar e explorar','studying, teaching and exploring'),10:L('carreira e vida pública','career and public life'),11:L('amigos e grupos','friends and groups'),12:L('silêncio e espiritualidade','silence and spirituality')};
+HFULL={1:L('O corpo, a personalidade e o jeito de chegar ao mundo.','The body, the personality and how you arrive in the world.'),2:L('Dinheiro, valores e tudo o que é seu.','Money, values and everything that is yours.'),3:L('Falar, escrever, aprender no dia a dia, irmãos e vizinhos.','Talking, writing, everyday learning, siblings and neighbors.'),4:L('Casa, família e raízes. O fundo do coração.','Home, family and roots. The depths of the heart.'),5:L('Criar, brincar, romance e filhos. O que dá prazer.','Creating, playing, romance and children. What brings joy.'),6:L('Rotina, trabalho do dia a dia, saúde e cuidado.','Routine, everyday work, health and care.'),7:L('Parcerias, casamento e as relações a dois.','Partnerships, marriage and one-to-one relationships.'),8:L('Intimidade, transformações e o que é compartilhado.','Intimacy, transformations and what is shared.'),9:L('Estudar, ensinar, viajar longe e acreditar.','Studying, teaching, traveling far and believing.'),10:L('Carreira, vida pública e reputação.','Career, public life and reputation.'),11:L('Amigos, grupos e sonhos de futuro.','Friends, groups and dreams of the future.'),12:L('Silêncio, bastidores e espiritualidade.','Silence, behind the scenes and spirituality.')};
+SIGNDESC={'Áries':L('vai primeiro','goes first'),'Touro':L('devagar e gostoso','slow and delicious'),'Gêmeos':L('pergunta e conversa','asks and chats'),'Câncer':L('abraça e cuida','hugs and cares'),'Leão':L('brilha no palco','shines on stage'),'Virgem':L('arruma e ajuda','tidies up and helps'),'Libra':L('procura o equilíbrio','looks for balance'),'Escorpião':L('mergulha fundo','dives deep'),'Sagitário':L('aventureiro','adventurous'),'Capricórnio':L('escala a montanha','climbs the mountain'),'Aquário':L('inventa o futuro','invents the future'),'Peixes':L('sonha e sente tudo','dreams and feels everything')};
+var PM={'Sol':L('o Rei do show: o que te faz sentir viva','the Show King: what makes you feel alive'),'Lua':L('o Coração: como você sente e se liga às pessoas','the Heart: how you feel and bond with people'),'Mercúrio':L('o Mensageiro: pensar, aprender e falar','the Messenger: thinking, learning and talking'),'Vênus':L('a Amiga do prazer: amor, estilo e prazer','the Pleasure Friend: love, style and pleasure'),'Marte':L('o Motorzinho: ação e vontade de fazer','the Little Engine: action and the will to do'),'Júpiter':L('o Grande Sorriso: sorte, fé e crescimento','the Big Smile: luck, faith and growth'),'Saturno':L('o Professor rígido: disciplina e desafios','the Strict Teacher: discipline and challenges'),'Urano':L('o Inventor maluquinho: mudança e liberdade','the Wacky Inventor: change and freedom'),'Netuno':L('o Sonhador: imaginação, arte e intuição','the Dreamer: imagination, art and intuition'),'Plutão':L('o Mágico: transformação e profundidade','the Magician: transformation and depth')};
+MEAN={};for(var pk2 in PM)MEAN[pk2]=PM[pk2];
+for(var sk in SIGNDESC)MEAN[sk]=L('signo de ','sign of ')+N(ELEM_OF[sk]).toLowerCase()+': '+SIGNDESC[sk];
+MEAN['Fogo']=L('energia e coragem (Áries, Leão, Sagitário)','energy and courage (Aries, Leo, Sagittarius)');
+MEAN['Terra']=L('pés no chão (Touro, Virgem, Capricórnio)','feet on the ground (Taurus, Virgo, Capricorn)');
+MEAN['Ar']=L('ideias e conversa (Gêmeos, Libra, Aquário)','ideas and conversation (Gemini, Libra, Aquarius)');
+MEAN['Água']=L('sentimentos (Câncer, Escorpião, Peixes)','feelings (Cancer, Scorpio, Pisces)');
+MEAN['Conjunção']=L('o Abraço: planetas colados, forças misturadas','the Hug: planets side by side, forces blended');
+MEAN['Sextil']=L('o Aperto de mão: se ajudam, se você der o primeiro passo','the Handshake: they help each other if you take the first step');
+MEAN['Trígono']=L('os Melhores amigos: fluem fácil, talento natural','the Best Friends: they flow easily, natural talent');
+MEAN['Quadratura']=L('o Cabo de guerra: puxam para lados diferentes, tensão e movimento','the Tug of War: they pull in different directions, tension and movement');
+MEAN['Oposição']=L('a Gangorra: dois lados do mesmo assunto, equilibrar','the Seesaw: two sides of the same topic, balancing');
+P5=[
+ ['Sol',L('o Rei do show','the Show King'),L('O que te faz sentir viva. O seu brilho.','What makes you feel alive. Your shine.')],
+ ['Lua',L('o Coração','the Heart'),L('Como você sente e se liga às pessoas. O seu cantinho seguro.','How you feel and bond with people. Your safe corner.')],
+ ['Mercúrio',L('o Mensageiro','the Messenger'),L('Como você pensa, aprende e se comunica.','How you think, learn and communicate.')],
+ ['Vênus',L('a Amiga do prazer','the Pleasure Friend'),L('Estilo, o que você gosta sem esforço, amor e prazer.','Style, what you enjoy effortlessly, love and pleasure.')],
+ ['Marte',L('o Motorzinho','the Little Engine'),L('O que te apaixona e te acende. A vontade de ir lá e fazer.','What you are passionate about and what lights you up. The will to go and do.')]
+];
+PL=[
+ ['Júpiter',L('o Grande Sorriso','the Big Smile'),L('Crenças, sorte, abundância. Onde as coisas crescem.','Beliefs, luck, abundance. Where things grow.')],
+ ['Saturno',L('o Professor rígido','the Strict Teacher'),L('Disciplina e grandes desafios. Ensina pelo esforço.','Discipline and big challenges. Teaches through effort.')],
+ ['Urano',L('o Inventor maluquinho','the Wacky Inventor'),L('Mudança, liberdade e novidade.','Change, freedom and novelty.')],
+ ['Netuno',L('o Sonhador','the Dreamer'),L('Imaginação, arte, intuição e espiritualidade.','Imagination, art, intuition and spirituality.')],
+ ['Plutão',L('o Mágico das transformações','the Magician of transformations'),L('Profundidade e renascimento.','Depth and rebirth.')]
+];
+EXPLAIN=[L('O que é um regente?','What is a ruler?'),L('Qual a diferença entre planeta, signo e casa?','What is the difference between planet, sign and house?'),L('O que o Mercúrio mostra no mapa?','What does Mercury show in the chart?'),L('O que é um trígono e o que é uma quadratura?','What is a trine and what is a square?'),L('O que a casa 11 representa?','What does house 11 represent?'),L('Por que o Saturno é o Professor rígido?','Why is Saturn the Strict Teacher?'),L('Quais são os 4 elementos?','What are the 4 elements?'),L('O que é o Ascendente?','What is the Ascendant?')];
+BANK=[];
+function Q(d,q,o,a,why,ox){BANK.push({d:d,q:q,o:o,a:a,why:why,ox:ox})}
+Q(1,L('Planeta é quem faz, signo é como faz e casa é...','Planet is who does it, sign is how it is done and house is...'),[L('onde faz','where it is done'),L('quando faz','when it is done'),L('por que faz','why it is done')],0,L('Casa é o cenário: em que parte da vida.','House is the setting: in which part of life.'),[null,L('"Quando" é tempo. A casa fala de lugar na vida, não de hora.','"When" is time. The house is about a place in life, not a time.'),L('"Por quê" é motivo. A casa mostra o cenário, não a razão.','"Why" is a reason. The house shows the setting, not the reason.')]);
+Q(2,L('Qual planeta é o Mensageiro?','Which planet is the Messenger?'),['Mercúrio','Marte','Vênus'],0,L('Mercúrio: como você pensa e se comunica.','Mercury: how you think and communicate.'));
+Q(2,L('Quem é o Motorzinho, a vontade de agir?','Who is the Little Engine, the will to act?'),['Marte','Lua','Saturno'],0,L('Marte: o que te acende.','Mars: what lights you up.'));
+Q(3,L('Quais planetas valem para uma geração inteira?','Which planets apply to a whole generation?'),[L('Sol, Lua e Marte','Sun, Moon and Mars'),L('Urano, Netuno e Plutão','Uranus, Neptune and Pluto'),L('Mercúrio e Vênus','Mercury and Venus')],1,L('São os lentos: a geração toda tem o mesmo signo.','They are the slow ones: a whole generation shares the same sign.'),[L('Sol, Lua e Marte são pessoais e rápidos: mudam de signo em dias ou meses.','Sun, Moon and Mars are personal and fast: they change sign in days or months.'),null,L('Mercúrio e Vênus são rápidos: mudam de signo em semanas, então cada pessoa tem o seu.','Mercury and Venus are fast: they change sign within weeks, so each person has their own.')]);
+Q(4,L('Qual elemento sente tudo fundo?','Which element feels everything deeply?'),['Fogo','Água','Ar'],1,L('Água: Câncer, Escorpião e Peixes.','Water: Cancer, Scorpio and Pisces.'));
+Q(5,L('A casa 4 é o cômodo de quê?','What is house 4 the room of?'),[L('Carreira','Career'),L('Casa, família e raízes','Home, family and roots'),L('Amigos','Friends')],1,L('Casa 4: o fundo do coração.','House 4: the depths of the heart.'),[L('Carreira é a casa 10.','Career is house 10.'),null,L('Amigos e grupos é a casa 11.','Friends and groups is house 11.')]);
+Q(5,L('Amigos, grupos e sonhos de futuro moram na casa...','Friends, groups and dreams of the future live in house...'),['11','6','2'],0,L('Casa 11: amigos, grupos e sonhos de futuro.','House 11: friends, groups and dreams of the future.'));
+Q(6,L('Quem manda em Capricórnio?','Who rules Capricorn?'),['Saturno','Júpiter','Urano'],0,L('Saturno, o Professor rígido.','Saturn, the Strict Teacher.'));
+Q(7,L('Qual aspecto é o Cabo de guerra?','Which aspect is the Tug of War?'),['Trígono','Quadratura','Sextil'],1,L('Quadratura: puxam para lados diferentes.','Square: they pull in different directions.'));
+Q(1,L('No mapa, o que é o signo?','In the chart, what is the sign?'),[L('O jeito, como faz','The style, how it is done'),L('O lugar, onde faz','The place, where it is done'),L('O personagem, quem faz','The character, who does it')],0,L('Signo é a fantasia: o jeito do planeta agir.','The sign is the costume: the way the planet acts.'),[null,L('O lugar, onde faz, é a casa.','The place, where it is done, is the house.'),L('O personagem, quem faz, é o planeta.','The character, who does it, is the planet.')]);
+Q(2,L('Qual planeta é o Rei do show?','Which planet is the Show King?'),['Sol','Lua','Marte'],0,L('O Sol: o que te faz sentir viva.','The Sun: what makes you feel alive.'));
+Q(2,L('Qual planeta cuida do amor e do prazer?','Which planet looks after love and pleasure?'),['Vênus','Saturno','Urano'],0,L('Vênus: estilo, amor e prazer.','Venus: style, love and pleasure.'));
+Q(2,L('O Coração, que sente e se liga às pessoas, é...','The Heart, which feels and bonds with people, is...'),['Lua','Mercúrio','Júpiter'],0,L('A Lua: como você se vincula emocionalmente.','The Moon: how you bond emotionally.'));
+Q(3,L('Quem é o Sonhador, da imaginação e da arte?','Who is the Dreamer, of imagination and art?'),['Netuno','Plutão','Saturno'],0,L('Netuno: sonhos, arte e intuição.','Neptune: dreams, art and intuition.'));
+Q(3,L('Quem é o Mágico das transformações?','Who is the Magician of transformations?'),['Plutão','Júpiter','Vênus'],0,L('Plutão: profundidade e renascimento.','Pluto: depth and rebirth.'));
+Q(4,L('Áries, Leão e Sagitário são do elemento...','Aries, Leo and Sagittarius belong to the element...'),['Fogo','Terra','Água'],0,L('Fogo: energia e coragem.','Fire: energy and courage.'));
+Q(4,L('Touro, Virgem e Capricórnio são do elemento...','Taurus, Virgo and Capricorn belong to the element...'),['Terra','Ar','Fogo'],0,L('Terra: pés no chão.','Earth: feet on the ground.'));
+Q(4,L('Qual signo inventa o futuro?','Which sign invents the future?'),['Aquário','Virgem','Câncer'],0,L('Aquário: original, livre, pensa diferente.','Aquarius: original, free, thinks differently.'));
+Q(5,L('A casa 9 é a casa de...','House 9 is the house of...'),[L('Estudos, viagens e crenças','Studies, travel and beliefs'),L('Dinheiro','Money'),L('Rotina','Routine')],0,L('Casa 9: estudar, ensinar, viajar e acreditar.','House 9: studying, teaching, traveling and believing.'),[null,L('Dinheiro é a casa 2.','Money is house 2.'),L('Rotina e trabalho do dia a dia é a casa 6.','Everyday routine and work is house 6.')]);
+Q(5,L('Rotina e trabalho do dia a dia: casa...','Everyday routine and work: house...'),['6','3','8'],0,L('Casa 6: rotina, trabalho e saúde.','House 6: routine, work and health.'));
+Q(5,L('Parcerias e casamento: casa...','Partnerships and marriage: house...'),['7','5','12'],0,L('Casa 7: as relações a dois.','House 7: one-to-one relationships.'));
+Q(6,L('Quem manda em Touro e em Libra?','Who rules Taurus and Libra?'),['Vênus','Marte','Mercúrio'],0,L('Vênus rege os dois.','Venus rules both.'));
+Q(6,L('Quem é o regente moderno de Aquário?','Who is the modern ruler of Aquarius?'),['Urano','Saturno','Netuno'],0,L('Urano (o tradicional é Saturno).','Uranus (the traditional one is Saturn).'));
+Q(7,L('Qual aspecto é a Gangorra, dois lados do mesmo assunto?','Which aspect is the Seesaw, two sides of the same topic?'),['Oposição','Conjunção','Sextil'],0,L('Oposição: equilibrar os dois lados.','Opposition: balancing the two sides.'));
+Q(7,L('Qual aspecto é o Abraço, planetas colados?','Which aspect is the Hug, planets side by side?'),['Conjunção','Trígono','Quadratura'],0,L('Conjunção: as forças se misturam.','Conjunction: the forces blend.'));
+Q(7,L('Os Melhores amigos, que fluem fácil, são o...','The Best Friends, who flow easily, are the...'),['Trígono','Oposição','Quadratura'],0,L('Trígono: talento natural.','Trine: natural talent.'));
+Q(1,L('O que é o mapa astral?','What is the birth chart?'),[L('Uma foto do céu no momento em que você nasceu','A photo of the sky at the moment you were born'),L('Uma previsão fixa do seu futuro','A fixed prediction of your future'),L('Um teste com nota','A test with a grade')],0,L('O mapa é a foto do céu no seu nascimento.','The chart is the photo of the sky at your birth.'),[null,L('O mapa não prevê: ele mostra tendências e jeitos de agir.','The chart does not predict: it shows tendencies and ways of acting.'),L('Não há nota nem certo ou errado: é um retrato.','There is no grade or right and wrong: it is a portrait.')]);
+Q(2,L('Qual planeta mostra o que te faz sentir viva?','Which planet shows what makes you feel alive?'),['Sol','Saturno','Netuno'],0,L('O Sol é o seu brilho.','The Sun is your shine.'));
+Q(2,L('Mercúrio tem a ver com...','Mercury has to do with...'),[L('Pensar, aprender e falar','Thinking, learning and talking'),L('Dinheiro e valores','Money and values'),L('Sentir saudade e família','Missing someone and family')],0,L('Mercúrio: o Mensageiro.','Mercury: the Messenger.'),[null,L('Dinheiro e valores é a casa 2, e Vênus também fala de valores.','Money and values is house 2, and Venus also speaks of values.'),L('Sentimentos e família ligam mais com a Lua e a casa 4.','Feelings and family connect more with the Moon and house 4.')]);
+Q(3,L('Quem é o Grande Sorriso, da sorte e da abundância?','Who is the Big Smile, of luck and abundance?'),['Júpiter','Urano','Plutão'],0,L('Júpiter: crenças, sorte e crescimento.','Jupiter: beliefs, luck and growth.'));
+Q(3,L('Qual planeta quebra o velho e traz novidade?','Which planet breaks the old and brings novelty?'),['Urano','Saturno','Lua'],0,L('Urano: mudança e liberdade.','Uranus: change and freedom.'));
+Q(4,L('Gêmeos, Libra e Aquário são do elemento...','Gemini, Libra and Aquarius belong to the element...'),['Ar','Fogo','Terra'],0,L('Ar: ideias e conversa.','Air: ideas and conversation.'));
+Q(4,L('Câncer, Escorpião e Peixes são do elemento...','Cancer, Scorpio and Pisces belong to the element...'),['Água','Ar','Fogo'],0,L('Água: sentimentos.','Water: feelings.'));
+Q(4,L('Qual signo mergulha fundo e sente com intensidade?','Which sign dives deep and feels with intensity?'),['Escorpião','Libra','Sagitário'],0,L('Escorpião: profundidade.','Scorpio: depth.'));
+Q(4,L('Qual signo escala a montanha, com paciência e foco?','Which sign climbs the mountain, with patience and focus?'),['Capricórnio','Gêmeos','Peixes'],0,L('Capricórnio: disciplina e foco.','Capricorn: discipline and focus.'));
+Q(5,L('A casa 10 é o cômodo de...','House 10 is the room of...'),[L('Carreira e vida pública','Career and public life'),L('Casa e família','Home and family'),L('Silêncio e bastidores','Silence and behind the scenes')],0,L('Casa 10: carreira, vida pública e reputação.','House 10: career, public life and reputation.'),[null,L('Casa e família é a casa 4.','Home and family is house 4.'),L('Silêncio e bastidores é a casa 12.','Silence and behind the scenes is house 12.')]);
+Q(5,L('"Ficar no silêncio, nos bastidores." Qual casa?','"Staying in silence, behind the scenes." Which house?'),['12','2','5'],0,L('Casa 12: silêncio, bastidores e espiritualidade.','House 12: silence, behind the scenes and spirituality.'));
+Q(5,L('Dinheiro e valores moram na casa...','Money and values live in house...'),['2','8','4'],0,L('Casa 2: dinheiro, valores e o que é seu.','House 2: money, values and what is yours.'));
+Q(5,L('Criar, brincar e romance: casa...','Creating, playing and romance: house...'),['5','1','10'],0,L('Casa 5: o que dá prazer.','House 5: what brings joy.'));
+Q(6,L('Quem manda em Leão?','Who rules Leo?'),['Sol','Marte','Júpiter'],0,L('O Sol, o Rei do show.','The Sun, the Show King.'));
+Q(6,L('Quem manda em Câncer?','Who rules Cancer?'),['Lua','Vênus','Saturno'],0,L('A Lua, o Coração.','The Moon, the Heart.'));
+Q(6,L('Quem manda em Gêmeos e em Virgem?','Who rules Gemini and Virgo?'),['Mercúrio','Vênus','Júpiter'],0,L('Mercúrio rege os dois.','Mercury rules both.'));
+Q(6,L('Qual é o regente tradicional de Peixes?','Who is the traditional ruler of Pisces?'),['Júpiter','Netuno','Marte'],0,L('Júpiter (o moderno é Netuno).','Jupiter (the modern one is Neptune).'));
+Q(7,L('Qual aspecto é o Aperto de mão, que ajuda se você der o primeiro passo?','Which aspect is the Handshake, which helps if you take the first step?'),['Sextil','Oposição','Conjunção'],0,L('Sextil: se ajudam com um empurrãozinho.','Sextile: they help each other with a little nudge.'));
+}
 var ELEM_OF={'Áries':'Fogo','Leão':'Fogo','Sagitário':'Fogo','Touro':'Terra','Virgem':'Terra','Capricórnio':'Terra','Gêmeos':'Ar','Libra':'Ar','Aquário':'Ar','Câncer':'Água','Escorpião':'Água','Peixes':'Água'};
 var RULER={'Áries':'Marte','Touro':'Vênus','Gêmeos':'Mercúrio','Câncer':'Lua','Leão':'Sol','Virgem':'Mercúrio','Libra':'Vênus','Escorpião':'Plutão','Sagitário':'Júpiter','Capricórnio':'Saturno','Aquário':'Urano','Peixes':'Netuno'};
 var TEN=['Sol','Lua','Mercúrio','Vênus','Marte','Júpiter','Saturno','Urano','Netuno','Plutão'];
-function listPT(a){return a.length<2?(a[0]||''):a.slice(0,-1).join(', ')+' e '+a[a.length-1]}
+var SIGNS=['Áries','Touro','Gêmeos','Câncer','Leão','Virgem','Libra','Escorpião','Sagitário','Capricórnio','Aquário','Peixes'];
+var CH=null,PROFILE=null,MAPA={};
+function listPT(a){a=a.map(N);if(a.length<2)return a[0]||'';var w=L(' e ',' and ');return a.slice(0,-1).join(', ')+w+a[a.length-1]}
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
 function inHouse(h){return TEN.filter(function(p){return MAPA[p][1]===h})}
 function inSign(sg){return TEN.filter(function(p){return MAPA[p][0]===sg})}
 function inElem(e){return TEN.filter(function(p){return ELEM_OF[MAPA[p][0]]===e})}
-function houseNote(h){var a=inHouse(h);return a.length?' No seu mapa moram aqui: '+listPT(a)+'.':''}
-function elemNote(e){var a=inElem(e);return a.length?'Você tem '+a.length+' planeta'+(a.length>1?'s':'')+' em '+e+': '+listPT(a)+'.':'Nenhum planeta seu mora aqui. É um elemento para aprender com as outras pessoas.'}
-function groupNote(hs){var out=[];hs.forEach(function(h){var a=inHouse(h);if(a.length)out.push(listPT(a)+' (casa '+h+')')});return out.length?'Moram aqui: '+out.join('; ')+'.':''}
-function dualNote(sg,modern){var a=inSign(sg);if(!a.length)return '';if(a.length===1&&a[0]===modern)return 'O seu '+modern+' está em casa aqui!';var o=a.filter(function(x){return x!==modern});return modern+' rege '+o.map(function(x){return 'o seu '+x}).join(' e ')+'.'}
-function ex(p){var m=MAPA[p];return cap(ROLE[p])+' (<b>'+p+'</b>), '+SSTYLE[m[0]]+' (<b>'+m[0]+'</b>), '+HAREA[m[1]]+' (<b>casa '+m[1]+'</b>).'}
+function houseNote(h){var a=inHouse(h);return a.length?L(' No seu mapa moram aqui: ',' In your chart, living here: ')+listPT(a)+'.':''}
+function elemNote(e){var a=inElem(e);return a.length?L('Você tem '+a.length+' planeta'+(a.length>1?'s':'')+' em '+e+': ','You have '+a.length+' planet'+(a.length>1?'s':'')+' in '+N(e)+': ')+listPT(a)+'.':L('Nenhum planeta seu mora aqui. É um elemento para aprender com as outras pessoas.','None of your planets live here. It is an element to learn from other people.')}
+function groupNote(hs){var out=[];hs.forEach(function(h){var a=inHouse(h);if(a.length)out.push(listPT(a)+' ('+houseTxt(h)+')')});return out.length?L('Moram aqui: ','Living here: ')+out.join('; ')+'.':''}
+function dualNote(sg,modern){var a=inSign(sg);if(!a.length)return '';if(a.length===1&&a[0]===modern)return L('O seu '+modern+' está em casa aqui!','Your '+N(modern)+' is at home here!');var o=a.filter(function(x){return x!==modern});return L(modern+' rege '+o.map(function(x){return 'o seu '+x}).join(' e ')+'.',N(modern)+' rules '+o.map(function(x){return 'your '+N(x)}).join(' and ')+'.')}
+function ex(p){var m=MAPA[p];return cap(ROLE[p])+' (<b>'+N(p)+'</b>), '+SSTYLE[m[0]]+' (<b>'+N(m[0])+'</b>), '+HAREA[m[1]]+' (<b>'+houseTxt(m[1])+'</b>).'}
+function flipP(list){return list.map(function(p){return {c:COL[p[0]],g:g(p[0]),t:N(p[0]),s:p[1],back:p[2],em:mine(p[0])}})}
+function regentTable(){return SIGNS.map(function(s){var r=RULER[s];var trad={'Escorpião':'Marte','Aquário':'Saturno','Peixes':'Júpiter'}[s];return '<b>'+N(s)+'</b> '+N(r)+(trad?L(' (tradicional: ',' (traditional: ')+N(trad)+')':'')}).join('<br>')}
 
-/* ===== lições ===== */
-var P5=[
- ['Sol','o Rei do show','O que te faz sentir viva. O seu brilho.'],
- ['Lua','o Coração','Como você sente e se liga às pessoas. O seu cantinho seguro.'],
- ['Mercúrio','o Mensageiro','Como você pensa, aprende e se comunica.'],
- ['Vênus','a Amiga do prazer','Estilo, o que você gosta sem esforço, amor e prazer.'],
- ['Marte','o Motorzinho','O que te apaixona e te acende. A vontade de ir lá e fazer.']
-];
-var PL=[
- ['Júpiter','o Grande Sorriso','Crenças, sorte, abundância. Onde as coisas crescem.'],
- ['Saturno','o Professor rígido','Disciplina e grandes desafios. Ensina pelo esforço.'],
- ['Urano','o Inventor maluquinho','Mudança, liberdade e novidade.'],
- ['Netuno','o Sonhador','Imaginação, arte, intuição e espiritualidade.'],
- ['Plutão','o Mágico das transformações','Profundidade e renascimento.']
-];
-function flipP(list){return list.map(function(p){return {c:COL[p[0]],g:g(p[0]),t:p[0],s:p[1],back:p[2],em:mine(p[0])}})}
-
-var DAYS=[];
 function buildDays(){
 var asc=MAPA['Ascendente'][0],chef=RULER[asc],chefM=MAPA[chef],sol=MAPA['Sol'],merc=MAPA['Mercúrio'];
+var elems=[
+ {c:'#d9542f',g:'🔥',t:N('Fogo'),s:L('Áries, Leão, Sagitário','Aries, Leo, Sagittarius'),back:L('Energia e coragem. Vai e faz. Áries vai primeiro, Leão brilha no palco, Sagitário é aventureiro.','Energy and courage. Goes and does. Aries goes first, Leo shines on stage, Sagittarius is adventurous.'),em:elemNote('Fogo')},
+ {c:'#5b8a3c',g:'🌱',t:N('Terra'),s:L('Touro, Virgem, Capricórnio','Taurus, Virgo, Capricorn'),back:L('Pés no chão. Constrói e cuida. Touro é devagar e gostoso, Virgem arruma e ajuda, Capricórnio escala a montanha.','Feet on the ground. Builds and cares. Taurus is slow and delicious, Virgo tidies up and helps, Capricorn climbs the mountain.'),em:elemNote('Terra')},
+ {c:'#2a8fbd',g:'💨',t:N('Ar'),s:L('Gêmeos, Libra, Aquário','Gemini, Libra, Aquarius'),back:L('Ideias e conversa. Conecta. Gêmeos pergunta e conversa, Libra procura o equilíbrio, Aquário inventa o futuro.','Ideas and conversation. Connects. Gemini asks and chats, Libra looks for balance, Aquarius invents the future.'),em:elemNote('Ar')},
+ {c:'#5b5bd6',g:'🌊',t:N('Água'),s:L('Câncer, Escorpião, Peixes','Cancer, Scorpio, Pisces'),back:L('Sentimentos. Sente fundo. Câncer abraça e cuida, Escorpião mergulha fundo, Peixes sonha e sente tudo.','Feelings. Feels deeply. Cancer hugs and cares, Scorpio dives deep, Pisces dreams and feels everything.'),em:elemNote('Água')}];
+var grp=[[1,2,3],[4,5,6],[7,8,9],[10,11,12]],grpC=['#f2b705','#2fa58f','#e0679b','#7d4fb5'];
+var houses=[];for(var h=1;h<=12;h++){houses.push({c:grpC[Math.floor((h-1)/3)],g:String(h),t:Hc(h),s:HSHORT[h],back:HFULL[h],em:inHouse(h).length?L('Moram aqui: ','Living here: ')+listPT(inHouse(h))+'.':''})}
+var mis=function(pt,en){return {k:'mission',big:'🎙️',title:L('Missão do dia','Mission of the day'),body:L(pt,en)}};
 DAYS=[
-{id:1,emoji:'✦',c:'#6f3fa0',title:'A grande ideia',sub:'Planeta, signo e casa em 5 minutos',steps:[
- {k:'card',big:'✦',tag:'Comece por aqui',title:'O mapa é uma foto do céu',body:'Uma foto do céu no momento em que você nasceu. Nela, cada planeta está em um signo e em uma casa.'},
+{id:1,emoji:'✦',c:'#6f3fa0',title:L('A grande ideia','The big idea'),sub:L('Planeta, signo e casa em 5 minutos','Planet, sign and house in 5 minutes'),steps:[
+ {k:'card',big:'✦',tag:L('Comece por aqui','Start here'),title:L('O mapa é uma foto do céu','The chart is a photo of the sky'),body:L('Uma foto do céu no momento em que você nasceu. Nela, cada planeta está em um signo e em uma casa.','A photo of the sky at the moment you were born. In it, each planet is in a sign and in a house.')},
  {k:'trio'},
- {k:'card',big:'☉'+TXT,tag:'Veja funcionando',title:'Sol em '+sol[0]+' na casa '+sol[1],body:ex('Sol')+' Esse é o seu Sol.'},
+ {k:'card',big:'☉'+TXT,tag:L('Veja funcionando','See it working'),title:L('Sol em '+sol[0]+' na casa '+sol[1],'Sun in '+N(sol[0])+' in house '+sol[1]),body:ex('Sol')+L(' Esse é o seu Sol.',' That is your Sun.')},
+ {k:'card',big:'📒',tag:L('Antes do jogo','Before the game'),title:L('Seu mini-dicionário','Your mini cheat sheet'),body:L('Para o jogo a seguir, você só precisa destas dicas:<br>• <b>Lua</b> é o coração, <b>Marte</b> é a vontade de agir, <b>Sol</b> é o seu brilho.<br>• <b>Touro</b> é calma e conforto, <b>Áries</b> vai primeiro.<br>• <b>Casa 10</b> é carreira e vida pública, <b>casa 9</b> é estudos e viagens.<br>Todos os planetas, signos e as 12 casas você aprende nos próximos dias.','For the next game you only need these hints:<br>• <b>Moon</b> is the heart, <b>Mars</b> is the drive to act, <b>Sun</b> is your shine.<br>• <b>Taurus</b> is calm and comfort, <b>Aries</b> goes first.<br>• <b>House 10</b> is career and public life, <b>house 9</b> is studies and travel.<br>You will learn all the planets, signs and the 12 houses over the next days.')},
  {k:'build',rounds:[
-  {s:'Um coração que precisa de calma e conforto, e isso aparece no trabalho e na vida pública.',a:['Lua','Touro','10'],o:[['Sol','Lua','Marte'],['Touro','Leão','Peixes'],['4','10','7']],why:'Lua é o coração, Touro é calma e conforto, casa 10 é a vida pública.'},
-  {s:'A vontade de agir (o motorzinho), do jeito corajoso de quem vai primeiro, quando estuda e viaja.',a:['Marte','Áries','9'],o:[['Marte','Vênus','Saturno'],['Áries','Câncer','Libra'],['2','9','12']],why:'Marte é a ação, Áries vai primeiro, casa 9 é estudo e viagem.'}
+  {s:L('Um coração que precisa de calma e conforto, e isso aparece no trabalho e na vida pública.','A heart that needs calm and comfort, and it shows up in work and public life.'),a:['Lua','Touro','10'],o:[['Sol','Lua','Marte'],['Touro','Leão','Peixes'],['4','10','7']],why:L('Lua é o coração, Touro é calma e conforto, casa 10 é a vida pública.','Moon is the heart, Taurus is calm and comfort, house 10 is public life.')},
+  {s:L('A vontade de agir (o motorzinho), do jeito corajoso de quem vai primeiro, quando estuda e viaja.','The drive to act (the little engine), in the brave way of someone who goes first, when studying and traveling.'),a:['Marte','Áries','9'],o:[['Marte','Vênus','Saturno'],['Áries','Câncer','Libra'],['2','9','12']],why:L('Marte é a ação, Áries vai primeiro, casa 9 é estudo e viagem.','Mars is action, Aries goes first, house 9 is study and travel.')}
  ]},
- {k:'mission',big:'🎙️',title:'Missão do dia',body:'Mande um áudio de 30 segundos para uma amiga explicando: <b>planeta é quem faz, signo é como faz, casa é onde faz.</b>'}
+ mis('Mande um áudio de 30 segundos para uma amiga explicando: <b>planeta é quem faz, signo é como faz, casa é onde faz.</b>','Send a 30-second voice message to a friend explaining: <b>planet is who does it, sign is how it is done, house is where it is done.</b>')
 ]},
-{id:2,emoji:'☉',c:'#f2b705',title:'Os 5 planetas só seus',sub:'Sol, Lua, Mercúrio, Vênus e Marte',steps:[
- {k:'flip',title:'Toque nas cartas',list:flipP(P5)},
- {k:'match',title:'Ligue cada planeta ao que ele faz',pairs:[['Sol','O seu brilho'],['Lua','O seu coração'],['Mercúrio','Pensar e falar'],['Vênus','Amor e prazer'],['Marte','Ação e vontade']]},
- {k:'quiz',q:'Qual planeta cuida de como você pensa e se comunica?',o:['Vênus','Mercúrio','Saturno'],a:1,why:'Mercúrio é o Mensageiro. O seu está em '+merc[0]+', na casa '+merc[1]+': '+CH.merc+'.'},
- {k:'mission',big:'🔎',title:'Missão do dia',body:'Descubra o <b>Sol</b> de uma amiga e adivinhe, antes de ela contar, no que ela brilha.'}
+{id:2,emoji:'☉',c:'#f2b705',title:L('Os 5 planetas só seus','Your 5 personal planets'),sub:L('Sol, Lua, Mercúrio, Vênus e Marte','Sun, Moon, Mercury, Venus and Mars'),steps:[
+ {k:'flip',title:L('Toque nas cartas','Tap the cards'),list:flipP(P5)},
+ {k:'match',title:L('Ligue cada planeta ao que ele faz','Match each planet to what it does'),pairs:[['Sol',L('O seu brilho','Your shine')],['Lua',L('O seu coração','Your heart')],['Mercúrio',L('Pensar e falar','Thinking and talking')],['Vênus',L('Amor e prazer','Love and pleasure')],['Marte',L('Ação e vontade','Action and drive')]]},
+ {k:'quiz',q:L('Qual planeta cuida de como você pensa e se comunica?','Which planet looks after how you think and communicate?'),o:['Vênus','Mercúrio','Saturno'],a:1,why:L('Mercúrio é o Mensageiro. O seu está em '+merc[0]+', na casa '+merc[1]+': '+CH.merc+'.','Mercury is the Messenger. Yours is in '+N(merc[0])+', in house '+merc[1]+': '+CH.merc+'.')},
+ mis('Descubra o <b>Sol</b> de uma amiga e adivinhe, antes de ela contar, no que ela brilha.','Find out a friend\'s <b>Sun</b> and guess, before she tells you, what she shines at.')
 ]},
-{id:3,emoji:'♄'+TXT,c:'#6b5b7b',title:'Os planetas grandes e lentos',sub:'Júpiter, Saturno, Urano, Netuno e Plutão',steps:[
- {k:'card',big:'🐢',tag:'Curiosidade',title:'Eles andam devagar',body:'Júpiter e Saturno ensinam. Urano, Netuno e Plutão demoram tanto que valem para <b>uma geração inteira</b>.'},
- {k:'flip',title:'Toque nas cartas',list:flipP(PL)},
- {k:'quiz',q:'Quem é o Professor rígido, que ensina pelo esforço?',o:['Saturno','Urano','Netuno'],a:0,why:'Saturno. '+CH.sat},
- {k:'quiz',q:'Quem é o Inventor maluquinho, que quebra o velho?',o:['Júpiter','Plutão','Urano'],a:2,why:'Urano: mudança, liberdade e novidade.'},
- {k:'mission',big:'🎙️',title:'Missão do dia',body:'Escolha <b>1 planeta lento</b> e conte em um áudio de 30 segundos quem ele é, com as suas palavras.'}
+{id:3,emoji:'♄'+TXT,c:'#6b5b7b',title:L('Os planetas grandes e lentos','The big, slow planets'),sub:L('Júpiter, Saturno, Urano, Netuno e Plutão','Jupiter, Saturn, Uranus, Neptune and Pluto'),steps:[
+ {k:'card',big:'🐢',tag:L('Curiosidade','Curiosity'),title:L('Eles andam devagar','They move slowly'),body:L('Júpiter e Saturno ensinam. Urano, Netuno e Plutão demoram tanto que valem para <b>uma geração inteira</b>.','Jupiter and Saturn teach. Uranus, Neptune and Pluto take so long that they apply to <b>a whole generation</b>.')},
+ {k:'flip',title:L('Toque nas cartas','Tap the cards'),list:flipP(PL)},
+ {k:'quiz',q:L('Quem é o Professor rígido, que ensina pelo esforço?','Who is the Strict Teacher, who teaches through effort?'),o:['Saturno','Urano','Netuno'],a:0,why:L('Saturno. ','Saturn. ')+CH.sat},
+ {k:'quiz',q:L('Quem é o Inventor maluquinho, que quebra o velho?','Who is the Wacky Inventor, who breaks the old?'),o:['Júpiter','Plutão','Urano'],a:2,why:L('Urano: mudança, liberdade e novidade.','Uranus: change, freedom and novelty.')},
+ mis('Escolha <b>1 planeta lento</b> e conte em um áudio de 30 segundos quem ele é, com as suas palavras.','Pick <b>1 slow planet</b> and tell, in a 30-second voice message, who it is, in your own words.')
 ]},
-{id:4,emoji:'♈'+TXT,c:'#d9542f',title:'Os 12 signos',sub:'Fogo, Terra, Ar e Água',steps:[
- {k:'flip',title:'Os 4 elementos',one:true,list:[
-  {c:'#d9542f',g:'🔥',t:'Fogo',s:'Áries, Leão, Sagitário',back:'Energia e coragem. Vai e faz.',em:elemNote('Fogo')},
-  {c:'#5b8a3c',g:'🌱',t:'Terra',s:'Touro, Virgem, Capricórnio',back:'Pés no chão. Constrói e cuida.',em:elemNote('Terra')},
-  {c:'#2a8fbd',g:'💨',t:'Ar',s:'Gêmeos, Libra, Aquário',back:'Ideias e conversa. Conecta.',em:elemNote('Ar')},
-  {c:'#5b5bd6',g:'🌊',t:'Água',s:'Câncer, Escorpião, Peixes',back:'Sentimentos. Sente fundo.',em:elemNote('Água')}]},
- {k:'match',title:'Ligue o signo ao seu jeito',pairs:[['Áries','Vai primeiro'],['Touro','Devagar e gostoso'],['Gêmeos','Pergunta e conversa'],['Leão','Brilha no palco'],['Escorpião','Mergulha fundo'],['Aquário','Inventa o futuro']]},
- {k:'match',title:'Mais um: ligue de novo',pairs:[['Câncer','Abraça e cuida'],['Virgem','Arruma e ajuda'],['Libra','Procura o equilíbrio'],['Sagitário','Aventureiro'],['Capricórnio','Escala a montanha'],['Peixes','Sonha e sente tudo']]},
- {k:'mission',big:'🕵️',title:'Missão do dia',body:'Escolha 3 pessoas e adivinhe o <b>elemento</b> de cada uma. Depois confira e veja quantas você acertou.'}
+{id:4,emoji:'♈'+TXT,c:'#d9542f',title:L('Os 12 signos','The 12 signs'),sub:L('Fogo, Terra, Ar e Água','Fire, Earth, Air and Water'),steps:[
+ {k:'flip',title:L('Os 4 elementos e os seus signos','The 4 elements and their signs'),one:true,list:elems},
+ {k:'match',title:L('Ligue o signo ao seu jeito','Match the sign to its style'),pairs:[['Áries',SIGNDESC['Áries']],['Touro',SIGNDESC['Touro']],['Gêmeos',SIGNDESC['Gêmeos']],['Leão',SIGNDESC['Leão']],['Escorpião',SIGNDESC['Escorpião']],['Aquário',SIGNDESC['Aquário']]]},
+ {k:'match',title:L('Mais um: ligue de novo','One more: match again'),pairs:[['Câncer',SIGNDESC['Câncer']],['Virgem',SIGNDESC['Virgem']],['Libra',SIGNDESC['Libra']],['Sagitário',SIGNDESC['Sagitário']],['Capricórnio',SIGNDESC['Capricórnio']],['Peixes',SIGNDESC['Peixes']]]},
+ mis('Escolha 3 pessoas e adivinhe o <b>elemento</b> de cada uma. Depois confira e veja quantas você acertou.','Pick 3 people and guess the <b>element</b> of each. Then check and see how many you got right.')
+].map(function(s){if(s.k==='mission')s.big='🕵️';return s})},
+{id:5,emoji:'🏠',c:'#2fa58f',title:L('As 12 casas','The 12 houses'),sub:L('Uma casa com 12 cômodos','A home with 12 rooms'),steps:[
+ {k:'flip',title:L('As 4 partes da casa','The 4 parts of the home'),one:true,list:[
+  {c:'#f2b705',g:'1·2·3',t:L('Eu','Me'),s:L('Casas 1, 2 e 3','Houses 1, 2 and 3'),back:L('O corpo, o que é meu e o meu jeito de falar.','The body, what is mine and how I talk.'),em:groupNote([1,2,3])},
+  {c:'#2fa58f',g:'4·5·6',t:L('O meu mundo','My world'),s:L('Casas 4, 5 e 6','Houses 4, 5 and 6'),back:L('Casa e família, o prazer de criar e a rotina.','Home and family, the joy of creating, and routine.'),em:groupNote([4,5,6])},
+  {c:'#e0679b',g:'7·8·9',t:L('Os outros','Others'),s:L('Casas 7, 8 e 9','Houses 7, 8 and 9'),back:L('Parcerias, intimidade e o que vem de longe.','Partnerships, intimacy and what comes from afar.'),em:groupNote([7,8,9])},
+  {c:'#7d4fb5',g:'10·11·12',t:L('O mundo e o invisível','The world and the invisible'),s:L('Casas 10, 11 e 12','Houses 10, 11 and 12'),back:L('Carreira, a turma e o que é maior que eu.','Career, the crew and what is bigger than me.'),em:groupNote([10,11,12])}]},
+ {k:'flip',title:L('Os 12 cômodos, um por um','The 12 rooms, one by one'),list:houses},
+ {k:'quiz',q:L('"Combinar o rolê com a turma." Em que casa isso acontece?','"Planning the hangout with the crew." Which house is that?'),o:[Hc(11),Hc(4),Hc(8)],a:0,why:L('Casa 11: amigos, grupos e sonhos de futuro.','House 11: friends, groups and dreams of the future.')+houseNote(11)},
+ {k:'quiz',q:L('"Planejar uma viagem de estudos." Em que casa?','"Planning a study trip." Which house?'),o:[Hc(3),Hc(9),Hc(12)],a:1,why:L('Casa 9: estudar, ensinar, viajar longe e acreditar.','House 9: studying, teaching, traveling far and believing.')+houseNote(9)},
+ {k:'quiz',q:L('"Mostrar o meu trabalho para o mundo." Em que casa?','"Showing my work to the world." Which house?'),o:[Hc(10),Hc(2),Hc(6)],a:0,why:L('Casa 10: carreira, vida pública e reputação.','House 10: career, public life and reputation.')+houseNote(10)},
+ {k:'quiz',q:L('"Ficar quietinha, meditando sozinha." Em que casa?','"Staying quiet, meditating alone." Which house?'),o:[Hc(5),Hc(12),Hc(7)],a:1,why:L('Casa 12: silêncio, bastidores e espiritualidade.','House 12: silence, behind the scenes and spirituality.')+houseNote(12)},
+ {k:'mission',big:'🗺️',title:L('Missão do dia','Mission of the day'),body:L('Escolha 1 coisa que você fez hoje e descubra a <b>casa</b> dela. Mande para uma amiga e veja se ela concorda.','Pick 1 thing you did today and find its <b>house</b>. Send it to a friend and see if she agrees.')}
 ]},
-{id:5,emoji:'🏠',c:'#2fa58f',title:'As 12 casas',sub:'Uma casa com 12 cômodos',steps:[
- {k:'flip',title:'As 4 partes da casa',one:true,list:[
-  {c:'#f2b705',g:'1·2·3',t:'Eu',s:'Casas 1, 2 e 3',back:'O corpo, o que é meu e o meu jeito de falar.',em:groupNote([1,2,3])},
-  {c:'#2fa58f',g:'4·5·6',t:'O meu mundo',s:'Casas 4, 5 e 6',back:'Casa e família, o prazer de criar e a rotina.',em:groupNote([4,5,6])},
-  {c:'#e0679b',g:'7·8·9',t:'Os outros',s:'Casas 7, 8 e 9',back:'Parcerias, intimidade e o que vem de longe.',em:groupNote([7,8,9])},
-  {c:'#7d4fb5',g:'10·11·12',t:'O mundo e o invisível',s:'Casas 10, 11 e 12',back:'Carreira, a turma e o que é maior que eu.',em:groupNote([10,11,12])}]},
- {k:'quiz',q:'"Combinar o rolê com a turma." Em que casa isso acontece?',o:['Casa 11','Casa 4','Casa 8'],a:0,why:'Casa 11: amigos, grupos e sonhos de futuro.'+houseNote(11)},
- {k:'quiz',q:'"Planejar uma viagem de estudos." Em que casa?',o:['Casa 3','Casa 9','Casa 12'],a:1,why:'Casa 9: estudar, ensinar, viajar longe e acreditar.'+houseNote(9)},
- {k:'quiz',q:'"Mostrar o meu trabalho para o mundo." Em que casa?',o:['Casa 10','Casa 2','Casa 6'],a:0,why:'Casa 10: carreira, vida pública e reputação.'+houseNote(10)},
- {k:'quiz',q:'"Ficar quietinha, meditando sozinha." Em que casa?',o:['Casa 5','Casa 12','Casa 7'],a:1,why:'Casa 12: silêncio, bastidores e espiritualidade.'+houseNote(12)},
- {k:'mission',big:'🗺️',title:'Missão do dia',body:'Escolha 1 coisa que você fez hoje e descubra a <b>casa</b> dela. Mande para uma amiga e veja se ela concorda.'}
+{id:6,emoji:'👑',c:'#8e2f6b',title:L('Os regentes','The rulers'),sub:L('O dono de cada signo','The owner of each sign'),steps:[
+ {k:'card',big:'👑',tag:L('A ideia','The idea'),title:L('Cada signo tem um dono','Each sign has an owner'),body:L('O planeta que manda no signo é o <b>regente</b>. Ele é o chefe do jeito do signo e se sente <b>em casa</b> ali.','The planet in charge of a sign is its <b>ruler</b>. It is the boss of the sign\'s style and feels <b>at home</b> there.')},
+ {k:'card',big:'📜',tag:L('A tabela','The table'),title:L('Quem manda em quem','Who rules what'),body:regentTable()},
+ {k:'match',title:L('Ligue o signo ao seu regente','Match the sign to its ruler'),pairs:[['Áries','Marte'],['Touro','Vênus'],['Gêmeos','Mercúrio'],['Câncer','Lua'],['Leão','Sol'],['Capricórnio','Saturno']]},
+ {k:'flip',title:L('Os 3 com dois regentes','The 3 with two rulers'),one:true,list:[
+  {c:'#8e2f6b',g:'♏'+TXT,t:N('Escorpião'),s:L('Plutão (moderno)','Pluto (modern)'),back:L('Tradicional: Marte.','Traditional: Mars.'),em:dualNote('Escorpião','Plutão')},
+  {c:'#1aa3c4',g:'♒'+TXT,t:N('Aquário'),s:L('Urano (moderno)','Uranus (modern)'),back:L('Tradicional: Saturno.','Traditional: Saturn.'),em:dualNote('Aquário','Urano')},
+  {c:'#5b6ee1',g:'♓'+TXT,t:N('Peixes'),s:L('Netuno (moderno)','Neptune (modern)'),back:L('Tradicional: Júpiter.','Traditional: Jupiter.'),em:dualNote('Peixes','Netuno')}]},
+ {k:'card',big:'🧭',tag:L('O seu mapa','Your chart'),title:L('O seu chefe é '+chef,'Your boss is '+N(chef)),body:L('O seu Ascendente é '+asc+', e '+asc+' é regido por '+chef+'. Então o <b>chefe do seu mapa</b> é '+chef+', que está em '+chefM[0]+', na casa '+chefM[1]+': '+HSHORT[chefM[1]]+'.','Your Ascendant is '+N(asc)+', and '+N(asc)+' is ruled by '+N(chef)+'. So the <b>boss of your chart</b> is '+N(chef)+', which is in '+N(chefM[0])+', in house '+chefM[1]+': '+HSHORT[chefM[1]]+'.')},
+ {k:'quiz',q:L('Quem é o regente de Leão?','Who is the ruler of Leo?'),o:['Sol','Lua','Vênus'],a:0,why:L('O Sol, o Rei do show, manda em Leão.','The Sun, the Show King, rules Leo.')},
+ mis('Explique em um áudio de 30 segundos o que é um <b>regente</b>. Use a palavra "chefe".','Explain in a 30-second voice message what a <b>ruler</b> is. Use the word "boss".')
 ]},
-{id:6,emoji:'👑',c:'#8e2f6b',title:'Os regentes',sub:'O dono de cada signo',steps:[
- {k:'card',big:'👑',tag:'A ideia',title:'Cada signo tem um dono',body:'O planeta que manda no signo é o <b>regente</b>. Ele é o chefe do jeito do signo e se sente <b>em casa</b> ali.'},
- {k:'match',title:'Ligue o signo ao seu regente',pairs:[['Áries','Marte'],['Touro','Vênus'],['Gêmeos','Mercúrio'],['Câncer','Lua'],['Leão','Sol'],['Capricórnio','Saturno']]},
- {k:'flip',title:'Os 3 com dois regentes',one:true,list:[
-  {c:'#8e2f6b',g:'♏'+TXT,t:'Escorpião',s:'Plutão (moderno)',back:'Tradicional: Marte.',em:dualNote('Escorpião','Plutão')},
-  {c:'#1aa3c4',g:'♒'+TXT,t:'Aquário',s:'Urano (moderno)',back:'Tradicional: Saturno.',em:dualNote('Aquário','Urano')},
-  {c:'#5b6ee1',g:'♓'+TXT,t:'Peixes',s:'Netuno (moderno)',back:'Tradicional: Júpiter.',em:dualNote('Peixes','Netuno')}]},
- {k:'card',big:'🧭',tag:'O seu mapa',title:'O seu chefe é '+chef,body:'O seu Ascendente é '+asc+', e '+asc+' é regido por '+chef+'. Então o <b>chefe do seu mapa</b> é '+chef+', que está em '+chefM[0]+', na casa '+chefM[1]+': '+HSHORT[chefM[1]]+'.'},
- {k:'quiz',q:'Quem é o regente de Leão?',o:['Sol','Lua','Vênus'],a:0,why:'O Sol, o Rei do show, manda em Leão.'},
- {k:'mission',big:'🎙️',title:'Missão do dia',body:'Explique em um áudio de 30 segundos o que é um <b>regente</b>. Use a palavra "chefe".'}
-]},
-{id:7,emoji:'⚖',c:'#7d4fb5',title:'Como os planetas conversam',sub:'Os aspectos e o seu mapa inteiro',steps:[
- {k:'flip',title:'Os 5 jeitos de conversar',list:[
-  {c:'#c9a35b',g:'☌'+TXT,t:'Conjunção',s:'O Abraço',back:'Colados. As forças se misturam.',em:CH.asp.conj},
-  {c:'#2fa58f',g:'⚹'+TXT,t:'Sextil',s:'O Aperto de mão',back:'Se ajudam, se você der o primeiro passo.',em:CH.asp.sext},
-  {c:'#5b8a3c',g:'△'+TXT,t:'Trígono',s:'Os Melhores amigos',back:'Fluem fácil. Talento natural.',em:CH.asp.trig},
-  {c:'#d9432f',g:'□'+TXT,t:'Quadratura',s:'O Cabo de guerra',back:'Puxam para lados diferentes. Tensão e movimento.',em:CH.asp.quad},
-  {c:'#7d4fb5',g:'☍'+TXT,t:'Oposição',s:'A Gangorra',back:'Dois lados do mesmo assunto. Equilibrar.',em:CH.asp.opos}]},
- {k:'match',title:'Ligue o aspecto ao apelido',pairs:[['Conjunção','O Abraço'],['Sextil','O Aperto de mão'],['Trígono','Os Melhores amigos'],['Quadratura','O Cabo de guerra'],['Oposição','A Gangorra']]},
+{id:7,emoji:'⚖',c:'#7d4fb5',title:L('Como os planetas conversam','How the planets talk'),sub:L('Os aspectos e o seu mapa inteiro','The aspects and your whole chart'),steps:[
+ {k:'flip',title:L('Os 5 jeitos de conversar','The 5 ways of talking'),list:[
+  {c:'#c9a35b',g:'☌'+TXT,t:N('Conjunção'),s:L('O Abraço','The Hug'),back:L('Colados. As forças se misturam.','Side by side. The forces blend.'),em:CH.asp.conj},
+  {c:'#2fa58f',g:'⚹'+TXT,t:N('Sextil'),s:L('O Aperto de mão','The Handshake'),back:L('Se ajudam, se você der o primeiro passo.','They help each other if you take the first step.'),em:CH.asp.sext},
+  {c:'#5b8a3c',g:'△'+TXT,t:N('Trígono'),s:L('Os Melhores amigos','The Best Friends'),back:L('Fluem fácil. Talento natural.','They flow easily. Natural talent.'),em:CH.asp.trig},
+  {c:'#d9432f',g:'□'+TXT,t:N('Quadratura'),s:L('O Cabo de guerra','The Tug of War'),back:L('Puxam para lados diferentes. Tensão e movimento.','They pull in different directions. Tension and movement.'),em:CH.asp.quad},
+  {c:'#7d4fb5',g:'☍'+TXT,t:N('Oposição'),s:L('A Gangorra','The Seesaw'),back:L('Dois lados do mesmo assunto. Equilibrar.','Two sides of the same topic. Balancing.'),em:CH.asp.opos}]},
+ {k:'match',title:L('Ligue o aspecto ao apelido','Match the aspect to its nickname'),pairs:[['Conjunção',L('O Abraço','The Hug')],['Sextil',L('O Aperto de mão','The Handshake')],['Trígono',L('Os Melhores amigos','The Best Friends')],['Quadratura',L('O Cabo de guerra','The Tug of War')],['Oposição',L('A Gangorra','The Seesaw')]]},
  {k:'mine'},
- {k:'mission',big:'🏆',title:'Missão final',body:'Faça o mapa de uma amiga e conte para ela, em um áudio de 1 minuto: o <b>Sol</b>, a <b>Lua</b> e o <b>Ascendente</b>, cada um com planeta, signo e casa.'}
+ {k:'mission',big:'🏆',title:L('Missão final','Final mission'),body:L('Faça o mapa de uma amiga e conte para ela, em um áudio de 1 minuto: o <b>Sol</b>, a <b>Lua</b> e o <b>Ascendente</b>, cada um com planeta, signo e casa.','Make a friend\'s chart and tell her, in a 1-minute voice message: the <b>Sun</b>, the <b>Moon</b> and the <b>Ascendant</b>, each with planet, sign and house.')}
 ]}
 ];
 }
 
 /* ===== estado ===== */
 var S={done:{},pts:0,best:{}};
+var app=document.getElementById('app');
+var cur=null,LANGBACK=null;
 function stateKey(){return 'missaoAstro_'+PROFILE}
 function loadState(){S={done:{},pts:0,best:{}};try{var raw=localStorage.getItem(stateKey());if(raw)S=JSON.parse(raw)}catch(e){}}
 function save(){try{localStorage.setItem(stateKey(),JSON.stringify(S))}catch(e){}}
 function setProfile(key){CH=CHARTS[key];PROFILE=key;MAPA=CH.pl;loadState();S.name=CH.name;try{localStorage.setItem('missaoAstroProfile',key)}catch(e){}buildDays()}
-var app=document.getElementById('app');
-var cur=null; // {day,step,locked}
+function setLang(l){LANG=l==='en'?'en':'pt';try{localStorage.setItem('missaoAstroLang',LANG)}catch(e){}document.documentElement.lang=LANG==='en'?'en':'pt-BR';buildData();if(PROFILE){var nm=S.name;setProfile(PROFILE);if(nm)S.name=nm}}
+function toggleLang(){setLang(LANG==='pt'?'en':'pt');(LANGBACK||home)()}
 
 function el(tag,attrs){var e=document.createElement(tag);for(var k in (attrs||{})){if(k==='class')e.className=attrs[k];else if(k==='html')e.innerHTML=attrs[k];else if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),attrs[k]);else e.setAttribute(k,attrs[k])}for(var i=2;i<arguments.length;i++){var c=arguments[i];if(c==null)continue;e.appendChild(typeof c==='string'?document.createTextNode(c):c)}return e}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
@@ -290,47 +407,54 @@ function toast(t){var d=el('div',{class:'toast'},t);document.body.appendChild(d)
 function addPts(n){S.pts+=n;save();var p=document.getElementById('pts');if(p)p.textContent='✦ '+S.pts}
 function confetti(){var cs=['✦','✧','★','◆'],cl=['#c9a35b','#b58fd6','#6f3fa0','#e0679b','#2fa58f'];for(var i=0;i<42;i++){var d=el('div',{class:'conf'},cs[i%4]);d.style.left=Math.random()*100+'vw';d.style.color=cl[i%5];d.style.fontSize=(14+Math.random()*16)+'px';d.style.animationDuration=(1.8+Math.random()*1.6)+'s';d.style.animationDelay=(Math.random()*.4)+'s';document.body.appendChild(d);(function(x){setTimeout(function(){x.remove()},4200)})(d)}}
 function doneCount(){var n=0;for(var k in S.done)if(S.done[k])n++;return n}
+var BRAND=function(){return el('div',{class:'brand'},L('Missão ','Mission '),el('span',{},'Astro'))};
+
+/* ===== significado das respostas ===== */
+function optLabel(t){var m=String(t).match(/^(?:Casa |House )?(\d+)$/);return m?Hc(+m[1]):N(t)}
+function meaningOf(t){var m=String(t).match(/^(?:Casa |House )?(\d+)$/);if(m)return HFULL[+m[1]]||'';return MEAN[pk(t)]||''}
+function optMeaning(q,i){return (q.ox&&q.ox[i])||meaningOf(q.o[i])}
+function othersHtml(q){var li='';q.o.forEach(function(t,i){if(i===q.a)return;var m=optMeaning(q,i);if(m)li+='<li><b>'+optLabel(t)+'</b>: '+m+'</li>'});return li?'<div class="oth"><b>'+L('E as outras respostas:','And the other answers:')+'</b><ul>'+li+'</ul></div>':''}
 
 /* ===== telas ===== */
-function topbar(){return el('header',{class:'top'},el('div',{class:'brand'},'Missão ',el('span',{},'Astro')),el('div',{class:'pts',id:'pts'},'✦ '+S.pts))}
+function topbar(withLang){var r=el('div',{class:'hr'});if(withLang)r.appendChild(el('button',{class:'langbtn',id:'lang-toggle',onclick:toggleLang},LANG==='pt'?'🌐 English':'🌐 Português'));r.appendChild(el('div',{class:'pts',id:'pts'},'✦ '+S.pts));return el('header',{class:'top'},BRAND(),r)}
 
 function home(){
-  cur=null;app.innerHTML='';app.appendChild(topbar());
-  var n=doneCount(),pct=Math.round(n/7*100);
+  LANGBACK=home;cur=null;app.innerHTML='';app.appendChild(topbar(true));
+  var n=doneCount(),pct=Math.round(n/7*100),other=CHARTS[CH.other].name;
   app.appendChild(el('div',{class:'hero'},el('div',{class:'stars'},'✦ ✧ ✦'),
-    el('h1',{},'Oi, '+CH.name+'!'),
-    el('p',{},'7 microaulas de 5 minutos. Você escolhe a ordem, pula o que quiser e volta quando quiser.'),
-    el('div',{class:'bar'},el('i',{style:'width:'+pct+'%'})),el('div',{class:'bar-l'},n+' de 7 missões concluídas')));
-  if(n>0){app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},'Revisão rápida'),el('p',{},'3 perguntas sobre o que você já viu. Revisar no dia seguinte faz o cérebro gravar.'),el('button',{class:'btn gold wide',onclick:review},'Revisar agora')))}
+    el('h1',{},L('Oi, ','Hi, ')+CH.name+'!'),
+    el('p',{},L('7 microaulas de 5 minutos. Você escolhe a ordem, pula o que quiser e volta quando quiser.','7 micro-lessons of 5 minutes. You choose the order, skip what you want and come back whenever you like.')),
+    el('div',{class:'bar'},el('i',{style:'width:'+pct+'%'})),el('div',{class:'bar-l'},L(n+' de 7 missões concluídas',n+' of 7 missions completed'))));
+  if(n>0){app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},L('Revisão rápida','Quick review')),el('p',{},L('3 perguntas sobre o que você já viu. Revisar no dia seguinte faz o cérebro gravar.','3 questions about what you have already seen. Reviewing the next day helps your brain keep it.')),el('button',{class:'btn gold wide',onclick:review},L('Revisar agora','Review now'))))}
   var days=el('div',{class:'days'});
   DAYS.forEach(function(d){
     var done=S.done[d.id];
     days.appendChild(el('button',{class:'day'+(done?' done':''),onclick:function(){startDay(d.id)}},
       el('div',{class:'n glyph',style:'--c:'+d.c},d.emoji),
-      el('div',{},el('b',{},'Dia '+d.id+'. '+d.title),el('small',{},d.sub)),
+      el('div',{},el('b',{},L('Dia ','Day ')+d.id+'. '+d.title),el('small',{},d.sub)),
       el('div',{class:'st'},done?'✔':'›')));
   });
   app.appendChild(days);
-  app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},'Em dupla'),el('p',{},'Jogue com a Renata: na mesma tela em chamada, em duelo à distância ou criando perguntas uma para a outra.'),el('button',{class:'btn gold wide',onclick:together},'Jogar juntas')));
-  app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},'Feito para o seu jeito'),el('p',{},'Curto, com jogo, em ordem livre, com o seu mapa como exemplo e missões para fazer com as amigas. Quando você explica para alguém, aprende duas vezes.'),el('button',{class:'btn ghost wide',onclick:mapa},'Ver o meu mapa')));
-  app.appendChild(el('div',{style:'text-align:center;margin-top:14px'},el('button',{class:'link',id:'switch-prof',onclick:chooser},'Não é '+CH.name+'? Trocar de pessoa')));
+  app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},L('Em dupla','As a pair')),el('p',{},L('Jogue com a '+other+': na mesma tela em chamada, em duelo à distância ou criando perguntas uma para a outra.','Play with '+other+': on the same screen during a call, in a long-distance duel, or by creating questions for each other.')),el('button',{class:'btn gold wide',onclick:together},L('Jogar juntas','Play together'))));
+  app.appendChild(el('div',{class:'tile'},el('div',{class:'tag'},L('Feito para o seu jeito','Made for your style')),el('p',{},L('Curto, com jogo, em ordem livre, com o seu mapa como exemplo e missões para fazer com as amigas. Quando você explica para alguém, aprende duas vezes.','Short, with games, in free order, with your chart as the example and missions to do with friends. When you explain something to someone, you learn it twice.')),el('button',{class:'btn ghost wide',onclick:mapa},L('Ver o meu mapa','See my chart'))));
+  app.appendChild(el('div',{style:'text-align:center;margin-top:14px'},el('button',{class:'link',id:'switch-prof',onclick:chooser},L('Não é '+CH.name+'? Trocar de pessoa','Not '+CH.name+'? Switch person'))));
   bottom([]);
 }
 
 function bottom(btns){var old=document.querySelector('.nav');if(old)old.remove();if(!btns.length)return;var inn=el('div',{class:'in'});btns.forEach(function(b){inn.appendChild(b)});document.body.appendChild(el('div',{class:'nav'},inn))}
 
 function mapa(){
-  cur=null;app.innerHTML='';app.appendChild(topbar());
-  app.appendChild(el('div',{class:'row sp'},el('h2',{},'O seu mapa'),el('button',{class:'link',onclick:home},'Voltar')));
-  app.appendChild(el('p',{},'Nascimento: '+CH.nasc+'. Ascendente em '+MAPA['Ascendente'][0]+'.'));
+  LANGBACK=mapa;cur=null;app.innerHTML='';app.appendChild(topbar(true));
+  app.appendChild(el('div',{class:'row sp'},el('h2',{},L('O seu mapa','Your chart')),el('button',{class:'link',onclick:home},L('Voltar','Back'))));
+  app.appendChild(el('p',{},L('Nascimento: ','Born: ')+CH.nasc+L('. Ascendente em ','. Ascendant in ')+N(MAPA['Ascendente'][0])+'.'));
   var mp=el('div',{class:'mp'});
-  ['Sol','Lua','Mercúrio','Vênus','Marte','Júpiter','Saturno','Urano','Netuno','Plutão'].forEach(function(n){
-    mp.appendChild(el('div',{style:'--c:'+COL[n]},el('b',{class:'glyph'},g(n)+' '+n),MAPA[n][0]+', casa '+MAPA[n][1]+(CH.retro.indexOf(n)>=0?' (retrógrado)':'')));
+  TEN.forEach(function(n){
+    mp.appendChild(el('div',{style:'--c:'+COL[n]},el('b',{class:'glyph'},g(n)+' '+N(n)),N(MAPA[n][0])+', '+houseTxt(MAPA[n][1])+(CH.retro.indexOf(n)>=0?L(' (retrógrado)',' (retrograde)'):'')));
   });
   app.appendChild(mp);
   var lul=el('ul',{});CH.learn.forEach(function(x){lul.appendChild(el('li',{html:'<b>'+x[0]+'</b>'+x[1]}))});
-  app.appendChild(el('div',{class:'mine',style:'margin-top:16px'},el('div',{class:'tag'},'O seu jeito de aprender'),lul));
-  bottom([el('button',{class:'btn wide',onclick:home},'Voltar às missões')]);
+  app.appendChild(el('div',{class:'mine',style:'margin-top:16px'},el('div',{class:'tag'},L('O seu jeito de aprender','Your way of learning')),lul));
+  bottom([el('button',{class:'btn wide',onclick:home},L('Voltar às missões','Back to missions'))]);
 }
 
 function startDay(id){cur={day:id,step:0,done:false};renderStep()}
@@ -339,16 +463,16 @@ function dayObj(){return DAYS.filter(function(d){return d.id===cur.day})[0]}
 function renderStep(){
   var d=dayObj();app.innerHTML='';app.appendChild(topbar());
   var dots=el('div',{class:'dots'});d.steps.forEach(function(s,i){dots.appendChild(el('i',{class:i<cur.step?'on':(i===cur.step?'cur':'')}))});
-  app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:home,'aria-label':'Sair'},'✕'),dots));
+  app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:home,'aria-label':L('Sair','Exit')},'✕'),dots));
   var s=d.steps[cur.step];cur.ok=false;
   var body=el('div',{});app.appendChild(body);
-  var next=el('button',{class:'btn wide',onclick:advance},cur.step===d.steps.length-1?'Concluir':'Continuar');
+  var next=el('button',{class:'btn wide',onclick:advance},cur.step===d.steps.length-1?L('Concluir','Finish'):L('Continuar','Continue'));
   var back=el('button',{class:'btn ghost',onclick:function(){if(cur.step>0){cur.step--;renderStep()}else home()}},'‹');
   var skip=null;
   var gate=function(){next.removeAttribute('disabled');if(skip)skip.remove()};
   var R=RENDER[s.k];
   var needs=R(body,s,d,gate);
-  if(needs){next.setAttribute('disabled','');skip=el('button',{class:'link',onclick:function(){gate();cur.skipped=true;advance()}},'Pular esta');body.appendChild(el('div',{style:'text-align:center;margin-top:10px'},skip))}
+  if(needs){next.setAttribute('disabled','');skip=el('button',{class:'link',onclick:function(){gate();cur.skipped=true;advance()}},L('Pular esta','Skip this one'));body.appendChild(el('div',{style:'text-align:center;margin-top:10px'},skip))}
   bottom([back,next]);
   window.scrollTo(0,0);
 }
@@ -363,64 +487,54 @@ function finishDay(d){
   app.innerHTML='';app.appendChild(topbar());
   var all=doneCount()===7;
   if(all){
-    app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},'Missão cumprida'),el('h1',{},CH.name+', Mestra Astro'),el('p',{},'Você completou as 7 missões. Agora você lê um mapa e sabe ensinar. O céu inteiro cabe na sua conversa.'),el('p',{class:'glyph',style:'font-size:34px;color:#c9a35b'},'✦ ✧ ✦'),el('p',{html:'<b>'+S.pts+'</b> estrelas'})));
+    app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},L('Missão cumprida','Mission accomplished')),el('h1',{},CH.name+L(', Mestra Astro',', Astro Master')),el('p',{},L('Você completou as 7 missões. Agora você lê um mapa e sabe ensinar. O céu inteiro cabe na sua conversa.','You completed all 7 missions. Now you can read a chart and teach it. The whole sky fits in your conversation.')),el('p',{class:'glyph',style:'font-size:34px;color:#c9a35b'},'✦ ✧ ✦'),el('p',{html:L('<b>'+S.pts+'</b> estrelas','<b>'+S.pts+'</b> stars')})));
   }else{
-    app.appendChild(el('div',{class:'card'},el('div',{class:'big glyph',style:'--c:#c9a35b'},'✦'),el('h2',{},'Missão '+d.id+' concluída!'),el('p',{style:'text-align:center'},first?'+30 estrelas. Descanse a cabeça e volte quando quiser.':'Boa revisão!'),el('p',{style:'text-align:center;color:#7a6a88;font-size:15px'},'Amanhã, faça a Revisão rápida na tela inicial.')));
+    app.appendChild(el('div',{class:'card'},el('div',{class:'big glyph',style:'--c:#c9a35b'},'✦'),el('h2',{},L('Missão '+d.id+' concluída!','Mission '+d.id+' complete!')),el('p',{style:'text-align:center'},first?L('+30 estrelas. Descanse a cabeça e volte quando quiser.','+30 stars. Rest your head and come back whenever you like.'):L('Boa revisão!','Nice review!')),el('p',{style:'text-align:center;color:#7a6a88;font-size:15px'},L('Amanhã, faça a Revisão rápida na tela inicial.','Tomorrow, do the Quick review on the home screen.'))));
   }
-  bottom([el('button',{class:'btn wide',onclick:home},'Voltar às missões')]);
+  bottom([el('button',{class:'btn wide',onclick:home},L('Voltar às missões','Back to missions'))]);
   window.scrollTo(0,0);
 }
 
 /* ===== renderizadores ===== */
 var RENDER={
  card:function(b,s){b.appendChild(el('div',{class:'card'},el('div',{class:'big glyph',style:'--c:'+(dayObj().c)},s.big),el('div',{style:'text-align:center'},el('span',{class:'tag'},s.tag||'')),el('h2',{},s.title),el('p',{html:s.body})));return false},
- trio:function(b){b.appendChild(el('div',{class:'card'},el('div',{style:'text-align:center'},el('span',{class:'tag'},'A fórmula')),el('h2',{},'Quem, como e onde'),
-   el('div',{class:'trio',html:'<div style="--c:#f2b705;--b:#fff6d6"><b>Planeta</b> é <b style="font-size:17px">QUEM</b> faz. O personagem.</div><div style="--c:#7d4fb5;--b:#efe6f7"><b>Signo</b> é <b style="font-size:17px">COMO</b> faz. A fantasia.</div><div style="--c:#2fa58f;--b:#dff5ef"><b>Casa</b> é <b style="font-size:17px">ONDE</b> faz. O cenário.</div>'}),
-   el('p',{style:'text-align:center;color:#7a6a88;font-size:15px'},'Se você guardar só isso, já entendeu o mapa.')));return false},
- flip:function(b,s,d,gate){var wrap=el('div',{});wrap.appendChild(el('h2',{style:'text-align:center;margin-bottom:6px'},s.title));var gr=el('div',{class:'flipgrid'+(s.one?' one':'')});var seen={};
-   s.list.forEach(function(it,i){var f=el('button',{class:'fl',style:'--c:'+it.c+';--b:#fff'},el('div',{class:'in'},
+ trio:function(b){b.appendChild(el('div',{class:'card'},el('div',{style:'text-align:center'},el('span',{class:'tag'},L('A fórmula','The formula'))),el('h2',{},L('Quem, como e onde','Who, how and where')),
+   el('div',{class:'trio',html:L('<div style="--c:#f2b705;--b:#fff6d6"><b>Planeta</b> é <b style="font-size:17px">QUEM</b> faz. O personagem.</div><div style="--c:#7d4fb5;--b:#efe6f7"><b>Signo</b> é <b style="font-size:17px">COMO</b> faz. A fantasia.</div><div style="--c:#2fa58f;--b:#dff5ef"><b>Casa</b> é <b style="font-size:17px">ONDE</b> faz. O cenário.</div>','<div style="--c:#f2b705;--b:#fff6d6"><b>Planet</b> is <b style="font-size:17px">WHO</b> does it. The character.</div><div style="--c:#7d4fb5;--b:#efe6f7"><b>Sign</b> is <b style="font-size:17px">HOW</b> it is done. The costume.</div><div style="--c:#2fa58f;--b:#dff5ef"><b>House</b> is <b style="font-size:17px">WHERE</b> it is done. The setting.</div>')}),
+   el('p',{style:'text-align:center;color:#7a6a88;font-size:15px'},L('Se você guardar só isso, já entendeu o mapa.','If you keep only this, you already understand the chart.'))));return false},
+ flip:function(b,s,d,gate){var wrap=el('div',{});wrap.appendChild(el('h2',{style:'text-align:center;margin-bottom:6px'},s.title));var gr=el('div',{class:'flipgrid'+(s.one?' one':'')});
+   s.list.forEach(function(it,i){var f=el('button',{class:'fl',style:'--c:'+it.c+';--b:#fff'+(it.back.length>90?';height:190px':'')},el('div',{class:'in'},
      el('div',{class:'f'},el('div',{class:'g glyph'},it.g),el('b',{},it.t),el('small',{},it.s)),
      el('div',{class:'b'},el('span',{},it.back),it.em?el('em',{},it.em):null)));
-     f.addEventListener('click',function(){f.classList.toggle('on');seen[i]=1});gr.appendChild(f)});
-   wrap.appendChild(gr);wrap.appendChild(el('div',{class:'hint'},'Toque para virar a carta'));b.appendChild(wrap);return false},
- quiz:function(b,s,d,gate){var c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},'Pergunta'));c.appendChild(el('div',{class:'q'},s.q));var os=el('div',{class:'opts'});var tries=0,done=false;
-   s.o.forEach(function(t,i){var o=el('button',{class:'opt'},t);o.addEventListener('click',function(){if(done)return;if(i===s.a){done=true;o.classList.add('ok');addPts(tries?5:10);c.appendChild(el('div',{class:'why',html:'<b>Isso!</b> '+s.why}));gate()}else{tries++;o.classList.add('no')}});os.appendChild(o)});
-   c.appendChild(os);b.appendChild(c);return true},
- match:function(b,s,d,gate){var c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},'Jogo'));c.appendChild(el('div',{class:'q'},s.title));
-   var L=shuffle(s.pairs.map(function(p,i){return {i:i,t:p[0]}})),Rr=shuffle(s.pairs.map(function(p,i){return {i:i,t:p[1]}}));
+     f.addEventListener('click',function(){f.classList.toggle('on')});gr.appendChild(f)});
+   wrap.appendChild(gr);wrap.appendChild(el('div',{class:'hint'},L('Toque para virar a carta','Tap to flip the card')));b.appendChild(wrap);return false},
+ quiz:function(b,s,d,gate){var c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},L('Pergunta','Question')));c.appendChild(el('div',{class:'q'},s.q));var os=el('div',{class:'opts'});var tries=0,done=false;
+   var note=el('div',{class:'why bad',style:'display:none'});
+   s.o.forEach(function(t,i){var o=el('button',{class:'opt'},N(t));o.addEventListener('click',function(){if(done)return;if(i===s.a){done=true;o.classList.add('ok');note.remove();addPts(tries?5:10);c.appendChild(el('div',{class:'why',html:'<b>'+L('Isso!','Yes!')+'</b> '+s.why}));if(tries){var oh=othersHtml(s);if(oh)c.appendChild(el('div',{html:oh}))}gate()}else{tries++;o.classList.add('no');var m=optMeaning(s,i);note.style.display='block';note.innerHTML='<b>'+L('Ainda não.','Not yet.')+'</b> '+optLabel(t)+(m?': '+m+'.':'')+' '+L('Tente outra!','Try another!')}});os.appendChild(o)});
+   c.appendChild(os);c.appendChild(note);b.appendChild(c);return true},
+ match:function(b,s,d,gate){var c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},L('Jogo','Game')));c.appendChild(el('div',{class:'q'},s.title));
+   var Ls=shuffle(s.pairs.map(function(p,i){return {i:i,t:p[0]}})),Rr=shuffle(s.pairs.map(function(p,i){return {i:i,t:p[1]}}));
    var grid=el('div',{class:'match'});var colL=el('div',{style:'display:grid;gap:10px'}),colR=el('div',{style:'display:grid;gap:10px'});var sel=null,left=s.pairs.length,errs=0;
-   L.forEach(function(x){var e=el('button',{class:'mi'},el('b',{},x.t));e.dataset.i=x.i;e.addEventListener('click',function(){if(e.classList.contains('ok'))return;[].forEach.call(colL.children,function(k){k.classList.remove('sel')});e.classList.add('sel');sel=e});colL.appendChild(e)});
-   Rr.forEach(function(x){var e=el('button',{class:'mi'},x.t);e.dataset.i=x.i;e.addEventListener('click',function(){if(!sel||e.classList.contains('ok'))return;if(sel.dataset.i===e.dataset.i){sel.classList.remove('sel');sel.classList.add('ok');e.classList.add('ok');sel=null;left--;addPts(errs?2:4);if(!left){c.appendChild(el('div',{class:'why',html:'<b>Todas certas!</b> '+(errs?'Com '+errs+' tentativa(s) a mais, normal. Foi assim que o cérebro gravou.':'De primeira!')}));gate()}}else{errs++;e.classList.add('no');setTimeout(function(){e.classList.remove('no')},400)}});colR.appendChild(e)});
+   Ls.forEach(function(x){var e=el('button',{class:'mi'},el('b',{},N(x.t)));e.dataset.i=x.i;e.addEventListener('click',function(){if(e.classList.contains('ok'))return;[].forEach.call(colL.children,function(k){k.classList.remove('sel')});e.classList.add('sel');sel=e});colL.appendChild(e)});
+   Rr.forEach(function(x){var e=el('button',{class:'mi'},N(x.t));e.dataset.i=x.i;e.addEventListener('click',function(){if(!sel||e.classList.contains('ok'))return;if(sel.dataset.i===e.dataset.i){sel.classList.remove('sel');sel.classList.add('ok');e.classList.add('ok');sel=null;left--;addPts(errs?2:4);if(!left){c.appendChild(el('div',{class:'why',html:'<b>'+L('Todas certas!','All correct!')+'</b> '+(errs?L('Com '+errs+' tentativa(s) a mais, normal. Foi assim que o cérebro gravou.','With '+errs+' extra attempt(s), which is normal. That is how your brain stored it.'):L('De primeira!','First try!'))}));gate()}}else{errs++;e.classList.add('no');setTimeout(function(){e.classList.remove('no')},400)}});colR.appendChild(e)});
    grid.appendChild(colL);grid.appendChild(colR);c.appendChild(grid);b.appendChild(c);return true},
  build:function(b,s,d,gate){var c=el('div',{class:'card'});var ri=0;
-   function round(){c.innerHTML='';var r=s.rounds[ri];c.appendChild(el('div',{class:'tag'},'Monte a frase '+(ri+1)+'/'+s.rounds.length));c.appendChild(el('div',{class:'scn'},r.s));var picks=[null,null,null],labels=['Quem faz? (planeta)','Como faz? (signo)','Onde faz? (casa)'];var chipsEls=[];
-     r.o.forEach(function(opts,si){var slot=el('div',{class:'slot'},el('label',{},labels[si]));var ch=el('div',{class:'chips'});chipsEls[si]=[];opts.forEach(function(t){var chip=el('button',{class:'chip'},(si===2?'Casa ':'')+t);chip.addEventListener('click',function(){if(chk.disabled===false&&chk.dataset.done)return;chipsEls[si].forEach(function(x){x.classList.remove('sel')});chip.classList.add('sel');picks[si]=t;chk.disabled=picks.indexOf(null)>=0});chipsEls[si].push(chip);ch.appendChild(chip)});slot.appendChild(ch);c.appendChild(slot)});
-     var chk=el('button',{class:'btn gold wide',style:'margin-top:8px',disabled:''},'Conferir');chk.disabled=true;
-     chk.addEventListener('click',function(){var okAll=true;picks.forEach(function(p,si){chipsEls[si].forEach(function(x){var txt=x.textContent.replace('Casa ','');if(x.classList.contains('sel')){x.classList.remove('sel');x.classList.add(txt===r.a[si]?'ok':'no')}else if(txt===r.a[si]&&p!==r.a[si]){x.classList.add('ok')}});if(p!==r.a[si])okAll=false});
-       chk.dataset.done=1;addPts(okAll?15:5);c.appendChild(el('div',{class:'why',html:'<b>'+(okAll?'Perfeito!':'Quase!')+'</b> '+r.why}));
-       chk.remove();if(ri<s.rounds.length-1){c.appendChild(el('button',{class:'btn wide',style:'margin-top:10px',onclick:function(){ri++;round()}},'Próxima frase'))}else gate()});
+   function round(){c.innerHTML='';var r=s.rounds[ri];c.appendChild(el('div',{class:'tag'},L('Monte a frase ','Build the sentence ')+(ri+1)+'/'+s.rounds.length));c.appendChild(el('div',{class:'scn'},r.s));var picks=[null,null,null],labels=[L('Quem faz? (planeta)','Who does it? (planet)'),L('Como faz? (signo)','How? (sign)'),L('Onde faz? (casa)','Where? (house)')];var chipsEls=[];
+     r.o.forEach(function(opts,si){var slot=el('div',{class:'slot'},el('label',{},labels[si]));var ch=el('div',{class:'chips'});chipsEls[si]=[];opts.forEach(function(t){var chip=el('button',{class:'chip'},si===2?Hc(t):N(t));chip.dataset.k=t;chip.addEventListener('click',function(){if(chk.dataset.done)return;chipsEls[si].forEach(function(x){x.classList.remove('sel')});chip.classList.add('sel');picks[si]=t;chk.disabled=picks.indexOf(null)>=0});chipsEls[si].push(chip);ch.appendChild(chip)});slot.appendChild(ch);c.appendChild(slot)});
+     var chk=el('button',{class:'btn gold wide',style:'margin-top:8px',disabled:''},L('Conferir','Check'));chk.disabled=true;
+     chk.addEventListener('click',function(){var okAll=true;picks.forEach(function(p,si){chipsEls[si].forEach(function(x){var txt=x.dataset.k;if(x.classList.contains('sel')){x.classList.remove('sel');x.classList.add(txt===r.a[si]?'ok':'no')}else if(txt===r.a[si]&&p!==r.a[si]){x.classList.add('ok')}});if(p!==r.a[si])okAll=false});
+       chk.dataset.done=1;addPts(okAll?15:5);c.appendChild(el('div',{class:'why',html:'<b>'+(okAll?L('Perfeito!','Perfect!'):L('Quase!','Almost!'))+'</b> '+r.why}));
+       if(!okAll){var li='';picks.forEach(function(p,si){if(p!==r.a[si]){var m=meaningOf(p);if(m)li+='<li><b>'+(si===2?Hc(p):N(p))+'</b>: '+m+'</li>'}});if(li)c.appendChild(el('div',{class:'oth',html:'<b>'+L('O que as outras escolhas significam:','What the other choices mean:')+'</b><ul>'+li+'</ul>'}))}
+       chk.remove();if(ri<s.rounds.length-1){c.appendChild(el('button',{class:'btn wide',style:'margin-top:10px',onclick:function(){ri++;round()}},L('Próxima frase','Next sentence')))}else gate()});
      c.appendChild(chk)}
    round();b.appendChild(c);return true},
- mission:function(b,s,d,gate){var c=el('div',{class:'mission'},el('div',{class:'big'},s.big),el('span',{class:'tag'},'Missão'),el('h2',{style:'margin:4px 0 8px'},s.title),el('p',{html:s.body,style:'font-size:18px'}));
-   var cb=el('input',{type:'checkbox'});var lab=el('label',{class:'check'},cb,'Fiz! (ou vou fazer hoje)');cb.addEventListener('change',function(){if(cb.checked&&!c.dataset.p){c.dataset.p=1;addPts(20);toast('+20 estrelas');confetti()}gate()});
-   c.appendChild(lab);c.appendChild(el('p',{style:'font-size:14px;color:#7a6a88;margin-top:10px'},'Ensinar para alguém é o jeito mais rápido de aprender.'));b.appendChild(c);return false},
- mine:function(b){var l=CH.four.map(function(x){return [x[0],'',x[1]]});
-   var ul=el('ul',{});l.forEach(function(x){ul.appendChild(el('li',{html:'<b>'+x[0]+'</b>'+x[2]}))});
-   b.appendChild(el('div',{class:'mine'},el('div',{class:'tag'},'Juntando tudo'),el('h2',{style:'margin-bottom:6px'},'O seu mapa em 4 frases'),ul,el('p',{style:'font-size:15px;color:#7a6a88;margin-top:10px'},CH.curio)));return false}
+ mission:function(b,s,d,gate){var c=el('div',{class:'mission'},el('div',{class:'big'},s.big),el('span',{class:'tag'},L('Missão','Mission')),el('h2',{style:'margin:4px 0 8px'},s.title),el('p',{html:s.body,style:'font-size:18px'}));
+   var cb=el('input',{type:'checkbox'});var lab=el('label',{class:'check'},cb,L('Fiz! (ou vou fazer hoje)','Done! (or I will do it today)'));cb.addEventListener('change',function(){if(cb.checked&&!c.dataset.p){c.dataset.p=1;addPts(20);toast(L('+20 estrelas','+20 stars'));confetti()}gate()});
+   c.appendChild(lab);c.appendChild(el('p',{style:'font-size:14px;color:#7a6a88;margin-top:10px'},L('Ensinar para alguém é o jeito mais rápido de aprender.','Teaching someone is the fastest way to learn.')));b.appendChild(c);return false},
+ mine:function(b){var ul=el('ul',{});CH.four.forEach(function(x){ul.appendChild(el('li',{html:'<b>'+N(x[0])+'</b>'+x[1]}))});
+   b.appendChild(el('div',{class:'mine'},el('div',{class:'tag'},L('Juntando tudo','Putting it all together')),el('h2',{style:'margin-bottom:6px'},L('O seu mapa em 4 frases','Your chart in 4 sentences')),ul,el('p',{style:'font-size:15px;color:#7a6a88;margin-top:10px'},CH.curio)));return false}
 };
 
 /* ===== revisão ===== */
-var BANK=[
- {d:1,q:'Planeta é quem faz, signo é como faz e casa é...',o:['onde faz','quando faz','por que faz'],a:0,why:'Casa é o cenário: em que parte da vida.'},
- {d:2,q:'Qual planeta é o Mensageiro?',o:['Mercúrio','Marte','Vênus'],a:0,why:'Mercúrio: como você pensa e se comunica.'},
- {d:2,q:'Quem é o Motorzinho, a vontade de agir?',o:['Marte','Lua','Saturno'],a:0,why:'Marte: o que te acende.'},
- {d:3,q:'Quais planetas valem para uma geração inteira?',o:['Sol, Lua e Marte','Urano, Netuno e Plutão','Mercúrio e Vênus'],a:1,why:'São os lentos: a geração toda tem o mesmo signo.'},
- {d:4,q:'Qual elemento sente tudo fundo?',o:['Fogo','Água','Ar'],a:1,why:'Água: Câncer, Escorpião e Peixes.'},
- {d:5,q:'A casa 4 é o cômodo de quê?',o:['Carreira','Casa, família e raízes','Amigos'],a:1,why:'Casa 4: o fundo do coração.'},
- {d:5,q:'Amigos, grupos e sonhos de futuro moram na casa...',o:['11','6','2'],a:0,why:'Casa 11: amigos, grupos e sonhos de futuro.'},
- {d:6,q:'Quem manda em Capricórnio?',o:['Saturno','Júpiter','Urano'],a:0,why:'Saturno, o Professor rígido.'},
- {d:7,q:'Qual aspecto é o Cabo de guerra?',o:['Trígono','Quadratura','Sextil'],a:1,why:'Quadratura: puxam para lados diferentes.'}
-];
 function review(){
   var pool=BANK.filter(function(q){return S.done[q.d]});if(pool.length<1)pool=BANK.slice(0,3);
   var qs=shuffle(pool).slice(0,3);cur={review:true,i:0,ok:0};
@@ -428,212 +542,227 @@ function review(){
     app.innerHTML='';app.appendChild(topbar());
     var dots=el('div',{class:'dots'});qs.forEach(function(x,i){dots.appendChild(el('i',{class:i<cur.i?'on':(i===cur.i?'cur':'')}))});
     app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:home},'✕'),dots));
-    var s=qs[cur.i],c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},'Revisão rápida'));c.appendChild(el('div',{class:'q'},s.q));var os=el('div',{class:'opts'}),done=false,tries=0;
-    shuffle(s.o.map(function(t,i){return {t:t,r:i===s.a}})).forEach(function(x){var o=el('button',{class:'opt'},x.t);o.addEventListener('click',function(){if(done)return;if(x.r){done=true;o.classList.add('ok');if(!tries)cur.ok++;addPts(tries?3:6);c.appendChild(el('div',{class:'why',html:'<b>Isso!</b> '+s.why}));nx.removeAttribute('disabled')}else{tries++;o.classList.add('no')}});os.appendChild(o)});
-    c.appendChild(os);app.appendChild(c);
-    var nx=el('button',{class:'btn wide',disabled:'',onclick:function(){cur.i++;if(cur.i<qs.length)showQ();else{confetti();app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'card'},el('div',{class:'big glyph',style:'--c:#c9a35b'},'✦'),el('h2',{},'Revisão feita!'),el('p',{style:'text-align:center'},'Você acertou '+cur.ok+' de '+qs.length+' de primeira. Revisar é o que faz ficar.')));bottom([el('button',{class:'btn wide',onclick:home},'Voltar às missões')])}}},'Continuar');
+    var s=qs[cur.i],c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},L('Revisão rápida','Quick review')));c.appendChild(el('div',{class:'q'},s.q));var os=el('div',{class:'opts'}),done=false,tries=0;
+    var note=el('div',{class:'why bad',style:'display:none'});
+    shuffle(s.o.map(function(t,i){return {t:t,i:i,r:i===s.a}})).forEach(function(x){var o=el('button',{class:'opt'},N(x.t));o.addEventListener('click',function(){if(done)return;if(x.r){done=true;o.classList.add('ok');note.remove();if(!tries)cur.ok++;addPts(tries?3:6);c.appendChild(el('div',{class:'why',html:'<b>'+L('Isso!','Yes!')+'</b> '+s.why}));if(tries){var oh=othersHtml(s);if(oh)c.appendChild(el('div',{html:oh}))}nx.removeAttribute('disabled')}else{tries++;o.classList.add('no');var m=optMeaning(s,x.i);note.style.display='block';note.innerHTML='<b>'+L('Ainda não.','Not yet.')+'</b> '+optLabel(x.t)+(m?': '+m+'.':'')+' '+L('Tente outra!','Try another!')}});os.appendChild(o)});
+    c.appendChild(os);c.appendChild(note);app.appendChild(c);
+    var nx=el('button',{class:'btn wide',disabled:'',onclick:function(){cur.i++;if(cur.i<qs.length)showQ();else{confetti();app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'card'},el('div',{class:'big glyph',style:'--c:#c9a35b'},'✦'),el('h2',{},L('Revisão feita!','Review done!')),el('p',{style:'text-align:center'},L('Você acertou '+cur.ok+' de '+qs.length+' de primeira. Revisar é o que faz ficar.','You got '+cur.ok+' of '+qs.length+' right on the first try. Reviewing is what makes it stick.'))));bottom([el('button',{class:'btn wide',onclick:home},L('Voltar às missões','Back to missions'))])}}},L('Continuar','Continue'));
     bottom([nx]);window.scrollTo(0,0);
   }
   showQ();
 }
 
 /* ===== jogar juntas ===== */
-BANK=BANK.concat([
- {d:1,q:'No mapa, o que é o signo?',o:['O jeito, como faz','O lugar, onde faz','O personagem, quem faz'],a:0,why:'Signo é a fantasia: o jeito do planeta agir.'},
- {d:2,q:'Qual planeta é o Rei do show?',o:['Sol','Lua','Marte'],a:0,why:'O Sol: o que te faz sentir viva.'},
- {d:2,q:'Qual planeta cuida do amor e do prazer?',o:['Vênus','Saturno','Urano'],a:0,why:'Vênus: estilo, amor e prazer.'},
- {d:2,q:'O Coração, que sente e se liga às pessoas, é...',o:['Lua','Mercúrio','Júpiter'],a:0,why:'A Lua: como você se vincula emocionalmente.'},
- {d:3,q:'Quem é o Sonhador, da imaginação e da arte?',o:['Netuno','Plutão','Saturno'],a:0,why:'Netuno: sonhos, arte e intuição.'},
- {d:3,q:'Quem é o Mágico das transformações?',o:['Plutão','Júpiter','Vênus'],a:0,why:'Plutão: profundidade e renascimento.'},
- {d:4,q:'Áries, Leão e Sagitário são do elemento...',o:['Fogo','Terra','Água'],a:0,why:'Fogo: energia e coragem.'},
- {d:4,q:'Touro, Virgem e Capricórnio são do elemento...',o:['Terra','Ar','Fogo'],a:0,why:'Terra: pés no chão.'},
- {d:4,q:'Qual signo inventa o futuro?',o:['Aquário','Virgem','Câncer'],a:0,why:'Aquário: original, livre, pensa diferente.'},
- {d:5,q:'A casa 9 é a casa de...',o:['Estudos, viagens e crenças','Dinheiro','Rotina'],a:0,why:'Casa 9: estudar, ensinar, viajar e acreditar.'},
- {d:5,q:'Rotina e trabalho do dia a dia: casa...',o:['6','3','8'],a:0,why:'Casa 6: rotina, trabalho e saúde.'},
- {d:5,q:'Parcerias e casamento: casa...',o:['7','5','12'],a:0,why:'Casa 7: as relações a dois.'},
- {d:6,q:'Quem manda em Touro e em Libra?',o:['Vênus','Marte','Mercúrio'],a:0,why:'Vênus rege os dois.'},
- {d:6,q:'Quem é o regente moderno de Aquário?',o:['Urano','Saturno','Netuno'],a:0,why:'Urano (o tradicional é Saturno).'},
- {d:7,q:'Qual aspecto é a Gangorra, dois lados do mesmo assunto?',o:['Oposição','Conjunção','Sextil'],a:0,why:'Oposição: equilibrar os dois lados.'},
- {d:7,q:'Qual aspecto é o Abraço, planetas colados?',o:['Conjunção','Trígono','Quadratura'],a:0,why:'Conjunção: as forças se misturam.'},
- {d:7,q:'Os Melhores amigos, que fluem fácil, são o...',o:['Trígono','Oposição','Quadratura'],a:0,why:'Trígono: talento natural.'}
-]);
-var EXPLAIN=['O que é um regente?','Qual a diferença entre planeta, signo e casa?','O que o Mercúrio mostra no mapa?','O que é um trígono e o que é uma quadratura?','O que a casa 11 representa?','Por que o Saturno é o Professor rígido?','Quais são os 4 elementos?','O que é o Ascendente?'];
 function hashS(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function mul(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function sshuf(arr,r){arr=arr.slice();for(var i=arr.length-1;i>0;i--){var j=Math.floor(r()*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t}return arr}
-function qopts(q,r){return sshuf(q.o.map(function(t,i){return {t:t,c:i===q.a}}),r)}
+function qopts(q,r){return sshuf(q.o.map(function(t,i){return {t:t,c:i===q.a,i:i}}),r)}
 function newCode(){var a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',c='';for(var i=0;i<4;i++)c+=a[Math.floor(Math.random()*a.length)];return c}
-function cleanName(n){return (n||'').replace(/[^A-Za-zÀ-ÿ0-9 ]/g,'').trim().slice(0,12)||'Jogadora'}
-function copyText(t){var okc=false;try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){toast('Copiado!')},function(){fallbackCopy(t)});return}}catch(e){}fallbackCopy(t)}
-function fallbackCopy(t){var ta=el('textarea',{style:'position:fixed;left:-999px;top:0'});ta.value=t;document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();toast(ok?'Copiado!':'Segure o código e escolha Copiar')}
-function choiceCard(q,opts,tagTxt,onDone){var c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},tagTxt));c.appendChild(el('div',{class:'q'},q.q));var box=el('div',{class:'opts'});var done=false;
- opts.forEach(function(x){var b=el('button',{class:'opt'},x.t);b.addEventListener('click',function(){if(done)return;done=true;b.classList.add(x.c?'ok':'no');if(!x.c){[].forEach.call(box.children,function(k,i){if(opts[i].c)k.classList.add('ok')})}c.appendChild(el('div',{class:'why',html:(x.c?'<b>Isso!</b> ':'<b>Quase.</b> ')+q.why}));onDone(x.c)});box.appendChild(b)});c.appendChild(box);return c}
+function cleanName(n){return (n||'').replace(/[^A-Za-zÀ-ÿ0-9 ]/g,'').trim().slice(0,12)||L('Jogadora','Player')}
+function copyText(t){try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){toast(L('Copiado!','Copied!'))},function(){fallbackCopy(t)});return}}catch(e){}fallbackCopy(t)}
+function fallbackCopy(t){var ta=el('textarea',{style:'position:fixed;left:-999px;top:0'});ta.value=t;document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();toast(ok?L('Copiado!','Copied!'):L('Segure o código e escolha Copiar','Hold the code and choose Copy'))}
+
+/* pergunta de múltipla escolha, com cronômetro opcional (secs) e explicação das outras respostas */
+function choiceCard(q,opts,tagTxt,onDone,secs){
+  var c=el('div',{class:'card'});c.appendChild(el('div',{class:'tag'},tagTxt+(secs?' ⚡':'')));
+  var tm=null,tl=null;
+  if(secs){tl=el('b',{},String(secs));tm=el('div',{class:'tmr'},el('i',{}),el('span',{},'⏱ ',tl,'s'));c.appendChild(tm)}
+  c.appendChild(el('div',{class:'q'},q.q));var box=el('div',{class:'opts'});var done=false,iv=null,t0=Date.now();
+  function reveal(){[].forEach.call(box.children,function(k,i){if(opts[i].c)k.classList.add('ok')})}
+  function finishMsg(head){var h=head+' '+q.why;c.appendChild(el('div',{class:'why',html:h}));var oh=othersHtml(q);if(oh)c.appendChild(el('div',{html:oh}))}
+  opts.forEach(function(x){var b=el('button',{class:'opt'},N(x.t));b.addEventListener('click',function(){if(done)return;done=true;if(iv)clearInterval(iv);if(tm)tm.classList.add('stop');b.classList.add(x.c?'ok':'no');if(!x.c)reveal();
+    if(x.c)c.appendChild(el('div',{class:'why',html:'<b>'+L('Isso!','Yes!')+'</b> '+q.why+(secs?' ⚡':'')}));
+    else{finishMsg('<b>'+L('Quase.','Almost.')+'</b>')}
+    onDone(x.c,false)});box.appendChild(b)});
+  c.appendChild(box);
+  if(secs){iv=setInterval(function(){if(done){clearInterval(iv);return}
+    if(!c.isConnected&&Date.now()-t0>1500){clearInterval(iv);return}
+    var left=secs-(Date.now()-t0)/1000;if(left<0)left=0;tm.firstChild.style.width=(left/secs*100)+'%';tl.textContent=String(Math.ceil(left));if(left<=3)tm.classList.add('hurry');
+    if(left<=0){clearInterval(iv);done=true;[].forEach.call(box.children,function(k){k.classList.add('lock')});reveal();finishMsg('<b>⏰ '+L('Acabou o tempo!','Time is up!')+'</b>');onDone(false,true)}},100)}
+  return c}
 function dotsBar(n,i){var d=el('div',{class:'dots'});for(var k=0;k<n;k++)d.appendChild(el('i',{class:k<i?'on':(k===i?'cur':'')}));return d}
-function screen(title,backFn){app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:backFn||together,'aria-label':'Voltar'},'‹'),el('h2',{style:'flex:1'},title)))}
+function screen(title,backFn){app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:backFn||together,'aria-label':L('Voltar','Back')},'‹'),el('h2',{style:'flex:1'},title)))}
 
 function together(){
-  cur=null;app.innerHTML='';app.appendChild(topbar());
-  app.appendChild(el('div',{class:'row sp'},el('h2',{},'Jogar juntas'),el('button',{class:'link',onclick:home},'Voltar')));
-  app.appendChild(el('p',{},'Para a Sarah e a Renata aprenderem uma com a outra. Escolham como jogar.'));
+  cur=null;app.innerHTML='';app.appendChild(topbar());var other=CHARTS[CH.other].name;
+  app.appendChild(el('div',{class:'row sp'},el('h2',{},L('Jogar juntas','Play together')),el('button',{class:'link',onclick:home},L('Voltar','Back'))));
+  app.appendChild(el('p',{},L('Para a Sarah e a Renata aprenderem uma com a outra. Escolham como jogar.','For Sarah and Renata to learn from each other. Choose how to play.')));
   var tiles=[
-   ['📞','Na mesma tela','Em chamada de vídeo ou lado a lado. Por turnos, com placar e desafios de explicar em voz alta.',liveSetup],
-   ['⚔️','Duelo à distância','Cada uma no seu celular, com as mesmas perguntas. Depois vocês comparam o resultado.',duelMenu],
-   ['💌','Pergunta para a outra','Crie uma pergunta e mande o código. Ensinar é aprender duas vezes.',askMenu]
+   ['📞',L('Na mesma tela','On the same screen'),L('Em chamada de vídeo ou lado a lado. Por turnos, com placar e desafios de explicar em voz alta.','On a video call or side by side. In turns, with a scoreboard and out-loud explaining challenges.'),liveSetup],
+   ['⚔️',L('Duelo à distância','Long-distance duel'),L('Cada uma no seu celular, com as mesmas perguntas e rodadas relâmpago. Depois vocês comparam o resultado.','Each on your own phone, with the same questions and lightning rounds. Then you compare results.'),duelMenu],
+   ['💌',L('Pergunta para a outra','A question for the other'),L('Crie uma pergunta e mande o código. Ensinar é aprender duas vezes.','Create a question and send the code. Teaching is learning twice.'),askMenu]
   ];
   tiles.forEach(function(t){app.appendChild(el('button',{class:'day',style:'margin-top:12px',onclick:t[3]},el('div',{class:'n',style:'--c:#c9a35b'},t[0]),el('div',{},el('b',{},t[1]),el('small',{},t[2])),el('div',{class:'st'},'›')))});
-  bottom([el('button',{class:'btn wide',onclick:home},'Voltar às missões')]);
+  bottom([el('button',{class:'btn wide',onclick:home},L('Voltar às missões','Back to missions'))]);
 }
 
 /* --- 1. mesma tela --- */
 function liveSetup(){
-  screen('Na mesma tela',together);
-  var c=el('div',{class:'card'});c.appendChild(el('p',{},'Quem joga? Vocês se revezam. A cada 3 turnos tem um desafio de explicar em voz alta, e a outra dá a nota.'));
+  screen(L('Na mesma tela','On the same screen'),together);
+  var c=el('div',{class:'card'});c.appendChild(el('p',{},L('Quem joga? Vocês se revezam. A cada 3 turnos tem um desafio de explicar em voz alta, com 20 segundos no relógio, e a outra dá a nota. Tem também perguntas relâmpago ⚡.','Who is playing? You take turns. Every 3 turns there is an out-loud explaining challenge, with 20 seconds on the clock, and the other gives the grade. There are also lightning questions ⚡.')));
   var a=el('input',{class:'inp',value:CH.name,maxlength:12}),b=el('input',{class:'inp',value:CHARTS[CH.other].name,maxlength:12});
-  c.appendChild(el('div',{class:'slot'},el('label',{},'Jogadora 1'),a));c.appendChild(el('div',{class:'slot'},el('label',{},'Jogadora 2'),b));
-  c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:8px',id:'go-live',onclick:function(){S.name=cleanName(a.value);save();liveStart([cleanName(a.value),cleanName(b.value)])}},'Começar'));
+  c.appendChild(el('div',{class:'slot'},el('label',{},L('Jogadora 1','Player 1')),a));c.appendChild(el('div',{class:'slot'},el('label',{},L('Jogadora 2','Player 2')),b));
+  c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:8px',id:'go-live',onclick:function(){S.name=cleanName(a.value);save();liveStart([cleanName(a.value),cleanName(b.value)])}},L('Começar','Start')));
   app.appendChild(c);bottom([]);
 }
+function explainTimer(){
+  var big=el('div',{class:'bigtime',id:'xtime'},'20');var go=el('button',{class:'btn ghost wide',id:'xstart'},L('▶ Começar os 20 segundos','▶ Start the 20 seconds'));var iv=null;
+  go.addEventListener('click',function(){if(iv)return;go.setAttribute('disabled','');var t0=Date.now();big.classList.remove('end');iv=setInterval(function(){var left=Math.ceil(20-(Date.now()-t0)/1000);if(left<0)left=0;big.textContent=String(left);if(left<=5)big.classList.add('hurry');if(left<=0){clearInterval(iv);big.classList.add('end');big.textContent='⏰';try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}toast(L('Tempo!','Time!'))}if(!big.isConnected){clearInterval(iv)}},200)});
+  return el('div',{},big,go)}
 function liveStart(names){
-  var N=9,qs=shuffle(BANK).slice(0,N),ex=shuffle(EXPLAIN),pts=[0,0],i=0;
+  var N_=9,qs=shuffle(BANK).slice(0,N_),ex=shuffle(EXPLAIN),pts=[0,0],i=0;
   function show(){
-    if(i>=N)return end();
-    app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:together},'✕'),dotsBar(N,i)));
+    if(i>=N_)return end();
+    app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:together},'✕'),dotsBar(N_,i)));
     var p=i%2;var sc=el('div',{class:'score'});names.forEach(function(n,k){sc.appendChild(el('div',{class:k===p?'on':''},n,el('b',{},String(pts[k]))))});app.appendChild(sc);
-    var explain=(i%3===2);
+    var explain=(i%3===2),fast=(i%3===1);
     if(!explain){
       var q=qs[i],r=mul(hashS('live'+i+Date.now()));
-      var card=choiceCard(q,qopts(q,r),'Vez de '+names[p],function(ok){if(ok)pts[p]+=10;sc.children[p].lastChild.textContent=pts[p];nx.removeAttribute('disabled')});
+      var card=choiceCard(q,qopts(q,r),L('Vez de ','Turn of ')+names[p],function(ok){if(ok)pts[p]+=fast?15:10;sc.children[p].lastChild.textContent=pts[p];nx.removeAttribute('disabled')},fast?12:0);
       app.appendChild(card);
     }else{
       var topic=ex[Math.floor(i/3)%ex.length],judge=names[1-p];
-      var card=el('div',{class:'mission'},el('div',{class:'big'},'🎙️'),el('span',{class:'tag'},'Desafio de explicar'),el('h2',{style:'margin:4px 0 8px'},names[p]+', explique em 20 segundos:'),el('p',{style:'font-size:20px;font-family:Georgia,serif;color:#4a2370'},topic),el('p',{style:'font-size:15px;color:#7a6a88'},judge+' dá a nota:'));
+      var card=el('div',{class:'mission'},el('div',{class:'big'},'🎙️'),el('span',{class:'tag'},L('Desafio de explicar','Explaining challenge')),el('h2',{style:'margin:4px 0 8px'},names[p]+L(', explique em 20 segundos:',', explain in 20 seconds:')),el('p',{style:'font-size:20px;font-family:Georgia,serif;color:#4a2370'},topic),explainTimer(),el('p',{style:'font-size:15px;color:#7a6a88'},judge+L(' dá a nota:',' gives the grade:')));
       var row=el('div',{class:'row',style:'justify-content:center;margin-top:10px'});
-      [['Mandou bem! +10',10],['Quase +5',5],['Vamos rever +0',0]].forEach(function(o){row.appendChild(el('button',{class:'btn '+(o[1]?'gold':'ghost'),style:'padding:10px 12px;font-size:14px',onclick:function(){pts[p]+=o[1];sc.children[p].lastChild.textContent=pts[p];[].forEach.call(row.children,function(k){k.setAttribute('disabled','')});nx.removeAttribute('disabled');if(o[1]===10)confetti()}},o[0]))});
+      [[L('Mandou bem! +10','Nailed it! +10'),10],[L('Quase +5','Almost +5'),5],[L('Vamos rever +0','Let us review +0'),0]].forEach(function(o){row.appendChild(el('button',{class:'btn '+(o[1]?'gold':'ghost'),style:'padding:10px 12px;font-size:14px',onclick:function(){pts[p]+=o[1];sc.children[p].lastChild.textContent=pts[p];[].forEach.call(row.children,function(k){k.setAttribute('disabled','')});nx.removeAttribute('disabled');if(o[1]===10)confetti()}},o[0]))});
       card.appendChild(row);app.appendChild(card);
     }
-    var nx=el('button',{class:'btn wide',disabled:'',onclick:function(){i++;show()}},i===N-1?'Ver o placar final':'Passar a vez');
+    var nx=el('button',{class:'btn wide',disabled:'',onclick:function(){i++;show()}},i===N_-1?L('Ver o placar final','See the final score'):L('Passar a vez','Pass the turn'));
     bottom([nx]);window.scrollTo(0,0);
   }
   function end(){
     confetti();app.innerHTML='';app.appendChild(topbar());
     var w=pts[0]===pts[1]?-1:(pts[0]>pts[1]?0:1);
-    app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},'Fim de jogo'),el('h1',{},w<0?'Empate!':names[w]+' venceu!'),el('p',{html:'<b>'+names[0]+'</b> '+pts[0]+' x '+pts[1]+' <b>'+names[1]+'</b>'}),el('p',{},w<0?'As duas sabem igual. Dá para desempatar na revanche.':'Quem perdeu ganhou uma aula. Mostrem o que erraram uma para a outra.')));
-    bottom([el('button',{class:'btn ghost',onclick:together},'Outros jogos'),el('button',{class:'btn gold',onclick:function(){liveStart(names)}},'Revanche')]);window.scrollTo(0,0);
+    app.appendChild(el('div',{class:'cert'},el('div',{class:'tag'},L('Fim de jogo','Game over')),el('h1',{},w<0?L('Empate!','Tie!'):names[w]+L(' venceu!',' wins!')),el('p',{html:'<b>'+names[0]+'</b> '+pts[0]+' x '+pts[1]+' <b>'+names[1]+'</b>'}),el('p',{},w<0?L('As duas sabem igual. Dá para desempatar na revanche.','You both know the same. You can break the tie in a rematch.'):L('Quem perdeu ganhou uma aula. Mostrem o que erraram uma para a outra.','Whoever lost won a lesson. Show each other what you got wrong.'))));
+    bottom([el('button',{class:'btn ghost',onclick:together},L('Outros jogos','Other games')),el('button',{class:'btn gold',onclick:function(){liveStart(names)}},L('Revanche','Rematch'))]);window.scrollTo(0,0);
   }
   show();
 }
 
 /* --- 2. duelo à distância --- */
 function duelMenu(){
-  screen('Duelo à distância',together);
+  screen(L('Duelo à distância','Long-distance duel'),together);
   var c=el('div',{class:'card'});
-  c.appendChild(el('p',{},'Cada uma joga no seu celular as mesmas 8 perguntas. No fim, vocês trocam o código do resultado e comparam.'));
-  var nm=el('input',{class:'inp',value:S.name||'',placeholder:'Seu nome',maxlength:12,id:'duel-name'});
-  c.appendChild(el('div',{class:'slot'},el('label',{},'Seu nome'),nm));
-  c.appendChild(el('button',{class:'btn gold wide',onclick:function(){S.name=cleanName(nm.value);save();var code=newCode();duelIntro(code,true)}},'Criar um duelo novo'));
-  c.appendChild(el('p',{style:'text-align:center;color:#7a6a88;margin:14px 0 4px'},'ou entre no duelo da outra'));
-  var cd=el('input',{class:'inp',placeholder:'Código do duelo (4 letras)',maxlength:4,style:'text-transform:uppercase;text-align:center;letter-spacing:.3em',id:'duel-code'});
+  c.appendChild(el('p',{},L('Cada uma joga no seu celular as mesmas 8 perguntas, com 4 rodadas relâmpago ⚡ (12 segundos, vale 15 pontos). No fim, vocês trocam o código do resultado e comparam.','Each of you plays the same 8 questions on your own phone, with 4 lightning rounds ⚡ (12 seconds, worth 15 points). At the end, you swap result codes and compare.')));
+  c.appendChild(el('p',{style:'font-size:14px;color:#7a6a88'},L('As perguntas vêm de todos os 7 dias. Faça as missões antes para jogar melhor.','The questions come from all 7 days. Do the missions first to play better.')));
+  var nm=el('input',{class:'inp',value:S.name||'',placeholder:L('Seu nome','Your name'),maxlength:12,id:'duel-name'});
+  c.appendChild(el('div',{class:'slot'},el('label',{},L('Seu nome','Your name')),nm));
+  c.appendChild(el('button',{class:'btn gold wide',onclick:function(){S.name=cleanName(nm.value);save();var code=newCode();duelIntro(code,true)}},L('Criar um duelo novo','Create a new duel')));
+  c.appendChild(el('p',{style:'text-align:center;color:#7a6a88;margin:14px 0 4px'},L('ou entre no duelo da outra','or join the other one\'s duel')));
+  var cd=el('input',{class:'inp',placeholder:L('Código do duelo (4 letras)','Duel code (4 letters)'),maxlength:4,style:'text-transform:uppercase;text-align:center;letter-spacing:.3em',id:'duel-code'});
   c.appendChild(cd);
-  c.appendChild(el('button',{class:'btn wide',style:'margin-top:10px',id:'duel-join',onclick:function(){var v=cd.value.trim().toUpperCase();if(v.length!==4){toast('O código tem 4 letras');return}S.name=cleanName(nm.value);save();duelIntro(v,false)}},'Entrar no duelo'));
+  c.appendChild(el('button',{class:'btn wide',style:'margin-top:10px',id:'duel-join',onclick:function(){var v=cd.value.trim().toUpperCase();if(v.length!==4){toast(L('O código tem 4 letras','The code has 4 letters'));return}S.name=cleanName(nm.value);save();duelIntro(v,false)}},L('Entrar no duelo','Join the duel')));
   app.appendChild(c);bottom([]);
 }
 function duelIntro(code,creator){
-  screen('Duelo '+code,duelMenu);
+  screen(L('Duelo ','Duel ')+code,duelMenu);
   var c=el('div',{class:'card'});
-  c.appendChild(el('div',{style:'text-align:center'},el('span',{class:'tag'},'Código do duelo')));
+  c.appendChild(el('div',{style:'text-align:center'},el('span',{class:'tag'},L('Código do duelo','Duel code'))));
   c.appendChild(el('div',{class:'codebox'},code));
-  c.appendChild(el('p',{style:'text-align:center'},creator?'Mande este código para a outra. Quando as duas estiverem prontas, jogue!':'Joguem o mesmo código para comparar.'));
-  if(creator)c.appendChild(el('button',{class:'btn ghost wide',onclick:function(){copyText('Duelo Missão Astro! Código: '+code)}},'Copiar convite'));
-  c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:10px',id:'duel-start',onclick:function(){playDuel(code)}},'Jogar agora'));
+  c.appendChild(el('p',{style:'text-align:center'},creator?L('Mande este código para a outra. Quando as duas estiverem prontas, jogue!','Send this code to the other. When you are both ready, play!'):L('Joguem o mesmo código para comparar.','Play the same code to compare.')));
+  if(creator)c.appendChild(el('button',{class:'btn ghost wide',onclick:function(){copyText(L('Duelo Missão Astro! Código: ','Astro Mission duel! Code: ')+code)}},L('Copiar convite','Copy invite')));
+  c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:10px',id:'duel-start',onclick:function(){playDuel(code)}},L('Jogar agora','Play now')));
   app.appendChild(c);bottom([]);
 }
 function playDuel(code){
-  var N=8,pool=sshuf(BANK,mul(hashS(code))).slice(0,N),i=0,score=0,t0=Date.now(),name=cleanName(S.name);
+  var N_=8,pool=sshuf(BANK,mul(hashS(code))).slice(0,N_),i=0,score=0,t0=Date.now(),name=cleanName(S.name);
   function show(){
-    if(i>=N)return finish();
-    app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:function(){duelIntro(code,false)}},'✕'),dotsBar(N,i)));
-    var q=pool[i];app.appendChild(choiceCard(q,qopts(q,mul(hashS(code+':'+i))),'Duelo '+code+' · '+(i+1)+'/'+N,function(ok){if(ok)score+=10;nx.removeAttribute('disabled')}));
-    var nx=el('button',{class:'btn wide',disabled:'',onclick:function(){i++;show()}},i===N-1?'Ver o resultado':'Próxima');bottom([nx]);window.scrollTo(0,0);
+    if(i>=N_)return finish();
+    app.innerHTML='';app.appendChild(topbar());app.appendChild(el('div',{class:'lt'},el('button',{class:'x',onclick:function(){duelIntro(code,false)}},'✕'),dotsBar(N_,i)));
+    var q=pool[i],fast=(i%2===1);app.appendChild(choiceCard(q,qopts(q,mul(hashS(code+':'+i))),L('Duelo ','Duel ')+code+' · '+(i+1)+'/'+N_,function(ok){if(ok)score+=fast?15:10;nx.removeAttribute('disabled')},fast?12:0));
+    var nx=el('button',{class:'btn wide',disabled:'',onclick:function(){i++;show()}},i===N_-1?L('Ver o resultado','See the result'):L('Próxima','Next'));bottom([nx]);window.scrollTo(0,0);
   }
   function finish(){
     var secs=Math.round((Date.now()-t0)/1000),res=code+'-'+score+'-'+secs+'-'+name.replace(/ /g,'_');
     confetti();app.innerHTML='';app.appendChild(topbar());
-    var c=el('div',{class:'card'});c.appendChild(el('div',{style:'text-align:center'},el('span',{class:'tag'},'O seu resultado')));
-    c.appendChild(el('h2',{},score+' pontos em '+secs+'s'));
-    c.appendChild(el('p',{style:'text-align:center'},'Mande este código para a outra:'));c.appendChild(el('div',{class:'codebox',style:'font-size:16px;letter-spacing:.08em',id:'res-code'},res));
-    c.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText('Meu resultado no duelo '+code+': '+res)}},'Copiar meu resultado'));
-    c.appendChild(el('p',{style:'text-align:center;margin:14px 0 4px'},'Cole aqui o código dela para comparar:'));
-    var inp=el('input',{class:'inp',placeholder:'Ex.: '+code+'-80-74-Renata',id:'cmp-in'});c.appendChild(inp);
+    var c=el('div',{class:'card'});c.appendChild(el('div',{style:'text-align:center'},el('span',{class:'tag'},L('O seu resultado','Your result'))));
+    c.appendChild(el('h2',{},L(score+' pontos em '+secs+'s',score+' points in '+secs+'s')));
+    c.appendChild(el('p',{style:'text-align:center'},L('Mande este código para a outra:','Send this code to the other:')));c.appendChild(el('div',{class:'codebox',style:'font-size:16px;letter-spacing:.08em',id:'res-code'},res));
+    c.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText(res)}},L('Copiar meu resultado','Copy my result')));
+    c.appendChild(el('p',{style:'text-align:center;margin:14px 0 4px'},L('Cole aqui o código dela para comparar:','Paste her code here to compare:')));
+    var inp=el('input',{class:'inp',placeholder:L('Ex.: ','E.g.: ')+code+'-80-74-Renata',id:'cmp-in'});c.appendChild(inp);
     var out=el('div',{id:'cmp-out'});
-    c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:10px',id:'cmp-go',onclick:function(){out.innerHTML='';compare(res,inp.value,code,out)}},'Comparar'));
+    c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:10px',id:'cmp-go',onclick:function(){out.innerHTML='';compare(res,inp.value,code,out)}},L('Comparar','Compare')));
     c.appendChild(out);app.appendChild(c);
-    bottom([el('button',{class:'btn ghost',onclick:together},'Outros jogos'),el('button',{class:'btn',onclick:home},'Início')]);window.scrollTo(0,0);
+    bottom([el('button',{class:'btn ghost',onclick:together},L('Outros jogos','Other games')),el('button',{class:'btn',onclick:home},L('Início','Home'))]);window.scrollTo(0,0);
   }
   show();
 }
 function parseRes(s){var p=(s||'').trim().split(/\s+/).pop().split('-');if(p.length<4)return null;return {code:p[0].toUpperCase(),score:+p[1],secs:+p[2],name:p.slice(3).join('-').replace(/_/g,' ')}}
 function compare(mine,theirs,code,out){
   var a=parseRes(mine),b=parseRes(theirs);
-  if(!b||isNaN(b.score)||isNaN(b.secs)){out.appendChild(el('div',{class:'why'},'Não entendi esse código. Cole o resultado inteiro que ela mandou.'));return}
-  if(b.code!==code.toUpperCase()){out.appendChild(el('div',{class:'why'},'Esse resultado é de outro duelo ('+b.code+'). Joguem o mesmo código.'));return}
+  if(!b||isNaN(b.score)||isNaN(b.secs)){out.appendChild(el('div',{class:'why'},L('Não entendi esse código. Cole o resultado inteiro que ela mandou.','I did not understand that code. Paste the whole result she sent.')));return}
+  if(b.code!==code.toUpperCase()){out.appendChild(el('div',{class:'why'},L('Esse resultado é de outro duelo ('+b.code+'). Joguem o mesmo código.','That result is from another duel ('+b.code+'). Play the same code.')));return}
   var w=a.score===b.score?(a.secs===b.secs?-1:(a.secs<b.secs?0:1)):(a.score>b.score?0:1);
-  var msg=w<0?'Empate total!':(w===0?a.name:b.name)+' venceu'+(a.score===b.score?' no tempo':'')+'!';
-  out.appendChild(el('div',{class:'cmp',html:'<table><tr><th></th><th>Pontos</th><th>Tempo</th></tr><tr><td><b>'+a.name+'</b></td><td>'+a.score+'</td><td>'+a.secs+'s</td></tr><tr><td><b>'+b.name+'</b></td><td>'+b.score+'</td><td>'+b.secs+'s</td></tr></table><p class="win">'+msg+'</p>'}));
+  var msg=w<0?L('Empate total!','Total tie!'):(w===0?a.name:b.name)+L(' venceu'+(a.score===b.score?' no tempo':'')+'!',' wins'+(a.score===b.score?' on time':'')+'!');
+  out.appendChild(el('div',{class:'cmp',html:'<table><tr><th></th><th>'+L('Pontos','Points')+'</th><th>'+L('Tempo','Time')+'</th></tr><tr><td><b>'+a.name+'</b></td><td>'+a.score+'</td><td>'+a.secs+'s</td></tr><tr><td><b>'+b.name+'</b></td><td>'+b.score+'</td><td>'+b.secs+'s</td></tr></table><p class="win">'+msg+'</p>'}));
   if(w>=0)confetti();
 }
 
 /* --- 3. pergunta para a outra --- */
 function askMenu(){
-  screen('Pergunta para a outra',together);
-  var c=el('div',{class:'card'});c.appendChild(el('p',{},'Quem ensina aprende duas vezes. Crie uma pergunta com o que você sabe, ou responda a que a outra mandou.'));
-  c.appendChild(el('button',{class:'btn gold wide',id:'ask-new',onclick:askCreate},'Criar uma pergunta'));
-  c.appendChild(el('button',{class:'btn wide',style:'margin-top:10px',id:'ask-recv',onclick:askReceive},'Responder a uma pergunta'));
+  screen(L('Pergunta para a outra','A question for the other'),together);
+  var c=el('div',{class:'card'});c.appendChild(el('p',{},L('Quem ensina aprende duas vezes. Crie uma pergunta com o que você sabe, ou responda a que a outra mandou.','Whoever teaches learns twice. Create a question with what you know, or answer the one the other sent.')));
+  c.appendChild(el('button',{class:'btn gold wide',id:'ask-new',onclick:askCreate},L('Criar uma pergunta','Create a question')));
+  c.appendChild(el('button',{class:'btn wide',style:'margin-top:10px',id:'ask-recv',onclick:askReceive},L('Responder a uma pergunta','Answer a question')));
   app.appendChild(c);bottom([]);
 }
 function askCreate(){
-  screen('Criar pergunta',askMenu);
+  screen(L('Criar pergunta','Create a question'),askMenu);
   var c=el('div',{class:'card'});
-  var q=el('input',{class:'inp',placeholder:'Sua pergunta',id:'ask-q'});var o=[0,1,2].map(function(i){return el('input',{class:'inp',placeholder:'Opção '+(i+1),style:'margin-top:8px',id:'ask-o'+i})});
-  var w=el('input',{class:'inp',placeholder:'Por que essa é a certa? (uma frase)',id:'ask-w'});
-  var sel=el('div',{class:'chips',style:'margin:8px 0'});var ans=0;[0,1,2].forEach(function(i){var ch=el('button',{class:'chip'+(i===0?' sel':''),onclick:function(){ans=i;[].forEach.call(sel.children,function(k,j){k.classList.toggle('sel',j===i)})}},'A certa é a '+(i+1));sel.appendChild(ch)});
-  c.appendChild(el('div',{class:'slot'},el('label',{},'Pergunta'),q));c.appendChild(el('div',{class:'slot'},el('label',{},'Opções'),o[0],o[1],o[2]));c.appendChild(sel);c.appendChild(el('div',{class:'slot'},el('label',{},'Explicação'),w));
+  var q=el('input',{class:'inp',placeholder:L('Sua pergunta','Your question'),id:'ask-q'});var o=[0,1,2].map(function(i){return el('input',{class:'inp',placeholder:L('Opção ','Option ')+(i+1),style:'margin-top:8px',id:'ask-o'+i})});
+  var w=el('input',{class:'inp',placeholder:L('Por que essa é a certa? (uma frase)','Why is that the right one? (one sentence)'),id:'ask-w'});
+  var sel=el('div',{class:'chips',style:'margin:8px 0'});var ans=0;[0,1,2].forEach(function(i){var ch=el('button',{class:'chip'+(i===0?' sel':''),onclick:function(){ans=i;[].forEach.call(sel.children,function(k,j){k.classList.toggle('sel',j===i)})}},L('A certa é a ','The right one is ')+(i+1));sel.appendChild(ch)});
+  c.appendChild(el('div',{class:'slot'},el('label',{},L('Pergunta','Question')),q));c.appendChild(el('div',{class:'slot'},el('label',{},L('Opções','Options')),o[0],o[1],o[2]));c.appendChild(sel);c.appendChild(el('div',{class:'slot'},el('label',{},L('Explicação','Explanation')),w));
+  /* perguntas prontas para escolher */
+  var sugBox=el('div',{class:'sug',id:'ask-sug'});
+  function fill(item){q.value=item.q;item.o.forEach(function(t,i){o[i].value=optLabel(t)});ans=item.a;[].forEach.call(sel.children,function(k,j){k.classList.toggle('sel',j===ans)});w.value=item.why;toast(L('Pergunta escolhida! Pode editar.','Question chosen! You can edit it.'))}
+  function drawSug(){sugBox.innerHTML='';shuffle(BANK).slice(0,5).forEach(function(it,ix){sugBox.appendChild(el('button',{class:'sugbtn',id:'sug'+ix,onclick:function(){fill(it)}},it.q))})}
+  drawSug();
+  c.insertBefore(el('div',{class:'slot'},el('label',{},L('Escolha uma pergunta pronta (ou escreva a sua abaixo)','Pick a ready-made question (or write your own below)')),sugBox,el('button',{class:'link',id:'sug-more',onclick:drawSug},L('Ver outras sugestões','See other suggestions'))),c.firstChild);
   var out=el('div',{id:'ask-out'});
   c.appendChild(el('button',{class:'btn gold wide',id:'ask-make',onclick:function(){
     var obj={q:q.value.trim(),o:o.map(function(x){return x.value.trim()}),a:ans,w:w.value.trim(),n:cleanName(S.name)};
-    if(!obj.q||obj.o.some(function(x){return !x})){toast('Preencha a pergunta e as 3 opções');return}
+    if(!obj.q||obj.o.some(function(x){return !x})){toast(L('Preencha a pergunta e as 3 opções','Fill in the question and the 3 options'));return}
     var code='Q-'+btoa(unescape(encodeURIComponent(JSON.stringify(obj))));out.innerHTML='';
-    out.appendChild(el('p',{style:'text-align:center;margin-top:12px'},'Pronto! Mande este código para a outra:'));out.appendChild(el('div',{class:'codebox',style:'font-size:12px;letter-spacing:0;word-break:break-all',id:'ask-code'},code));
-    out.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText(code)}},'Copiar código'));addPts(10)
-  }},'Gerar código'));c.appendChild(out);app.appendChild(c);bottom([]);
+    out.appendChild(el('p',{style:'text-align:center;margin-top:12px'},L('Pronto! Mande este código para a outra:','Done! Send this code to the other:')));out.appendChild(el('div',{class:'codebox',style:'font-size:12px;letter-spacing:0;word-break:break-all',id:'ask-code'},code));
+    out.appendChild(el('button',{class:'btn ghost wide',style:'margin-top:8px',onclick:function(){copyText(code)}},L('Copiar código','Copy code')));addPts(10)
+  }},L('Gerar código','Generate code')));c.appendChild(out);app.appendChild(c);bottom([]);
 }
 function parseAsk(s){try{s=(s||'').trim().split(/\s+/).pop();if(s.indexOf('Q-')!==0)return null;var o=JSON.parse(decodeURIComponent(escape(atob(s.slice(2)))));if(!o.q||!o.o||o.o.length!==3)return null;return o}catch(e){return null}}
 function askReceive(){
-  screen('Responder pergunta',askMenu);
-  var c=el('div',{class:'card'});c.appendChild(el('p',{},'Cole aqui o código que a outra mandou.'));
+  screen(L('Responder pergunta','Answer a question'),askMenu);
+  var c=el('div',{class:'card'});c.appendChild(el('p',{},L('Cole aqui o código que a outra mandou.','Paste the code the other sent here.')));
   var ta=el('textarea',{class:'inp',placeholder:'Q-...',id:'ask-in'});c.appendChild(ta);
   c.appendChild(el('button',{class:'btn gold wide',style:'margin-top:10px',id:'ask-play',onclick:function(){
-    var o=parseAsk(ta.value);if(!o){toast('Não entendi esse código');return}
-    screen('Pergunta de '+(o.n||'uma amiga'),askMenu);
-    var q={q:o.q,o:o.o,a:o.a,why:o.w||'Peça a explicação para ela!'};
-    var card=choiceCard(q,qopts(q,mul(hashS(o.q))),'Pergunta de '+(o.n||'uma amiga'),function(ok){addPts(ok?10:3);if(ok)confetti()});app.appendChild(card);bottom([el('button',{class:'btn wide',onclick:askMenu},'Voltar')]);
-  }},'Jogar'));app.appendChild(c);bottom([]);
+    var o=parseAsk(ta.value);if(!o){toast(L('Não entendi esse código','I did not understand that code'));return}
+    var who=o.n||L('uma amiga','a friend');
+    screen(L('Pergunta de ','Question from ')+who,askMenu);
+    var q={q:o.q,o:o.o,a:o.a,why:o.w||L('Peça a explicação para ela!','Ask her for the explanation!')};
+    var card=choiceCard(q,qopts(q,mul(hashS(o.q))),L('Pergunta de ','Question from ')+who,function(ok){addPts(ok?10:3);if(ok)confetti()});app.appendChild(card);bottom([el('button',{class:'btn wide',onclick:askMenu},L('Voltar','Back'))]);
+  }},L('Jogar','Play')));app.appendChild(c);bottom([]);
 }
 
 /* ===== início, com atalhos para teste ===== */
 function chooser(){
-  cur=null;app.innerHTML='';bottom([]);
-  app.appendChild(el('header',{class:'top'},el('div',{class:'brand'},'Missão ',el('span',{},'Astro')),el('div',{})));
-  app.appendChild(el('div',{class:'hero'},el('div',{class:'stars'},'✦ ✧ ✦'),el('h1',{},'Quem está jogando?'),el('p',{},'Escolha o seu nome. O curso inteiro vai usar o seu mapa nos exemplos.')));
+  LANGBACK=chooser;cur=null;app.innerHTML='';bottom([]);
+  var lr=el('div',{class:'hr'},el('button',{class:'langbtn',id:'lang-toggle',onclick:toggleLang},LANG==='pt'?'🌐 English':'🌐 Português'));
+  app.appendChild(el('header',{class:'top'},BRAND(),lr));
+  app.appendChild(el('div',{class:'hero'},el('div',{class:'stars'},'✦ ✧ ✦'),el('h1',{},L('Quem está jogando?','Who is playing?')),el('p',{},L('Escolha o seu nome. O curso inteiro vai usar o seu mapa nos exemplos.','Pick your name. The whole course will use your chart in the examples.'))));
   var box=el('div',{class:'days'});
-  ['renata','sarah'].forEach(function(k){var c=CHARTS[k];box.appendChild(el('button',{class:'day',id:'pick-'+k,onclick:function(){setProfile(k);home()}},el('div',{class:'n glyph',style:'--c:#6f3fa0'},c.name.charAt(0)),el('div',{},el('b',{},'Sou a '+c.name),el('small',{},'Entrar com o meu mapa')),el('div',{class:'st'},'›')))});
+  ['renata','sarah'].forEach(function(k){var c=CHARTS[k];box.appendChild(el('button',{class:'day',id:'pick-'+k,onclick:function(){setProfile(k);home()}},el('div',{class:'n glyph',style:'--c:#6f3fa0'},c.name.charAt(0)),el('div',{},el('b',{},L('Sou a ','I am ')+c.name),el('small',{},L('Entrar com o meu mapa','Enter with my chart'))),el('div',{class:'st'},'›')))});
   app.appendChild(box);
-  app.appendChild(el('p',{style:'text-align:center;color:#7a6a88;font-size:14px;margin-top:14px'},'O seu progresso fica só neste aparelho. Dá para trocar de pessoa a qualquer momento.'));
+  app.appendChild(el('p',{style:'text-align:center;color:#7a6a88;font-size:14px;margin-top:14px'},L('O seu progresso fica só neste aparelho. Dá para trocar de pessoa a qualquer momento.','Your progress stays only on this device. You can switch person at any time.')));
 }
 (function(){
-  var h=location.hash||'';var key=null;
+  var h=location.hash||'',key=null,lg=null;
+  var m0=h.match(/^#(sarah|renata)?-?(en|pt)?$/);
+  if(m0&&(m0[1]||m0[2])){key=m0[1]||null;lg=m0[2]||null;h=key?'#'+key:''}
+  if(!lg){try{lg=localStorage.getItem('missaoAstroLang')}catch(e){}}
+  setLang(lg==='en'?'en':'pt');
   if(h==='#escolher'){chooser();return}
-  if(h==='#sarah'||h==='#renata')key=h.slice(1);
-  else{try{key=localStorage.getItem('missaoAstroProfile')}catch(e){}}
+  if(!key&&(h==='#sarah'||h==='#renata'))key=h.slice(1);
+  if(!key){try{key=localStorage.getItem('missaoAstroProfile')}catch(e){}}
   var dbg=/^#(d\d+s\d+|mapa|juntas)$/.test(h);
   if(!CHARTS[key]&&dbg)key='sarah';
   if(!CHARTS[key]){chooser();return}
